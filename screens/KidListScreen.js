@@ -22,8 +22,8 @@ const KidListScreen = () => {
 
   const renderKids = p_kids => {
     if (p_kids.length === 0) return null;
-    const kids = kidsFiltered ?
-      p_kids.filter(kid => kid.childGroup.id === globalState.auth.groupId)
+    const kids = kidsFiltered
+      ? p_kids.filter(kid => kid.childGroup.id === globalState.auth.groupId)
       : p_kids;
 
     return (
@@ -48,12 +48,6 @@ const KidListScreen = () => {
   useEffect(() => {
     fetchKids();
   }, []);
-
-  const getFilterbuttonStyle = p => {
-    if (kidsFiltered) {
-      return []
-    }
-  }
 
   return (
     <View>
@@ -89,11 +83,15 @@ const styles = StyleSheet.create({
   filterButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    paddingLeft: 25,
+    paddingRight: 25,
     marginBottom: 10,
     //borderWidth: 1,
     //borderColor: 'black'
   },
   filterButton: {
+    flex: 1,
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#147efb',
     paddingTop: 5,
