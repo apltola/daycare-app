@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, Text, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, View, Text, TouchableOpacity, TouchableHighlight, Animated } from 'react-native';
 import axios from 'axios';
 import { apiRoot } from '../util';
 import useGlobalHook from '../store';
 
-const KidListScreen = () => {
+function KidListScreen() {
   const [globalState, globalActions] = useGlobalHook();
   const [kids, setKids] = useState([]);
   const [kidsFiltered, setKidsFiltered] = useState(true);
+  this._scrollViewRef = React.createRef();
 
   const fetchKids = async () => {
     try {
       const res = await axios.get(`${apiRoot}/child/all`);
       const kids = res.data;
       //console.log(kids);
+      console.log('FETCH!!!')
       setKids(prev => kids);
     } catch(err) {
       console.error(err);
@@ -29,7 +31,7 @@ const KidListScreen = () => {
     return (
       kids.map(kid => {
         return (
-          <View key={kid.id} style={styles.kidView}>
+          <View key={kid.id} style={styles.kidItem}>
             <Text>
               name: {kid.firstName}
             </Text>
@@ -50,10 +52,13 @@ const KidListScreen = () => {
   }, []);
 
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.filterButtonsContainer}>
         <TouchableOpacity
-          onPress={() => setKidsFiltered(prev => false)}
+          onPress={() => {
+            setKidsFiltered(prev => false);
+            this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
+          }}
           style={kidsFiltered ? styles.filterButton : [styles.filterButton, styles.filterButtonSelected]}
         >
           <Text style={kidsFiltered ? styles.btnText : styles.btnTextSelected}>
@@ -61,7 +66,11 @@ const KidListScreen = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setKidsFiltered(prev => true)}
+          onPress={() => {
+            setKidsFiltered(prev => true)
+            this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
+          }
+        }
           style={kidsFiltered ? [styles.filterButton, styles.filterButtonSelected]: styles.filterButton}
         >
           <Text style={kidsFiltered ? styles.btnTextSelected : styles.btnText}>
@@ -69,16 +78,34 @@ const KidListScreen = () => {
           </Text>
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <Animated.ScrollView
+        ref={e => this._scrollViewRef = e}
+        style={styles.scrollView}
+      >
         {renderKids(kids)}
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  kidView: {
-    padding: 5
+  container: {
+    //borderWidth: 1,
+    //borderColor: 'red',
+    flex: 1,
+    flexDirection: 'column'
+  },
+  scrollView: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    //borderWidth: 2,
+    //borderColor: 'goldenrod',
+  },
+  kidItem: {
+    padding: 5,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#d1d5da',
   },
   filterButtonsContainer: {
     flexDirection: 'row',
