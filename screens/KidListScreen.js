@@ -32,15 +32,20 @@ function KidListScreen() {
       kids.map(kid => {
         return (
           <View key={kid.id} style={styles.kidItem}>
-            <Text>
-              name: {kid.firstName}
-            </Text>
-            <Text>
-              groupId: {kid.childGroup.id}
-            </Text>
-            <Text>
-              groupName: {kid.childGroup.name}
-            </Text>
+            <View style={styles.kidItemLeft}>
+              <Text style={styles.kidName}>{kid.firstName}</Text>
+              <Text>{kid.childGroup.name}</Text>
+            </View>
+            <View style={styles.kidItemRight}>
+              <TouchableOpacity
+                style={styles.presentBtn}
+                onPress={() => console.log('PAIKALLA!!!!!')}
+              >
+                <Text style={styles.presentBtnText}>
+                  Paikalla
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         );
       })
@@ -102,10 +107,24 @@ const styles = StyleSheet.create({
     //borderColor: 'goldenrod',
   },
   kidItem: {
+    flexDirection: 'row',
     padding: 5,
-    marginBottom: 10,
+    marginBottom: 15,
     borderWidth: 1,
     borderColor: '#d1d5da',
+  },
+  kidItemLeft: {
+    flex: 1,
+  },
+  kidItemRight: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  kidName: {
+    fontSize: 25,
   },
   filterButtonsContainer: {
     flexDirection: 'row',
@@ -136,6 +155,15 @@ const styles = StyleSheet.create({
   btnText: {
     color: '#147efb',
     fontSize: 16,
+  },
+  presentBtn: {
+    borderColor: 'black',
+    borderWidth: 1,
+    paddingTop: 5,
+    paddingBottom: 5,
+    paddingLeft: 15,
+    paddingRight: 15,
+    borderRadius: 3
   }
 });
 
