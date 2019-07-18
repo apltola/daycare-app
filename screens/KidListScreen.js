@@ -22,6 +22,14 @@ function KidListScreen() {
     }
   }
 
+  const setKidPresent = async kid => {
+    try {
+      console.log(kid.firstName);
+    } catch(err) {
+      console.err(err);
+    }
+  }
+
   const renderKids = p_kids => {
     if (p_kids.length === 0) return null;
     const kids = kidsFiltered
@@ -39,7 +47,7 @@ function KidListScreen() {
             <View style={styles.kidItemRight}>
               <TouchableOpacity
                 style={styles.presentBtn}
-                onPress={() => console.log('PAIKALLA!!!!!')}
+                onPress={() => setKidPresent(kid)}
               >
                 <Text style={styles.presentBtnText}>
                   Paikalla
@@ -118,8 +126,8 @@ const styles = StyleSheet.create({
   },
   kidItemRight: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: 'red',
+    //borderWidth: 1,
+    //borderColor: 'red',
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
