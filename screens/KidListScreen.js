@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingLeft: 10,
     paddingRight: 10,
+    marginTop: 20
     //borderWidth: 2,
     //borderColor: 'goldenrod',
   },
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     //borderWidth: 1,
     //borderColor: 'red',
     justifyContent: 'center',
-    alignItems: 'flex-start',
+    alignItems: 'flex-end',
   },
   kidName: {
     fontSize: 25,
