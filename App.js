@@ -1,13 +1,29 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import KidListScreen from './screens/KidListScreen';
+import { createAppContainer, createBottomTabNavigator } from 'react-navigation';
+
 import Header from './components/Header';
+import KidListScreen from './screens/KidListScreen';
+import KidScreen from './screens/KidScreen';
+import TeacherScreen from './screens/TeacherScreen';
+import GroupScreen from './screens/GroupScreen';
+import ScheduleScreen from './screens/ScheduleScreen';
+
+const MainNavigator = createBottomTabNavigator({
+  main: KidListScreen,
+  kid: KidScreen,
+  teacher: TeacherScreen,
+  group: GroupScreen,
+  schedule: ScheduleScreen
+});
+
+const AppContainer = createAppContainer(MainNavigator);
 
 export default function App() {
   return (
     <View style={styles.container}>
       <Header title="childMinder_3000" />
-      <KidListScreen />
+      <AppContainer />
     </View>
   );
 }
