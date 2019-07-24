@@ -3,6 +3,8 @@ import { StyleSheet, ScrollView, View, Text, TouchableOpacity, TouchableHighligh
 import axios from 'axios';
 import { apiRoot } from '../util';
 import useGlobalHook from '../store';
+import KidList from '../components/KidList';
+import IsPresentButton from '../components/IsPresentButton';
 
 function KidListScreen() {
   const [globalState, globalActions] = useGlobalHook();
@@ -22,13 +24,13 @@ function KidListScreen() {
     }
   } */
 
-  const setKidPresent = async kid => {
+  /* const setKidPresent = kid => {
     try {
       console.log(kid.firstName);
     } catch(err) {
       console.err(err);
     }
-  }
+  } */
 
   const renderKids = p_kids => {
     if (p_kids.length === 0) return null;
@@ -36,28 +38,10 @@ function KidListScreen() {
       ? p_kids.filter(kid => kid.childGroup.id === globalState.auth.groupId)
       : p_kids;
 
-    return (
-      kids.map(kid => {
-        return (
-          <View key={kid.id} style={styles.kidItem}>
-            <View style={styles.kidItemLeft}>
-              <Text style={styles.kidName}>{kid.firstName}</Text>
-              <Text>{kid.childGroup.name}</Text>
-            </View>
-            <View style={styles.kidItemRight}>
-              <TouchableOpacity
-                style={styles.presentBtn}
-                onPress={() => setKidPresent(kid)}
-              >
-                <Text style={styles.presentBtnText}>
-                  Paikalla
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-      })
-    );
+    return <KidList
+              kids={kids}
+              returnButton={ kid => <IsPresentButton kid={kid} /> }
+            />
   }
 
   useEffect(() => {
