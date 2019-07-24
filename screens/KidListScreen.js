@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, View, Text, TouchableOpacity, TouchableHighlight, Animated } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Image } from 'react-native';
 import axios from 'axios';
 import { apiRoot } from '../util';
 import useGlobalHook from '../store';
@@ -10,27 +10,9 @@ function KidListScreen() {
   const [globalState, globalActions] = useGlobalHook();
   const [kids, setKids] = useState([]);
   const [kidsFiltered, setKidsFiltered] = useState(true);
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
   this._scrollViewRef = React.createRef();
-
-  /* const fetchKids = async () => {
-    try {
-      const res = await axios.get(`${apiRoot}/child/all`);
-      const kids = res.data;
-      //console.log(kids);
-      console.log('FETCH!!!')
-      setKids(prev => kids);
-    } catch(err) {
-      console.error(err);
-    }
-  } */
-
-  /* const setKidPresent = kid => {
-    try {
-      console.log(kid.firstName);
-    } catch(err) {
-      console.err(err);
-    }
-  } */
 
   const renderKids = p_kids => {
     if (p_kids.length === 0) return null;
@@ -44,12 +26,53 @@ function KidListScreen() {
             />
   }
 
-  useEffect(() => {
-    //fetchKids();
-  }, []);
+  const onDateChange = p => {
+    console.log('DATE CHANGE!!!');
+    console.log(p);
+    setDate(prev => p);
+  }
+
+  const renderDatePicker = () => {
+    if (!showDatePicker) return null;
+
+    return (
+      <DatePickerIOS
+        date={date}
+        onDateChange={onDateChange}
+        mode="date"
+      />
+    );
+  }
+
+  const getIconSource = () => {
+    if (showDatePicker) {
+      return require('../assets/chevron_up.png');
+    } else {
+      return require('../assets/chevron_down.png');
+    }
+  }
 
   return (
     <View style={styles.container}>
+      <View style={styles.dateButtonContainer}>
+        <TouchableOpacity
+          style={styles.dateButton}
+          onPress={() => setShowDatePicker(prev => !prev)}
+        >
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text style={styles.dateButtonTxt}>
+              {date.toLocaleDateString()}
+            </Text>
+            <Image
+              source={getIconSource()}
+              style={{ height: 20, width: 20, marginLeft: 10}}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.datePickerContainer}>
+        {renderDatePicker()}
+      </View>
       <View style={styles.filterButtonsContainer}>
         <TouchableOpacity
           onPress={() => {
@@ -157,7 +180,23 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
     borderRadius: 3
-  }
+  },
+  dateButtonContainer: {
+    borderWidth: 1,
+    borderColor: 'black',
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  dateButton: {
+    borderWidth: 1,
+    borderColor: 'red',
+    width: 200,
+    alignItems: 'center',
+  },
+  dateButtonTxt: {
+
+  },
+
 });
 
 export default KidListScreen;
