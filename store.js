@@ -8,7 +8,8 @@ const initialState = {
     id: 1,
     groupId: 1001,
     name: 'allu'
-  }
+  },
+  allKids: []
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);

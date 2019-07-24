@@ -10,7 +10,7 @@ function KidListScreen() {
   const [kidsFiltered, setKidsFiltered] = useState(true);
   this._scrollViewRef = React.createRef();
 
-  const fetchKids = async () => {
+  /* const fetchKids = async () => {
     try {
       const res = await axios.get(`${apiRoot}/child/all`);
       const kids = res.data;
@@ -20,7 +20,7 @@ function KidListScreen() {
     } catch(err) {
       console.error(err);
     }
-  }
+  } */
 
   const setKidPresent = async kid => {
     try {
@@ -61,7 +61,7 @@ function KidListScreen() {
   }
 
   useEffect(() => {
-    fetchKids();
+    //fetchKids();
   }, []);
 
   return (
@@ -95,7 +95,7 @@ function KidListScreen() {
         ref={e => this._scrollViewRef = e}
         style={styles.scrollView}
       >
-        {renderKids(kids)}
+        {renderKids(globalState.allKids)}
       </Animated.ScrollView>
     </View>
   );
