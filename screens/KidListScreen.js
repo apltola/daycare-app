@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Image, Button } from 'react-native';
 import axios from 'axios';
 import { apiRoot } from '../util';
 import useGlobalHook from '../store';
@@ -69,6 +69,12 @@ function KidListScreen() {
             />
           </View>
         </TouchableOpacity>
+      </View>
+      <View>
+        <Button
+          title='juukeli'
+          onPress={() => globalActions.fetchKidsForDate(new Date())}
+        />
       </View>
       <View style={styles.datePickerContainer}>
         {renderDatePicker()}
@@ -182,21 +188,21 @@ const styles = StyleSheet.create({
     borderRadius: 3
   },
   dateButtonContainer: {
-    borderWidth: 1,
-    borderColor: 'black',
+    //borderWidth: 1,
+    //borderColor: 'black',
     flexDirection: 'row',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    paddingBottom: 20
   },
   dateButton: {
     borderWidth: 1,
-    borderColor: 'red',
+    borderColor: 'black',
     width: 200,
     alignItems: 'center',
   },
   dateButtonTxt: {
-
+    fontSize: 24
   },
-
 });
 
 export default KidListScreen;
