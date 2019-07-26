@@ -10,15 +10,15 @@ function KidListScreen() {
   const [globalState, globalActions] = useGlobalHook();
   const [kids, setKids] = useState([]);
   const [kidsFiltered, setKidsFiltered] = useState(true);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date("2019/09/23"));
   const [showDatePicker, setShowDatePicker] = useState(false);
   this._scrollViewRef = React.createRef();
 
-  const renderKids = p_kids => {
-    if (p_kids.length === 0) return null;
-    const kids = kidsFiltered
-      ? p_kids.filter(kid => kid.childGroup.id === globalState.auth.groupId)
-      : p_kids;
+  const renderKids = kids => {
+    if (kids.length === 0) return null;
+    /* const kids = kidsFiltered
+    ? p_kids.filter(kid => kid.childGroup.id === globalState.auth.groupId)
+    : p_kids; */
 
     return <KidList
               kids={kids}
@@ -26,10 +26,10 @@ function KidListScreen() {
             />
   }
 
-  const onDateChange = p => {
+  const onDateChange = d => {
     console.log('DATE CHANGE!!!');
-    console.log(p);
-    setDate(prev => p);
+    console.log(d);
+    setDate(prev => d);
   }
 
   const renderDatePicker = () => {
@@ -52,6 +52,16 @@ function KidListScreen() {
     }
   }
 
+  /* useEffect(() => {
+    globalActions.fetchKidsForDate(date);
+    return () => {};
+  }, []) */
+  
+  useEffect(() => {
+    globalActions.fetchKidsForDate(date);
+    return () => {};
+  }, [date])
+
   return (
     <View style={styles.container}>
       <View style={styles.dateButtonContainer}>
@@ -72,8 +82,8 @@ function KidListScreen() {
       </View>
       <View>
         <Button
-          title='juukeli'
-          onPress={() => globalActions.fetchKidsForDate(new Date())}
+          title='juukelibutton'
+          onPress={() => globalActions.fetchKidsForDate(date)}
         />
       </View>
       <View style={styles.datePickerContainer}>
@@ -108,7 +118,7 @@ function KidListScreen() {
         ref={e => this._scrollViewRef = e}
         style={styles.scrollView}
       >
-        {renderKids(globalState.allKids)}
+        {renderKids(globalState.kidsForDate)}
       </Animated.ScrollView>
     </View>
   );

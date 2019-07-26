@@ -10,7 +10,10 @@ export const fetchAllKids = async store => {
 
 export const fetchKidsForDate = async (store, date) => {
   const day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-  const month = date.getMonth() < 10 ? '0' + date.getMonth() : date.getMonth();
-  const fdate = `${date.getFullYear()}-${month}-${day}`
-  console.log(fdate);
+  const month = date.getMonth()+1 < 10 ? '0' + (date.getMonth()+1) : (date.getMonth()+1);
+  const fdate = `${date.getFullYear()}-${month}-${day}`;
+  const res = await axios.get(`${apiRoot}/child/all/${fdate}`);
+  const kids = await res.data;
+  console.log('kids for date => ', kids);
+  store.setState({ kidsForDate: kids });
 }

@@ -8,7 +8,7 @@ const KidList = ({ kids, returnButton }) => {
       <View key={kid.id} style={styles.kidItem}>
         <View style={styles.kidItemLeft}>
           <Text style={styles.kidName}>{kid.firstName}</Text>
-          <Text>{kid.childGroup.name}</Text>
+          {/* <Text>{kid.childGroup.name}</Text> */}
         </View>
         <View style={styles.kidItemRight}>
           {returnButton(kid)}

@@ -9,7 +9,8 @@ const initialState = {
     groupId: 1001,
     name: 'allu'
   },
-  allKids: []
+  allKids: [],
+  kidsForDate: [],
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);
