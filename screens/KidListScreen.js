@@ -59,7 +59,6 @@ function KidListScreen() {
   
   useEffect(() => {
     globalActions.fetchKidsForDate(date);
-    return () => {};
   }, [date])
 
   return (
