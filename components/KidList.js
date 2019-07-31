@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity, TouchableHighlight, Animated } from 'react-native';
 
-const KidList = ({ kids, returnButton }) => {
+const KidList = ({ kids, buttonCb }) => {
 
   return kids.map(kid => {
     return (
@@ -11,7 +11,7 @@ const KidList = ({ kids, returnButton }) => {
           {/* <Text>{kid.childGroup.name}</Text> */}
         </View>
         <View style={styles.kidItemRight}>
-          {returnButton(kid)}
+          {buttonCb(kid)}
         </View>
       </View>
     );

@@ -22,7 +22,7 @@ function KidListScreen() {
 
     return <KidList
               kids={kids}
-              returnButton={ kid => <IsPresentButton kid={kid} /> }
+              buttonCb={ kid => <IsPresentButton kid={kid} /> }
             />
   }
 
