@@ -79,12 +79,12 @@ function KidListScreen() {
           </View>
         </TouchableOpacity>
       </View>
-      <View>
+      {/* <View>
         <Button
           title='juukelibutton'
           onPress={() => globalActions.fetchKidsForDate(date)}
         />
-      </View>
+      </View> */}
       <View style={styles.datePickerContainer}>
         {renderDatePicker()}
       </View>
@@ -204,8 +204,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20
   },
   dateButton: {
-    borderWidth: 1,
-    borderColor: 'black',
+    //borderWidth: 1,
+    //borderColor: 'black',
     width: 200,
     alignItems: 'center',
   },

@@ -12,17 +12,37 @@ import {
   Animated
 } from 'react-native';
 
-export default ScheduleScreen = () => {
+import KidList from '../components/KidList';
+import GoToScheduleButton from '../components/GoToScheduleButton';
+
+
+export default ScheduleScreen = ({ navigation }) => {
+  const [globalState, globalActions] = useGlobalHook();
+
+
   return (
-    <View>
-      <Text>SCHEDULE SCREEN</Text>
-      <Text>SCHEDULE SCREEN</Text>
-      <Text>SCHEDULE SCREEN</Text>
-      <Text>SCHEDULE SCREEN</Text>
+    <View style={styles.container}>
+      <Animated.ScrollView style={styles.scrollView}>
+        <KidList
+          kids={globalState.allKids}
+          buttonCb={kid => <GoToScheduleButton nav={navigation} kid={kid} /> }
+        />
+      </Animated.ScrollView>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+ScheduleScreen.navigationOptions = ({navigation}) => ({
+  title: 'Kalenteri'
+});
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column'
+  },
+  scrollView: {
+    paddingLeft: 10,
+    paddingRight: 10,
+  }
 });

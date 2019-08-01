@@ -30,7 +30,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Header title="childMinder_3000" />
+      <Header title="kidTracker_3000" />
       <AppContainer />
     </View>
   );
