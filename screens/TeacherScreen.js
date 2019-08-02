@@ -11,10 +11,12 @@ import {
   TouchableHighlight,
   Animated
 } from 'react-native';
+import Header from '../components/Header';
 
-export default TeacherScreen = () => {
+const TeacherScreen = () => {
   return (
     <View>
+      <Header title="ope" />
       <Text>TEACHER SCREEN</Text>
       <Text>TEACHER SCREEN</Text>
       <Text>TEACHER SCREEN</Text>
@@ -26,3 +28,13 @@ export default TeacherScreen = () => {
 const styles = StyleSheet.create({
 
 });
+
+TeacherScreen.navigationOptions = ({navigation}) => ({
+  title: 'ope',
+  headerStyle: {
+    height: 100,
+    borderWidth: 2
+  }
+})
+
+export default TeacherScreen;

@@ -22,7 +22,9 @@ export default ScheduleScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Animated.ScrollView style={styles.scrollView}>
+      <Animated.ScrollView
+        contentContainerStyle={{paddingTop: 20}}
+        style={styles.scrollView}>
         <KidList
           kids={globalState.allKids}
           buttonCb={kid => <GoToScheduleButton nav={navigation} kid={kid} /> }
@@ -33,7 +35,7 @@ export default ScheduleScreen = ({ navigation }) => {
 }
 
 ScheduleScreen.navigationOptions = ({navigation}) => ({
-  title: 'Kalenteri'
+  title: 'Aikataulut',
 });
 
 const styles = StyleSheet.create({
@@ -44,5 +46,6 @@ const styles = StyleSheet.create({
   scrollView: {
     paddingLeft: 10,
     paddingRight: 10,
+    //paddingTop: 10
   }
 });

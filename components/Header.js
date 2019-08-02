@@ -14,16 +14,20 @@ const Header = ({ title }) => {
 const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
+    justifyContent: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#e1e4e8',
-    paddingTop: 40,
-    paddingBottom: 10,
+    height: 70,
     marginBottom: 20
+    //paddingTop: 40,
+    //paddingBottom: 10,
+    //marginBottom: 20
   },
   logo: {
     //textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 20
+    fontWeight: '600',
+    fontSize: 17,
+    paddingTop: 20
   },
 });
 

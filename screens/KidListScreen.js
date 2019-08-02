@@ -5,6 +5,7 @@ import { apiRoot } from '../util';
 import useGlobalHook from '../store';
 import KidList from '../components/KidList';
 import IsPresentButton from '../components/IsPresentButton';
+import Header from '../components/Header';
 
 function KidListScreen() {
   const [globalState, globalActions] = useGlobalHook();
@@ -63,6 +64,7 @@ function KidListScreen() {
 
   return (
     <View style={styles.container}>
+      <Header title="kidTracker_3000" />
       <View style={styles.dateButtonContainer}>
         <TouchableOpacity
           style={styles.dateButton}
@@ -122,6 +124,8 @@ function KidListScreen() {
     </View>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   container: {

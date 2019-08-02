@@ -11,10 +11,12 @@ import {
   TouchableHighlight,
   Animated
 } from 'react-native';
+import Header from '../components/Header';
 
 export default GroupScreen = () => {
   return (
     <View>
+      <Header title="juukeli" />
       <Text>GROUP SCREEN</Text>
       <Text>GROUP SCREEN</Text>
       <Text>GROUP SCREEN</Text>
