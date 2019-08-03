@@ -13,10 +13,10 @@ import {
 } from 'react-native';
 import Header from '../components/Header';
 
-export default KidScreen = () => {
+const KidScreen = () => {
   return (
     <View>
-      <Header title="kidTracker_3000" />
+      <Header title="Muksu" />
       <Text>KID SCREEN</Text>
       <Text>KID SCREEN</Text>
       <Text>KID SCREEN</Text>
@@ -25,6 +25,12 @@ export default KidScreen = () => {
   );
 }
 
+KidScreen.navigationOptions = ({ navigation }) => ({
+  title: 'Muksu'
+});
+
 const styles = StyleSheet.create({
 
 });
+
+export default KidScreen;

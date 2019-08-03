@@ -15,9 +15,9 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     justifyContent: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e4e8',
-    height: 70,
+    borderBottomWidth: 0.3,
+    borderBottomColor: 'black',
+    height: 64,
     marginBottom: 20
     //paddingTop: 40,
     //paddingBottom: 10,

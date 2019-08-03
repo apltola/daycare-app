@@ -29,12 +29,8 @@ const styles = StyleSheet.create({
 
 });
 
-TeacherScreen.navigationOptions = ({navigation}) => ({
-  title: 'ope',
-  headerStyle: {
-    height: 100,
-    borderWidth: 2
-  }
+TeacherScreen.navigationOptions = ({ navigation }) => ({
+  title: 'Ope'
 })
 
 export default TeacherScreen;

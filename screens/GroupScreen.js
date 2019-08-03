@@ -13,10 +13,10 @@ import {
 } from 'react-native';
 import Header from '../components/Header';
 
-export default GroupScreen = () => {
+const GroupScreen = () => {
   return (
     <View>
-      <Header title="juukeli" />
+      <Header title="Ryhmät" />
       <Text>GROUP SCREEN</Text>
       <Text>GROUP SCREEN</Text>
       <Text>GROUP SCREEN</Text>
@@ -25,6 +25,12 @@ export default GroupScreen = () => {
   );
 }
 
+GroupScreen.navigationOptions = ({ navigation }) => ({
+  title: 'Ryhmät'
+})
+
 const styles = StyleSheet.create({
 
 });
+
+export default GroupScreen

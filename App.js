@@ -18,18 +18,26 @@ const MainNavigator = createBottomTabNavigator({
   group: GroupScreen,
   schedule: createStackNavigator({
     schedule: ScheduleScreen,
-    calendar: CalendarScreen
+    calendar: CalendarScreen,
   },{
-    defaultNavigationOptions: {
+    navigationOptions: {
       //header: null,
-      tabBarLabel: 'juuukeli',
+      tabBarLabel: 'Aikataulut',
       headerStyle: {
         height: 50,
         fontSize: 30,
+        borderBottomWidth: 1,
+        borderBottomColor: 'black',
         //marginBottom: 15
       }
     }
   })
+},{
+  tabBarOptions: {
+    labelStyle: {
+      //fontSize: 20
+    }
+  }
 });
 
 const AppContainer = createAppContainer(MainNavigator);

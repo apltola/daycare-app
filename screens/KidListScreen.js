@@ -125,7 +125,9 @@ function KidListScreen() {
   );
 }
 
-
+KidListScreen.navigationOptions = ({ navigation }) => ({
+  title: 'Etusivu'
+});
 
 const styles = StyleSheet.create({
   container: {
