@@ -41,6 +41,7 @@ const MainNavigator = createBottomTabNavigator({
 });
 
 const AppContainer = createAppContainer(MainNavigator);
+const juukeli = 'juukeli';
 
 export default function App() {
   const [globalState, globalActions] = useGlobalHook();
