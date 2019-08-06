@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { apiRoot } from '../util';
 import useGlobalHook from '../store';
 import {
   StyleSheet,
-  ScrollView,
   View,
-  Text,
-  TouchableOpacity,
-  TouchableHighlight,
   Animated
 } from 'react-native';
 
@@ -27,7 +21,7 @@ export default ScheduleScreen = ({ navigation }) => {
         style={styles.scrollView}>
         <KidList
           kids={globalState.allKids}
-          buttonCb={kid => <GoToScheduleButton nav={navigation} kid={kid} /> }
+          buttonRenderer={kid => <GoToScheduleButton nav={navigation} kid={kid} /> }
         />
       </Animated.ScrollView>
     </View>

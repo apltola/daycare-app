@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, Text, TouchableOpacity, TouchableHighlight, Animated } from 'react-native';
 
-const KidList = ({ kids, buttonCb }) => {
+const KidList = ({ kids, buttonRenderer }) => {
 
   return kids.map(kid => {
     return (
@@ -11,7 +11,7 @@ const KidList = ({ kids, buttonCb }) => {
           {/* <Text>{kid.childGroup.name}</Text> */}
         </View>
         <View style={styles.kidItemRight}>
-          {buttonCb(kid)}
+          {buttonRenderer(kid)}
         </View>
       </View>
     );
@@ -31,8 +31,6 @@ const styles = StyleSheet.create({
   },
   kidItemRight: {
     flex: 1,
-    //borderWidth: 1,
-    //borderColor: 'red',
     justifyContent: 'center',
     alignItems: 'flex-end',
   },
@@ -45,8 +43,6 @@ const styles = StyleSheet.create({
     paddingLeft: 25,
     paddingRight: 25,
     marginBottom: 10,
-    //borderWidth: 1,
-    //borderColor: 'black'
   },
   presentBtn: {
     borderColor: 'black',

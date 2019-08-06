@@ -19,17 +19,12 @@ const styles = StyleSheet.create({
     borderBottomColor: 'black',
     height: 64,
     marginBottom: 20
-    //paddingTop: 40,
-    //paddingBottom: 10,
-    //marginBottom: 20
   },
   logo: {
-    //textAlign: 'center',
     fontWeight: '600',
     fontSize: 17,
     paddingTop: 20
   },
 });
 
-//export { Header };
 export default Header;

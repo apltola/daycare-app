@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Image, Button } from 'react-native';
-import axios from 'axios';
-import { apiRoot } from '../util';
 import useGlobalHook from '../store';
 import KidList from '../components/KidList';
 import IsPresentButton from '../components/IsPresentButton';
@@ -23,7 +21,7 @@ function KidListScreen() {
 
     return <KidList
               kids={kids}
-              buttonCb={ kid => <IsPresentButton kid={kid} /> }
+              buttonRenderer={ kid => <IsPresentButton kid={kid} /> }
             />
   }
 
@@ -52,11 +50,6 @@ function KidListScreen() {
       return require('../assets/chevron_down.png');
     }
   }
-
-  /* useEffect(() => {
-    globalActions.fetchKidsForDate(date);
-    return () => {};
-  }, []) */
   
   useEffect(() => {
     globalActions.fetchKidsForDate(date);
@@ -76,17 +69,11 @@ function KidListScreen() {
             </Text>
             <Image
               source={getIconSource()}
-              style={{ height: 20, width: 20, marginLeft: 10}}
+              style={{ height: 20, width: 20, marginLeft: 10 }}
             />
           </View>
         </TouchableOpacity>
       </View>
-      {/* <View>
-        <Button
-          title='juukelibutton'
-          onPress={() => globalActions.fetchKidsForDate(date)}
-        />
-      </View> */}
       <View style={styles.datePickerContainer}>
         {renderDatePicker()}
       </View>
