@@ -2,7 +2,7 @@ import axios from 'axios';
 import { apiRoot } from '../util/index';
 
 export const fetchAllKids = async store => {
-  console.log('FETCH ALL KIDS!!');
+  //console.log('FETCH ALL KIDS!!');
   const res = await axios.get(`${apiRoot}/child/all`);
   const kids = await res.data;
   store.setState({ allKids: kids });
@@ -14,6 +14,6 @@ export const fetchKidsForDate = async (store, date) => {
   const fdate = `${date.getFullYear()}-${month}-${day}`;
   const res = await axios.get(`${apiRoot}/child/all/${fdate}`);
   const kids = await res.data;
-  console.log('kids for date => ', kids);
+  //console.log('kids for date => ', kids);
   store.setState({ kidsForDate: kids });
 }
