@@ -3,6 +3,17 @@ import t from 'timestamp-utils';
 
 export const apiRoot = __DEV__ ? 'http://192.168.1.102:9002' : 'emt';
 
+/* IOS COLORS */
+export const iosColors = {
+  darkBlue: '#147efb',
+  lightBlue: '#5fc9f8',
+  red: '#fc3d39',
+  green: '#53d769',
+  yellow: '#fecb2e',
+  orange: '#fd9426',
+  grey: '#8e8e93'
+}
+
 /* CALENDAR UTILS */
 const DAYS_TO_DISPLAY_PER_MONTH = 42
 const MONTHS_LENGHT = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]

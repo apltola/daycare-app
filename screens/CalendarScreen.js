@@ -12,11 +12,13 @@ import {
   Animated,
   Dimensions
 } from 'react-native';
-import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime } from '../util';
+import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, iosColors } from '../util';
 import t from 'timestamp-utils'
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
+const DAY_LABELS = ['MA', 'TI', 'KE', 'TO', 'PE', 'LA', 'SU'];
+const MONTH_LABELS = ['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','Kesäkuu','Heinäkuu','Elokuu','Syyskuu','Lokakuu','Marraskuu','Joulukuu'];
 
 const CalendarScreen = () => {
   const setti = {...initMonth(), ...parseRange()}
@@ -66,8 +68,16 @@ const CalendarScreen = () => {
 
   return (
     <View>
-      <Text>KALENTERIII!!!</Text>
-      <View styles={styles.calendarWrapper}>
+      <View style={styles.calendarContainer}>
+        <View style={styles.dayLabels}>
+          {DAY_LABELS.map(label => {
+            return (
+              <Text key={label} style={styles.dayLabel_text}>
+                {label}
+              </Text>
+            )
+          })}
+        </View>
         <View style={styles.calendar}>
           {getDays(firstDateToShow).map(day => {
             return (
@@ -88,33 +98,62 @@ const CalendarScreen = () => {
 }
 
 const styles = StyleSheet.create({
+  calendarContainer: {
+    //borderWidth: 2,
+    borderColor: 'red',
+    padding: 10,
+    alignContent: 'center',
+    alignItems: 'center',
+  },
+  dayLabels: {
+    flexDirection: 'row',
+    marginLeft: -1,
+    marginBottom: 10
+  },
+  dayLabel_text: {
+    width: (SCREEN_WIDTH/7.05)-(20/7),
+    textAlign: 'center',
+    //borderWidth: 0.5,
+    borderColor: iosColors.grey,
+  },
   calendar: {
     //borderWidth: 1,
     //borderColor: 'red',
-    //borderWidth: 1
+    //borderWidth: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    margin: 10,
+    //margin: 10,
   },
   day: {
-    padding: 0,
     width: (SCREEN_WIDTH/7.05)-(20/7),
     height: 50,
-    borderTopWidth: 0.5,
+    borderWidth: 0.5,
+    borderColor: iosColors.grey,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
   },
   day_text: {
     fontSize: 18,
-    margin: 10
+    //margin: 10,
+    textAlign: 'center',
   },
   dayOutOfMonth: {
     
   },
   dayOutOfMonth_text: {
-    opacity: 0.5,
+    opacity: 0.3,
   },
   dayToday: {
+    //borderWidth: 1,
+    //borderColor: 'red'
+  },
+  dayToday_text: {
+    textAlign: 'center',
+    color: iosColors.red,
+    fontWeight: 'bold',
     borderWidth: 1,
-    borderColor: 'red'
+
   },
   scrollView: {
 
@@ -124,5 +163,6 @@ const styles = StyleSheet.create({
   },
 
 });
+
 
 export default CalendarScreen;
