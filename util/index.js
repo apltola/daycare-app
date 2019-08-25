@@ -55,3 +55,13 @@ export const dateIsBetween = (date, start, end) => date > start && date < end
 export const dateIsOut = (date, start, end) => date < start || date > end
 
 export const formartTime = value => (`0${value}`).slice(-2)
+
+export const formatDateString = value => {
+  const dValue = new Date(value);
+  let date = dValue.getDate();
+  date = date < 10 ? `0${date}` : date;
+  let month = dValue.getMonth();
+  month = month < 10 ? `0${month}` : month;
+  const year = dValue.getFullYear();
+  return `${date}.${month}.${year}`;
+}
