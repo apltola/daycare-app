@@ -1,6 +1,7 @@
 import times from 'lodash.times';
 import t from 'timestamp-utils';
 
+/* API URL ROOT */
 export const apiRoot = __DEV__ ? 'http://192.168.1.102:9002' : 'emt';
 
 /* IOS COLORS */
@@ -14,7 +15,7 @@ export const iosColors = {
   grey: '#8e8e93'
 }
 
-/* CALENDAR UTILS */
+/* CALENDAR & DATE UTILS */
 const DAYS_TO_DISPLAY_PER_MONTH = 42
 const MONTHS_LENGHT = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
@@ -71,4 +72,21 @@ export const formatDateString = (value, pattern) => {
   } else {
     return null;
   }
+}
+
+/* GENERAL HELPERS */
+export const arraysAreEqual = (_arr1, _arr2) => {
+  if (_arr1.length !== _arr2.length) {
+    return false;
+  }
+
+  const arr1 = _arr1.concat().sort();
+  const arr2 = _arr2.concat().sort();
+  arr1.forEach((el, idx) => {
+    if (arr2[idx] !== el) {
+      return false;
+    }
+  });
+
+  return true;
 }

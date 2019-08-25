@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
-import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, formatDateString, iosColors } from '../util';
+import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, formatDateString, arraysAreEqual, iosColors } from '../util';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
 
@@ -22,8 +22,8 @@ const CalendarScreen = props => {
   const [postData, setPostData] = useState([]);
   const [arrivalTime, setArrivalTime] = useState(0);
   const [departureTime, setDepartureTime] = useState(0);
-  const [daysWithArrival, setDaysWithArrival] = useState(0);
-  const [daysWithDeparture, setDaysWithDeparture] = useState(0);  
+  const [daysWithArrival, setDaysWithArrival] = useState([]);
+  const [daysWithDeparture, setDaysWithDeparture] = useState([]);  
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
@@ -40,6 +40,7 @@ const CalendarScreen = props => {
         'dayToday': day === getDateWithoutTime(new Date().getTime()),
         'daySelected': selectedDays.includes(day),
         'dayOutOfMonth': dateIsOut(day, firstMonthDay, lastMonthDay),
+        'dayWithSchedule': daysWithArrival.findIndex(i => i.temp_id === day) > -1,
         //'day-inside-selection': dateIsBetween(day, sDate, eDate),
         //'day-selected': !endDate && (sDate === day),
         //'day-start-selection': endDate && (sDate === day),
@@ -63,6 +64,22 @@ const CalendarScreen = props => {
     }
 
     return Object.entries(conditions).map(i => i[1] ? styles[i[0]] : null);
+  }
+
+  const addDayToScheduledList = (day, type) => {
+    const arr = type === 'arrival' ? daysWithArrival : daysWithDeparture;
+    console.log('nii mitä? ', arr);
+    const idx = arr.findIndex(i => i === day);
+    console.log('idx==> ', idx);
+    if (idx === -1) {
+      if (type === 'arrival') {
+        return setDaysWithArrival(prev => [...prev, day])
+      } else {
+        return setDaysWithDeparture(prev => [...prev, day])
+      }
+    } else {
+      return;
+    }
   }
 
   const onDaySelect = day => {
@@ -114,13 +131,13 @@ const CalendarScreen = props => {
   }
 
   const onTimePicked = time => {
-    console.log('picked => ', time.getTime());
+    /*console.log('picked => ', time.getTime());
     console.log('pickedDate => ', time.getDate());
     console.log('pickedHours', time.getHours());
     console.log('pickedMinutes', time.getMinutes());
     let foo = t.addHours(selectedDays[0], time.getHours());
     let baz = t.addMinutes(foo, time.getMinutes())
-    console.log('baz => ', baz);
+    console.log('baz => ', baz);*/
 
     setIsTimePickerVisible(() => false);
 
@@ -131,127 +148,128 @@ const CalendarScreen = props => {
       tiedetään että pitää etsiä jo luotua alkiota indeksillä postData taulusta
     */
 
-    if (daysWithArrival === daysWithDeparture) {
+    if (daysWithArrival.length === daysWithDeparture.length) {
       const arr = selectedDays.map(day => {
         let data = {
           temp_id: day,
           child: kid,
           date: formatDateString(day, 'yyyy-mm-dd'),
         }
-        const withHours = t.addHours(day, time.getHours());
-        const withHoursAndMinutes = t.addMinutes(withHours, time.getMinutes());
+        const timeWithHours = t.addHours(day, time.getHours());
+        const timeWithHoursAndMin = t.addMinutes(timeWithHours, time.getMinutes());
         if (timePickerTarget === 'arrival') {
-          data.arrive = withHoursAndMinutes;
-          setDaysWithArrival(prev => prev + selectedDays.length)
-        } else {
-          data.departure = withHoursAndMinutes;
-          setDaysWithDeparture(prev => prev + selectedDays.length)
+          data.arrive = timeWithHoursAndMin;
+          addDayToScheduledList(day, 'arrival');
+        } else if (timePickerTarget === 'departure') {
+          data.departure = timeWithHoursAndMin;
+          addDayToScheduledList(day, 'departure');
         }
-        
         return data;
       })
-
-      setPostData(prev => [...prev, arr]);
+      setPostData(prev => [...prev, ...arr]);
     } else {
+      let arr = postData;
       selectedDays.forEach(selectedDay => {
-        const idx = postData.findIndex(i => i.temp_id === selectedDay);
+        const idx = arr.findIndex(i => i.temp_id === selectedDay);
 
-        // päivälle on laitettu jo saapumis-/lähtöaika -> pitää laittaa puuttuva aika
         if (idx > -1) {
-          const withHours = t.addHours(day, time.getHours());
-          const withHoursAndMinutes = t.addMinutes(withHours, time.getMinutes());
-          if (postData[idx].arrive) {
-            postData[idx].departure = withHoursAndMinutes;
-          } else if (postData[idx].departure) {
-            postData[idx].arrive = withHoursAndMinutes;
+          const timeWithHours = t.addHours(selectedDay, time.getHours());
+          const timeWithHoursAndMin = t.addMinutes(timeWithHours, time.getMinutes());
+          if (timePickerTarget === 'arrival') {
+            if (!arr[idx].arrive) {
+              addDayToScheduledList(selectedDay, 'arrival');
+            }
+            arr[idx].arrive = timeWithHoursAndMin;
+          } else if (timePickerTarget === 'departure') {
+            if (!arr[idx].departure) {
+              addDayToScheduledList(selectedDay, 'departure');
+            }
+            arr[idx].departure = timeWithHoursAndMin;
           }
         }
       })
+      setPostData(() => arr);
     }
   }
 
   return (
-    <View>
-      <View style={styles.calendarContainer}>
-        <View style={styles.dayLabels}>
-          {DAY_LABELS.map(label => {
-            return (
-              <Text key={label} style={styles.dayLabel_text}>
-                {label}
-              </Text>
-            )
-          })}
-        </View>
-        <View style={styles.calendar}>
-          {getDays(firstDateToShow).map(day => {
-            return (
-              <TouchableOpacity
-                key={day}
-                style={getCalendarClassNames(day, 'view')}
-                onPress={() => onDaySelect(day)}
-              >
-                <Text style={getCalendarClassNames(day, 'text')}>
-                  {parseInt(t.getDay(day), 10)}
+    <View style={{flex: 1}}>
+      <Animated.ScrollView style={{flex: 1}}>
+        <View style={styles.calendarContainer}>
+          <View style={styles.dayLabels}>
+            {DAY_LABELS.map(label => {
+              return (
+                <Text key={label} style={styles.dayLabel_text}>
+                  {label}
                 </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </View>
-      </View>
-      <View style={styles.timeInputContainer}>
-          {/* <Text style={styles.selectedDaysTitle}>
-            {formatSelectedDaysTitle()}
-          </Text> */}
-          {selectedDays.length > 0 &&
-          <View style={styles.timeButtonsContainer}>
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() => onTimeButtonPress('arrival')}
-              >
-              <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() => onTimeButtonPress('departure')}
-            >
-              <Text style={styles.timeButton_text}>Aseta lähtöaika</Text>
-            </TouchableOpacity>
-          </View>}
-      </View>
-
-      <View style={{display: 'flex', flexDirection: 'column'}}>
-        <Animated.ScrollView
-          style={{height: 115, borderWidth: 1, borderColor: 'red'}}
-        >
-          <View>
-            <Text>
-              {JSON.stringify(selectedDays, null, 2)}
-            </Text>
-            <Text>
-              {JSON.stringify(postData, null, 2)}
-            </Text>
-            <Text>
-              daysWithArrival: {JSON.stringify(daysWithArrival, null, 2)}
-            </Text>
-            <Text>
-              daysWithDeparture: {JSON.stringify(daysWithDeparture, null, 2)}
-            </Text>
-            <Text>
-              timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
-            </Text>
+              )
+            })}
           </View>
-        </Animated.ScrollView>      
-      </View>
+          <View style={styles.calendar}>
+            {getDays(firstDateToShow).map(day => {
+              return (
+                <TouchableOpacity
+                  key={day}
+                  style={getCalendarClassNames(day, 'view')}
+                  onPress={() => onDaySelect(day)}
+                >
+                  <Text style={getCalendarClassNames(day, 'text')}>
+                    {parseInt(t.getDay(day), 10)}
+                  </Text>
+                </TouchableOpacity>
+              )
+            })}
+          </View>
+        </View>
+        <View style={styles.timeInputContainer}>
+            {/* <Text style={styles.selectedDaysTitle}>
+              {formatSelectedDaysTitle()}
+            </Text> */}
+            {selectedDays.length > 0 &&
+            <View style={styles.timeButtonsContainer}>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={() => onTimeButtonPress('arrival')}
+                >
+                <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={() => onTimeButtonPress('departure')}
+              >
+                <Text style={styles.timeButton_text}>Aseta lähtöaika</Text>
+              </TouchableOpacity>
+            </View>}
+        </View>
 
-      <DateTimePicker
-        isVisible={isTimePickerVisible}
-        onConfirm={onTimePicked}
-        onCancel={() => setIsTimePickerVisible(false)}
-        mode="time"
-        cancelTextIOS="Peruuta"
-        confirmTextIOS="Ok"
-        titleIOS={timePickerTarget === 'arrival' ? 'Aseta saapumisaika' : 'Aseta lähtöaika'}
-      />
+        <View style={{marginTop: 30}}>
+          <Text>
+            selectedDays: {JSON.stringify(selectedDays, null, 2)}
+          </Text>
+          <Text>
+            postData: {JSON.stringify(postData, null, 2)}
+          </Text>
+          <Text>
+            daysWithArrival: {JSON.stringify(daysWithArrival, null, 2)}
+          </Text>
+          <Text>
+            daysWithDeparture: {JSON.stringify(daysWithDeparture, null, 2)}
+          </Text>
+          <Text>
+            timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
+          </Text>
+        </View>
+
+        <DateTimePicker
+          isVisible={isTimePickerVisible}
+          onConfirm={onTimePicked}
+          onCancel={() => setIsTimePickerVisible(false)}
+          mode="time"
+          cancelTextIOS="Peruuta"
+          confirmTextIOS="Ok"
+          titleIOS={timePickerTarget === 'arrival' ? 'Aseta saapumisaika' : 'Aseta lähtöaika'}
+        />
+      </Animated.ScrollView>
     </View>
   );
 }
@@ -309,9 +327,12 @@ const styles = StyleSheet.create({
   },
   dayToday_text: {
     textAlign: 'center',
-    color: iosColors.red,
-    fontWeight: 'bold',
-    //borderWidth: 1,
+    //color: iosColors.green,
+    //fontWeight: 'bold',
+    borderWidth: 2,
+    borderRadius: 15,
+    padding: 5,
+    borderColor: iosColors.red,
   },
   daySelected: {
     backgroundColor: iosColors.lightBlue,
@@ -321,7 +342,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   timeInputContainer: {
-    borderWidth: 1,
+    //borderWidth: 1,
   },
   selectedDaysTitle: {
     display: 'flex',
@@ -330,8 +351,8 @@ const styles = StyleSheet.create({
   },
   timeButtonsContainer: {
     display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
     alignContent: 'center',
     alignItems: 'center',
     //paddingTop: 10
