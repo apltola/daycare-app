@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Dimensions,
-  DatePickerIOS,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, } from 'react-native';
 import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, formatDateString, iosColors } from '../util';
-import t from 'timestamp-utils'
+import t from 'timestamp-utils';
+import DateTimePicker from "react-native-modal-datetime-picker";
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -24,7 +18,7 @@ const CalendarScreen = () => {
   const [month, setMonth] = useState(initialDateData.month);
   const [year, setYear] = useState(initialDateData.year);
   const [selectedDays, setSelectedDays] = useState([]);
-
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
 
   getDayClassNames = (day, elementType) => {
     //const { firstMonthDay, lastMonthDay, startDate, endDate } = this.state
@@ -101,13 +95,19 @@ const CalendarScreen = () => {
   }
 
   const formatSelectedDaysTitle = () => {
-    if (selectedDays.length === 0) return null;
+    if (selectedDays.length === 0) return '';
 
     const formattedDays = selectedDays.map(day => {
       return formatDateString(day);
-    })
-    const str = formattedDays.join(', ')
-    return str;
+    });
+
+    return `Valitut päivät: ${formattedDays.join(', ')}`;
+    //return formattedDays.join(', ');
+  }
+
+  const onTimePicked = time => {
+    console.log('picked => ', time);
+    setIsTimePickerVisible(() => false);
   }
 
   return (
@@ -147,18 +147,32 @@ const CalendarScreen = () => {
         </View>
       </View>
       <View style={styles.timeInputContainer}>
-        <Text style={styles.selectedDaysHeader}>
-          {formatSelectedDaysTitle()}
-        </Text>
+         <Text style={{borderWidth: 1}}>
+            {formatSelectedDaysTitle()}
+          </Text>
         {/* <DatePickerIOS
           date={new Date()}
           mode='time'
           onDateChange={onTimeChange}
         /> */}
+        <DateTimePicker
+          isVisible={isTimePickerVisible}
+          onConfirm={onTimePicked}
+          onCancel={() => setIsTimePickerVisible(false)}
+          mode="time"
+          cancelTextIOS="Peruuta"
+          confirmTextIOS="Ok"
+          titleIOS="Valitse saapumisaika/lähtöaika"
+        />
       </View>
       <Text>
         {JSON.stringify(selectedDays, null, 2)}
       </Text>
+      <TouchableOpacity
+        onPress={() => setIsTimePickerVisible(true)}
+      >
+        <Text>näytä pikkeri!!</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -229,7 +243,12 @@ const styles = StyleSheet.create({
   },
   timeInputContainer: {
     borderWidth: 1,
-  }
+  },
+  selectedDaysTitle: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+  },
 });
 
 
