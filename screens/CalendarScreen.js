@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
 import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, formatDateString, iosColors } from '../util';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -11,7 +11,6 @@ const MONTH_LABELS = ['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','K
 
 const CalendarScreen = props => {
   const initialDateData = {...initMonth(), ...parseRange()}
-  //console.log('initialDateData => ', initialDateData);
   const [firstDateToShow, setFirstDateToShow] = useState(initialDateData.firstDayToDisplay);
   const [firstMonthDay, setFirstMonthDay] = useState(initialDateData.firstMonthDay);
   const [lastMonthDay, setLastMonthDay] = useState(initialDateData.lastMonthDay);
@@ -21,8 +20,12 @@ const CalendarScreen = props => {
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [timePickerTarget, setTimePickerTarget] = useState('');
   const [postData, setPostData] = useState([]);
+  const [arrivalTime, setArrivalTime] = useState(0);
+  const [departureTime, setDepartureTime] = useState(0);
+  const [daysWithArrival, setDaysWithArrival] = useState(0);
+  const [daysWithDeparture, setDaysWithDeparture] = useState(0);  
 
-  /* navigation props */
+  /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
 
   getCalendarClassNames = (day, elementType) => {
@@ -63,9 +66,6 @@ const CalendarScreen = props => {
   }
 
   const onDaySelect = day => {
-    //console.log('new Date() => ', new Date(day));
-    //console.log(t.getHours(day));
-    //t.addHours
     if (!selectedDays.includes(day)) {
       setSelectedDays(prev => [...selectedDays, day]);
     } else {
@@ -94,11 +94,6 @@ const CalendarScreen = props => {
     const zone = time.getTimezoneOffset();
     console.log('zone => ', zone); */
 
-    const data = {
-      arrive: {
-        date: {}
-      }
-    }
     //console.log(day.getTime());
   }
 
@@ -106,7 +101,7 @@ const CalendarScreen = props => {
     if (selectedDays.length === 0) return '';
 
     const formattedDays = selectedDays.map(day => {
-      return formatDateString(day);
+      return formatDateString(day, 'dd.mm.yyyy');
     });
 
     return `Valitut päivät: ${formattedDays.join(', ')}`;
@@ -119,20 +114,60 @@ const CalendarScreen = props => {
   }
 
   const onTimePicked = time => {
-    console.log('picked => ', time);
+    console.log('picked => ', time.getTime());
+    console.log('pickedDate => ', time.getDate());
     console.log('pickedHours', time.getHours());
     console.log('pickedMinutes', time.getMinutes());
-
-    let data = {
-      arrive: null,
-      child: {},
-      date: '',
-
-    };
+    let foo = t.addHours(selectedDays[0], time.getHours());
+    let baz = t.addMinutes(foo, time.getMinutes())
+    console.log('baz => ', baz);
 
     setIsTimePickerVisible(() => false);
-    // adjust selected days by adding... something
 
+    /* 
+      Jos tullaan tähän funktioon ja daysWithArrival = daysWithDeparture,
+      tiedetään että pitää luoda uusia alkoita postData tauluun.
+      Jos tullaan tähän funktioon ja ne on eri,
+      tiedetään että pitää etsiä jo luotua alkiota indeksillä postData taulusta
+    */
+
+    if (daysWithArrival === daysWithDeparture) {
+      const arr = selectedDays.map(day => {
+        let data = {
+          temp_id: day,
+          child: kid,
+          date: formatDateString(day, 'yyyy-mm-dd'),
+        }
+        const withHours = t.addHours(day, time.getHours());
+        const withHoursAndMinutes = t.addMinutes(withHours, time.getMinutes());
+        if (timePickerTarget === 'arrival') {
+          data.arrive = withHoursAndMinutes;
+          setDaysWithArrival(prev => prev + selectedDays.length)
+        } else {
+          data.departure = withHoursAndMinutes;
+          setDaysWithDeparture(prev => prev + selectedDays.length)
+        }
+        
+        return data;
+      })
+
+      setPostData(prev => [...prev, arr]);
+    } else {
+      selectedDays.forEach(selectedDay => {
+        const idx = postData.findIndex(i => i.temp_id === selectedDay);
+
+        // päivälle on laitettu jo saapumis-/lähtöaika -> pitää laittaa puuttuva aika
+        if (idx > -1) {
+          const withHours = t.addHours(day, time.getHours());
+          const withHoursAndMinutes = t.addMinutes(withHours, time.getMinutes());
+          if (postData[idx].arrive) {
+            postData[idx].departure = withHoursAndMinutes;
+          } else if (postData[idx].departure) {
+            postData[idx].arrive = withHoursAndMinutes;
+          }
+        }
+      })
+    }
   }
 
   return (
@@ -173,7 +208,7 @@ const CalendarScreen = props => {
               style={styles.timeButton}
               onPress={() => onTimeButtonPress('arrival')}
               >
-              <Text style={styles.timeButton_text}>Aseta tuloaika</Text>
+              <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.timeButton}
@@ -184,12 +219,29 @@ const CalendarScreen = props => {
           </View>}
       </View>
 
-      <Text>
-        {JSON.stringify(selectedDays, null, 2)}
-      </Text>
-      <Text>
-        {JSON.stringify(kid, null, 2)}
-      </Text>
+      <View style={{display: 'flex', flexDirection: 'column'}}>
+        <Animated.ScrollView
+          style={{height: 115, borderWidth: 1, borderColor: 'red'}}
+        >
+          <View>
+            <Text>
+              {JSON.stringify(selectedDays, null, 2)}
+            </Text>
+            <Text>
+              {JSON.stringify(postData, null, 2)}
+            </Text>
+            <Text>
+              daysWithArrival: {JSON.stringify(daysWithArrival, null, 2)}
+            </Text>
+            <Text>
+              daysWithDeparture: {JSON.stringify(daysWithDeparture, null, 2)}
+            </Text>
+            <Text>
+              timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
+            </Text>
+          </View>
+        </Animated.ScrollView>      
+      </View>
 
       <DateTimePicker
         isVisible={isTimePickerVisible}
@@ -198,7 +250,7 @@ const CalendarScreen = props => {
         mode="time"
         cancelTextIOS="Peruuta"
         confirmTextIOS="Ok"
-        titleIOS="Valitse saapumisaika/lähtöaika"
+        titleIOS={timePickerTarget === 'arrival' ? 'Aseta saapumisaika' : 'Aseta lähtöaika'}
       />
     </View>
   );
@@ -278,13 +330,17 @@ const styles = StyleSheet.create({
   },
   timeButtonsContainer: {
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    paddingTop: 20
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    alignItems: 'center',
+    //paddingTop: 10
   },
   timeButton: {
-    //borderWidth: 1,
-    width: SCREEN_WIDTH/2.5,
+    marginTop: 10,
+    borderWidth: 1,
+    display: 'flex',
+    //width: SCREEN_WIDTH/2,
   },
   timeButton_text: {
     color: iosColors.darkBlue,

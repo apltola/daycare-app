@@ -56,12 +56,19 @@ export const dateIsOut = (date, start, end) => date < start || date > end
 
 export const formartTime = value => (`0${value}`).slice(-2)
 
-export const formatDateString = value => {
+export const formatDateString = (value, pattern) => {
   const dValue = new Date(value);
   let date = dValue.getDate();
   date = date < 10 ? `0${date}` : date;
-  let month = dValue.getMonth();
+  let month = dValue.getMonth()+1;
   month = month < 10 ? `0${month}` : month;
   const year = dValue.getFullYear();
-  return `${date}.${month}.${year}`;
+
+  if (pattern === 'dd.mm.yyyy') {
+    return `${date}.${month}.${year}`;
+  } else if (pattern === 'yyyy-mm-dd') {
+    return `${year}-${month}-${date}`;
+  } else {
+    return null;
+  }
 }
