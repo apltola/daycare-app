@@ -6,7 +6,9 @@ const GoToScheduleButton = props => {
   return (
     <TouchableOpacity
       style={styles.btn}
-      onPress={() => props.nav.navigate('calendar')}
+      onPress={() => props.nav.navigate('calendar', {
+        kid: props.kid
+      })}
     >
       <Text>
         Avaa kalenteri
