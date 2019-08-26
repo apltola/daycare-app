@@ -33,6 +33,12 @@ const CalendarScreen = props => {
     //const { disableDates } = this.props
     //const sDate = getDateWithoutTime(startDate)
     //const eDate = getDateWithoutTime(endDate)
+    const dayHasFullSchedule = () => {
+      const dayHasArrival = daysWithArrival.findIndex(i => i === day) > -1;
+      const dayHasDeparture = daysWithDeparture.findIndex(i => i === day) > -1;
+      return dayHasArrival && dayHasDeparture;
+    }
+
     let conditions = {};
     if (elementType === 'view') {
       conditions = {
@@ -40,7 +46,7 @@ const CalendarScreen = props => {
         'dayToday': day === getDateWithoutTime(new Date().getTime()),
         'daySelected': selectedDays.includes(day),
         'dayOutOfMonth': dateIsOut(day, firstMonthDay, lastMonthDay),
-        'dayWithSchedule': daysWithArrival.findIndex(i => i.temp_id === day) > -1,
+        'dayWithSchedule': dayHasFullSchedule(),
         //'day-inside-selection': dateIsBetween(day, sDate, eDate),
         //'day-selected': !endDate && (sDate === day),
         //'day-start-selection': endDate && (sDate === day),
@@ -54,6 +60,7 @@ const CalendarScreen = props => {
         'dayToday_text': day === getDateWithoutTime(new Date().getTime()),
         'daySelected_text': selectedDays.includes(day),
         'dayOutOfMonth_text': dateIsOut(day, firstMonthDay, lastMonthDay),
+        'dayWithSchedule_text': dayHasFullSchedule(),
         //'day-inside-selection': dateIsBetween(day, sDate, eDate),
         //'day-selected': !endDate && (sDate === day),
         //'day-start-selection': endDate && (sDate === day),
@@ -68,9 +75,7 @@ const CalendarScreen = props => {
 
   const addDayToScheduledList = (day, type) => {
     const arr = type === 'arrival' ? daysWithArrival : daysWithDeparture;
-    console.log('nii mitä? ', arr);
     const idx = arr.findIndex(i => i === day);
-    console.log('idx==> ', idx);
     if (idx === -1) {
       if (type === 'arrival') {
         return setDaysWithArrival(prev => [...prev, day])
@@ -84,34 +89,11 @@ const CalendarScreen = props => {
 
   const onDaySelect = day => {
     if (!selectedDays.includes(day)) {
-      setSelectedDays(prev => [...selectedDays, day]);
+      setSelectedDays(prev => [...prev, day]);
     } else {
-      const juukeli = selectedDays.filter(i => i !== day);
-      setSelectedDays(prev => juukeli);
+      const filtered = selectedDays.filter(i => i !== day);
+      setSelectedDays(() => filtered);
     }
-  }
-
-  const onTimeChange = p_time => {
-    const time = new Date(p_time);
-    console.log('time => ', time);
-    /* const date = time.getDate();
-    console.log('date => ', date);
-    const day = time.getDay();
-    console.log('day => ', day);
-    const hours = time.getHours(time);
-    console.log('hours => ', hours);
-    const minutes = time.getMinutes(time);
-    console.log('minutes => ', minutes);
-    const month = time.getMonth(time);
-    console.log('month => ', month);
-    const time2 = time.getTime(time);
-    console.log('time2 => ', time2);
-    const year = time.getFullYear(year);
-    console.log('year => ', year);
-    const zone = time.getTimezoneOffset();
-    console.log('zone => ', zone); */
-
-    //console.log(day.getTime());
   }
 
   const formatSelectedDaysTitle = () => {
@@ -131,65 +113,56 @@ const CalendarScreen = props => {
   }
 
   const onTimePicked = time => {
-    /*console.log('picked => ', time.getTime());
-    console.log('pickedDate => ', time.getDate());
-    console.log('pickedHours', time.getHours());
-    console.log('pickedMinutes', time.getMinutes());
-    let foo = t.addHours(selectedDays[0], time.getHours());
-    let baz = t.addMinutes(foo, time.getMinutes())
-    console.log('baz => ', baz);*/
-
     setIsTimePickerVisible(() => false);
 
-    /* 
-      Jos tullaan tähän funktioon ja daysWithArrival = daysWithDeparture,
-      tiedetään että pitää luoda uusia alkoita postData tauluun.
-      Jos tullaan tähän funktioon ja ne on eri,
-      tiedetään että pitää etsiä jo luotua alkiota indeksillä postData taulusta
-    */
+    const selectedArr = selectedDays;
+    selectedArr.forEach(selectedDay => {
+      const hours = time.getHours();
+      const minutes = time.getMinutes();
+      const timeWithHours = t.addHours(selectedDay, hours);
+      const timeWithHoursAndMin = t.addMinutes(timeWithHours, minutes);
+      console.log('hours ==> ', hours);
+      console.log('minutes ==> ', minutes);
 
-    if (daysWithArrival.length === daysWithDeparture.length) {
-      const arr = selectedDays.map(day => {
-        let data = {
-          temp_id: day,
-          child: kid,
-          date: formatDateString(day, 'yyyy-mm-dd'),
+      const dayHasArrival = daysWithArrival.findIndex(i => i === selectedDay) > -1;
+      const dayHasDeparture = daysWithDeparture.findIndex(i => i === selectedDay) > -1;
+      
+      if (dayHasArrival || dayHasDeparture) {
+        // selectedDaylle on jo laitettu tuloaika tai lähtöaika, eli sille on luotu alkio postDataan
+        // eli kun tullaan tähän, ei luoda uutta alkiota vaan etitään se indeksillä ja muokataan sitä
+        let postArr = postData;
+        const idx = postArr.findIndex(i => i.temp_id === selectedDay);
+        console.log('SILLÄ ON JOTAIN SCHEDULEE ==> ', idx);
+        if (timePickerTarget === 'arrival') {
+          postArr[idx].arrive = timeWithHoursAndMin;
+          addDayToScheduledList(selectedDay, 'arrival');
+        } else if (timePickerTarget === 'departure') {
+          postArr[idx].departure = timeWithHoursAndMin;
+          addDayToScheduledList(selectedDay, 'departure');
         }
-        const timeWithHours = t.addHours(day, time.getHours());
-        const timeWithHoursAndMin = t.addMinutes(timeWithHours, time.getMinutes());
+
+        // päivitetään postData
+        setPostData(() => postArr);
+      } else {
+        // pittää lissää selectedDaylle tunnit ja minuutit jotta saadaan oikee aika
+        console.log('PITÄÄ LUODA ALKIO!!');
+        let data = {
+          temp_id: selectedDay,
+          child: kid,
+          date: formatDateString(selectedDay, 'yyyy-mm-dd')
+        }
         if (timePickerTarget === 'arrival') {
           data.arrive = timeWithHoursAndMin;
-          addDayToScheduledList(day, 'arrival');
+          addDayToScheduledList(selectedDay, 'arrival');
         } else if (timePickerTarget === 'departure') {
           data.departure = timeWithHoursAndMin;
-          addDayToScheduledList(day, 'departure');
+          addDayToScheduledList(selectedDay, 'departure');
         }
-        return data;
-      })
-      setPostData(prev => [...prev, ...arr]);
-    } else {
-      let arr = postData;
-      selectedDays.forEach(selectedDay => {
-        const idx = arr.findIndex(i => i.temp_id === selectedDay);
 
-        if (idx > -1) {
-          const timeWithHours = t.addHours(selectedDay, time.getHours());
-          const timeWithHoursAndMin = t.addMinutes(timeWithHours, time.getMinutes());
-          if (timePickerTarget === 'arrival') {
-            if (!arr[idx].arrive) {
-              addDayToScheduledList(selectedDay, 'arrival');
-            }
-            arr[idx].arrive = timeWithHoursAndMin;
-          } else if (timePickerTarget === 'departure') {
-            if (!arr[idx].departure) {
-              addDayToScheduledList(selectedDay, 'departure');
-            }
-            arr[idx].departure = timeWithHoursAndMin;
-          }
-        }
-      })
-      setPostData(() => arr);
-    }
+        // lisätään postDataan alkio
+        setPostData(prev => [...prev, data])
+      }
+    });
   }
 
   return (
@@ -330,7 +303,7 @@ const styles = StyleSheet.create({
     //color: iosColors.green,
     //fontWeight: 'bold',
     borderWidth: 2,
-    borderRadius: 15,
+    borderRadius: 18,
     padding: 5,
     borderColor: iosColors.red,
   },
@@ -359,8 +332,8 @@ const styles = StyleSheet.create({
   },
   timeButton: {
     marginTop: 10,
-    borderWidth: 1,
     display: 'flex',
+    //borderWidth: 1,
     //width: SCREEN_WIDTH/2,
   },
   timeButton_text: {
