@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from '
 import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, formatDateString, arraysAreEqual, iosColors } from '../util';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
+import Spinner from '../components/Spinner';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -20,10 +21,9 @@ const CalendarScreen = props => {
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [timePickerTarget, setTimePickerTarget] = useState('');
   const [postData, setPostData] = useState([]);
-  const [arrivalTime, setArrivalTime] = useState(0);
-  const [departureTime, setDepartureTime] = useState(0);
   const [daysWithArrival, setDaysWithArrival] = useState([]);
-  const [daysWithDeparture, setDaysWithDeparture] = useState([]);  
+  const [daysWithDeparture, setDaysWithDeparture] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
@@ -232,6 +232,8 @@ const CalendarScreen = props => {
             timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
           </Text>
         </View>
+
+        <Spinner side="large" />
 
         <DateTimePicker
           isVisible={isTimePickerVisible}

@@ -3,9 +3,13 @@ import { apiRoot } from '../util/index';
 
 export const fetchAllKids = async store => {
   //console.log('FETCH ALL KIDS!!');
-  const res = await axios.get(`${apiRoot}/child/all`);
-  const kids = await res.data;
-  store.setState({ allKids: kids });
+  try {
+    const res = await axios.get(`${apiRoot}/child/all`);
+    const kids = await res.data;
+    store.setState({ allKids: kids });
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 export const fetchKidsForDate = async (store, date) => {
