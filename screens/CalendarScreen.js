@@ -88,6 +88,19 @@ const CalendarScreen = props => {
     }
   }
 
+  const getDaysWithSchedule = () => {
+    let arr = daysWithArrival;
+    daysWithDeparture.forEach(day => {
+      const idx = arr.findIndex(i => i === day);
+      if (idx === -1) {
+        arr = [...arr, day];
+      }
+    })
+
+    arr.sort();
+    return arr;
+  }
+
   const onDaySelect = day => {
     if (!selectedDays.includes(day)) {
       setSelectedDays(prev => [...prev, day]);
@@ -113,6 +126,7 @@ const CalendarScreen = props => {
       const timeWithHoursAndMin = t.addMinutes(timeWithHours, minutes);
       console.log('hours ==> ', hours);
       console.log('minutes ==> ', minutes);
+      console.log('NEW DATE => ', new Date(timeWithHoursAndMin));
 
       const dayHasArrival = daysWithArrival.findIndex(i => i === selectedDay) > -1;
       const dayHasDeparture = daysWithDeparture.findIndex(i => i === selectedDay) > -1;
@@ -156,15 +170,21 @@ const CalendarScreen = props => {
   }
 
   const renderTimeTable = () => {
-    const daysWithSchedule = [...daysWithArrival, ...daysWithDeparture];
-    if (daysWithSchedule.length === 0) return null;
+    const daysWithSchedule = getDaysWithSchedule();
+    if (daysWithSchedule.length === 0) return;
 
     return (
       <View style={styles.timeTable}>
         <View style={styles.timeTableRow}>
-          <Text style={styles.timeTableCol_left}>Päivä</Text>
-          <Text style={styles.timeTableCol_mid}>Saapumisaika</Text>
-          <Text style={styles.timeTableCol_right}>Lähtöaika</Text>
+          <Text style={[styles.timeTableCol_left, {fontWeight: 'bold'}]}>
+            Päivä
+          </Text>
+          <Text style={[styles.timeTableCol_mid, {fontWeight: 'bold'}]}>
+            Saapumisaika
+          </Text>
+          <Text style={{fontWeight: 'bold'}}>
+            Lähtöaika
+          </Text>
         </View>
         {
           daysWithSchedule.map(day => {
@@ -181,7 +201,7 @@ const CalendarScreen = props => {
                 <Text style={styles.timeTableCol_mid}>
                   {arrivalStr || '-'}
                 </Text>
-                <Text style={styles.timeTableCol_right}>
+                <Text>
                   {departureStr || '-'}
                 </Text>
               </View>
@@ -193,7 +213,8 @@ const CalendarScreen = props => {
   }
 
   const renderSubmitButton = () => {
-    if (selectedDays.length === 0) return null;
+    const daysWithSchedule = getDaysWithSchedule();
+    if (daysWithSchedule.length === 0) return;
 
     if (loading) {
       return <Spinner side="small" />;
@@ -265,11 +286,11 @@ const CalendarScreen = props => {
         
         {renderTimeTable()}
         
-        <View style={{display: 'flex', alignItems: 'center', paddingTop: 40}}>
+        <View style={{display: 'flex', alignItems: 'center', paddingTop: 20}}>
           {renderSubmitButton()}
         </View>
 
-        <View style={{marginTop: 30}}>
+        <View style={{marginTop: 60}}>
           <Text>
             selectedDays: {JSON.stringify(selectedDays, null, 2)}
           </Text>
@@ -306,6 +327,7 @@ const styles = StyleSheet.create({
     //borderWidth: 2,
     borderColor: 'red',
     padding: 10,
+    paddingBottom: 0,
     alignContent: 'center',
     alignItems: 'center',
   },
@@ -317,16 +339,10 @@ const styles = StyleSheet.create({
   dayLabel_text: {
     width: (SCREEN_WIDTH/7.05)-(20/7),
     textAlign: 'center',
-    //borderWidth: 0.5,
-    borderColor: iosColors.grey,
   },
   calendar: {
-    //borderWidth: 1,
-    //borderColor: 'red',
-    //borderWidth: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    //margin: 10,
   },
   day: {
     width: (SCREEN_WIDTH/7.05)-(20/7),
@@ -350,16 +366,16 @@ const styles = StyleSheet.create({
   },
   dayToday: {
     //borderWidth: 1,
-    //borderColor: 'red'
+    borderColor: 'red'
   },
   dayToday_text: {
     textAlign: 'center',
-    //color: iosColors.green,
-    //fontWeight: 'bold',
-    borderWidth: 2,
-    borderRadius: 18,
-    padding: 5,
-    borderColor: iosColors.red,
+    color: iosColors.red,
+    fontWeight: 'bold',
+    //borderWidth: 2,
+    //borderRadius: 18,
+    //borderColor: iosColors.red,
+    //padding: 5,
   },
   daySelected: {
     backgroundColor: iosColors.lightBlue,
@@ -374,38 +390,40 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   timeButtonsContainer: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    paddingTop: 20,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-between',
     alignContent: 'center',
     alignItems: 'center',
+    //borderWidth: 1,
   },
   timeButton: {
-    marginTop: 10,
     display: 'flex',
-    //borderWidth: 1,
-    //width: SCREEN_WIDTH/2,
   },
   timeButton_text: {
     color: iosColors.darkBlue,
-    fontSize: 20,
+    fontSize: 19,
     textAlign: 'center',
   },
   submitButton: {
     borderRadius: 3,
     paddingTop: 8,
     paddingBottom: 8,
-    paddingLeft: 35,
-    paddingRight: 35,
+    paddingLeft: 45,
+    paddingRight: 45,
     //backgroundColor: '#099cec',
     backgroundColor: iosColors.darkBlue
   },
   submitButton_text: {
-    fontSize: 20,
+    fontSize: 19,
     color: 'white',
   },
   timeTable: {
     padding: 10,
+    paddingTop: 20,
   },
   timeTableRow: {
     display: 'flex',
@@ -413,13 +431,10 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   timeTableCol_left: {
-    width: 100,
+    width: 105,
   },
   timeTableCol_mid: {
-    width: 140,
-  },
-  timeTableCol_right: {
-
+    width: 116,
   },
 });
 

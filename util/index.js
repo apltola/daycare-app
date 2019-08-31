@@ -68,9 +68,7 @@ export const formatDateString = (value, pattern) => {
   let month = dValue.getMonth()+1;
   month = month < 10 ? `0${month}` : month;
   const year = dValue.getFullYear();
-  const hours = dValue.getHours();
-  const minutes = dValue.getMinutes();
-
+  
   if (pattern === 'dd.mm.yyyy') {
     return `${date}.${month}.${year}`;
   }
@@ -78,8 +76,10 @@ export const formatDateString = (value, pattern) => {
   else if (pattern === 'yyyy-mm-dd') {
     return `${year}-${month}-${date}`;
   }
-
+  
   else if (pattern === 'hh:mm') {
+    const hours = t.getHours(value);
+    const minutes = t.getMinutes(value);
     return `${hours}:${minutes}`
   }
   
