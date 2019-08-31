@@ -2,7 +2,9 @@ import times from 'lodash.times';
 import t from 'timestamp-utils';
 
 /* API URL ROOT */
-export const apiRoot = __DEV__ ? 'http://192.168.1.102:9002' : 'emt';
+//export const apiRoot = __DEV__ ? 'http://192.168.1.102:9002' : 'emt';
+//export const apiRoot = 'https://shrouded-garden-66270.herokuapp.com';
+export const apiRoot = 'http://192.168.1.102:9002';
 
 /* IOS COLORS */
 export const iosColors = {
