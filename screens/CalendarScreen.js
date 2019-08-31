@@ -179,8 +179,7 @@ const CalendarScreen = props => {
   }
 
   const renderCalendarNavigation = () => {
-    let _month = null;
-    let label = null;
+    let monthLabel = null;
     if (dateData.month[0] === '0') {
       _month = dateData.month[1];
       monthLabel = MONTH_LABELS[dateData.month[1] - 1];
@@ -285,7 +284,7 @@ const CalendarScreen = props => {
       <Animated.ScrollView style={{flex: 1}}>
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
-            {kid.firstName}
+            {`${kid.firstName}, ${kid.childgroup.name}`}
           </Text>
         </View>
         
@@ -307,6 +306,7 @@ const CalendarScreen = props => {
                   key={day}
                   style={getCalendarClassNames(day, 'view')}
                   onPress={() => onDaySelect(day)}
+                  disabled={dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay)}
                 >
                   <Text style={getCalendarClassNames(day, 'text')}>
                     {parseInt(t.getDay(day), 10)}
@@ -377,9 +377,9 @@ const styles = StyleSheet.create({
   kidTitle_text: {
     fontSize: 22,
     fontWeight: 'bold',
-    textAlign: 'left',
+    textAlign: 'center',
     paddingTop: 18,
-    paddingLeft: 10,
+    //paddingLeft: 10,
   },
   calendarNavigation: {
     display: 'flex',
@@ -391,6 +391,7 @@ const styles = StyleSheet.create({
     //borderWidth: 2,
     borderColor: 'red',
     padding: 10,
+    paddingTop: 20,
     paddingBottom: 0,
     alignContent: 'center',
     alignItems: 'center',
