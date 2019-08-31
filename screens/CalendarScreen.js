@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Button } from 'react-native';
 import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, formatDateString, arraysAreEqual, iosColors } from '../util';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -70,20 +70,21 @@ const CalendarScreen = props => {
       }
     }
 
-    return Object.entries(conditions).map(i => i[1] ? styles[i[0]] : null);
+    const classList = Object.entries(conditions).map(i => i[1] ? styles[i[0]] : null);
+    return classList;
   }
 
   const addDayToScheduledList = (day, type) => {
     const arr = type === 'arrival' ? daysWithArrival : daysWithDeparture;
     const idx = arr.findIndex(i => i === day);
-    if (idx === -1) {
+    if (idx > -1) {
+      return;
+    } else {
       if (type === 'arrival') {
         return setDaysWithArrival(prev => [...prev, day])
       } else {
         return setDaysWithDeparture(prev => [...prev, day])
       }
-    } else {
-      return;
     }
   }
 
@@ -96,17 +97,6 @@ const CalendarScreen = props => {
     }
   }
 
-  const formatSelectedDaysTitle = () => {
-    if (selectedDays.length === 0) return '';
-
-    const formattedDays = selectedDays.map(day => {
-      return formatDateString(day, 'dd.mm.yyyy');
-    });
-
-    return `Valitut päivät: ${formattedDays.join(', ')}`;
-    //return formattedDays.join(', ');
-  }
-
   const onTimeButtonPress = type => {
     setTimePickerTarget(() => type);
     setIsTimePickerVisible(() => true);
@@ -115,8 +105,8 @@ const CalendarScreen = props => {
   const onTimePicked = time => {
     setIsTimePickerVisible(() => false);
 
-    const selectedArr = selectedDays;
-    selectedArr.forEach(selectedDay => {
+    const selectedDaysArr = selectedDays;
+    selectedDaysArr.forEach(selectedDay => {
       const hours = time.getHours();
       const minutes = time.getMinutes();
       const timeWithHours = t.addHours(selectedDay, hours);
@@ -132,7 +122,7 @@ const CalendarScreen = props => {
         // eli kun tullaan tähän, ei luoda uutta alkiota vaan etitään se indeksillä ja muokataan sitä
         let postArr = postData;
         const idx = postArr.findIndex(i => i.temp_id === selectedDay);
-        console.log('SILLÄ ON JOTAIN SCHEDULEE ==> ', idx);
+        //console.log('SILLÄ ON JOTAIN SCHEDULEE ==> ', idx);
         if (timePickerTarget === 'arrival') {
           postArr[idx].arrive = timeWithHoursAndMin;
           addDayToScheduledList(selectedDay, 'arrival');
@@ -140,12 +130,12 @@ const CalendarScreen = props => {
           postArr[idx].departure = timeWithHoursAndMin;
           addDayToScheduledList(selectedDay, 'departure');
         }
-
         // päivitetään postData
         setPostData(() => postArr);
+        
       } else {
         // pittää lissää selectedDaylle tunnit ja minuutit jotta saadaan oikee aika
-        console.log('PITÄÄ LUODA ALKIO!!');
+        //console.log('PITÄÄ LUODA ALKIO!!');
         let data = {
           temp_id: selectedDay,
           child: kid,
@@ -163,6 +153,66 @@ const CalendarScreen = props => {
         setPostData(prev => [...prev, data])
       }
     });
+  }
+
+  const renderTimeTable = () => {
+    const daysWithSchedule = [...daysWithArrival, ...daysWithDeparture];
+    if (daysWithSchedule.length === 0) return null;
+
+    return (
+      <View style={styles.timeTable}>
+        <View style={styles.timeTableRow}>
+          <Text style={styles.timeTableCol_left}>Päivä</Text>
+          <Text style={styles.timeTableCol_mid}>Saapumisaika</Text>
+          <Text style={styles.timeTableCol_right}>Lähtöaika</Text>
+        </View>
+        {
+          daysWithSchedule.map(day => {
+            const dateStr = formatDateString(day, 'dd.mm.yyyy');
+            const dayData = postData.find(item => item.temp_id === day);
+            const arrivalStr = formatDateString(dayData.arrive, 'hh:mm');
+            const departureStr = formatDateString(dayData.departure, 'hh:mm');
+      
+            return (
+              <View style={styles.timeTableRow}>
+                <Text style={styles.timeTableCol_left}>
+                  {dateStr}
+                </Text>
+                <Text style={styles.timeTableCol_mid}>
+                  {arrivalStr || '-'}
+                </Text>
+                <Text style={styles.timeTableCol_right}>
+                  {departureStr || '-'}
+                </Text>
+              </View>
+            )
+          })
+        }
+      </View>
+    );
+  }
+
+  const renderSubmitButton = () => {
+    if (selectedDays.length === 0) return null;
+
+    if (loading) {
+      return <Spinner side="small" />;
+    } else {
+      return (
+        <TouchableOpacity
+          onPress={onSubmit}
+          style={styles.submitButton}
+        >
+          <Text style={styles.submitButton_text}>
+            Tallenna
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+  }
+
+  const onSubmit = () => {
+    setLoading(() => true);
   }
 
   return (
@@ -194,25 +244,29 @@ const CalendarScreen = props => {
             })}
           </View>
         </View>
-        <View style={styles.timeInputContainer}>
-            {/* <Text style={styles.selectedDaysTitle}>
-              {formatSelectedDaysTitle()}
-            </Text> */}
-            {selectedDays.length > 0 &&
-            <View style={styles.timeButtonsContainer}>
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => onTimeButtonPress('arrival')}
-                >
-                <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => onTimeButtonPress('departure')}
+
+        <View>
+          {selectedDays.length > 0 &&
+          <View style={styles.timeButtonsContainer}>
+            <TouchableOpacity
+              style={styles.timeButton}
+              onPress={() => onTimeButtonPress('arrival')}
               >
-                <Text style={styles.timeButton_text}>Aseta lähtöaika</Text>
-              </TouchableOpacity>
-            </View>}
+              <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.timeButton}
+              onPress={() => onTimeButtonPress('departure')}
+            >
+              <Text style={styles.timeButton_text}>Aseta lähtöaika</Text>
+            </TouchableOpacity>
+          </View>}
+        </View>
+        
+        {renderTimeTable()}
+        
+        <View style={{display: 'flex', alignItems: 'center', paddingTop: 40}}>
+          {renderSubmitButton()}
         </View>
 
         <View style={{marginTop: 30}}>
@@ -232,8 +286,6 @@ const CalendarScreen = props => {
             timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
           </Text>
         </View>
-
-        <Spinner side="large" />
 
         <DateTimePicker
           isVisible={isTimePickerVisible}
@@ -316,9 +368,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold'
   },
-  timeInputContainer: {
-    //borderWidth: 1,
-  },
   selectedDaysTitle: {
     display: 'flex',
     flexDirection: 'row',
@@ -330,7 +379,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignContent: 'center',
     alignItems: 'center',
-    //paddingTop: 10
   },
   timeButton: {
     marginTop: 10,
@@ -342,6 +390,36 @@ const styles = StyleSheet.create({
     color: iosColors.darkBlue,
     fontSize: 20,
     textAlign: 'center',
+  },
+  submitButton: {
+    borderRadius: 3,
+    paddingTop: 8,
+    paddingBottom: 8,
+    paddingLeft: 35,
+    paddingRight: 35,
+    //backgroundColor: '#099cec',
+    backgroundColor: iosColors.darkBlue
+  },
+  submitButton_text: {
+    fontSize: 20,
+    color: 'white',
+  },
+  timeTable: {
+    padding: 10,
+  },
+  timeTableRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'nowrap',
+  },
+  timeTableCol_left: {
+    width: 100,
+  },
+  timeTableCol_mid: {
+    width: 140,
+  },
+  timeTableCol_right: {
+
   },
 });
 

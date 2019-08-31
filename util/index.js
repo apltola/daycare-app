@@ -60,20 +60,30 @@ export const dateIsOut = (date, start, end) => date < start || date > end
 export const formartTime = value => (`0${value}`).slice(-2)
 
 export const formatDateString = (value, pattern) => {
+  if (!value) return null;
+
   const dValue = new Date(value);
   let date = dValue.getDate();
   date = date < 10 ? `0${date}` : date;
   let month = dValue.getMonth()+1;
   month = month < 10 ? `0${month}` : month;
   const year = dValue.getFullYear();
+  const hours = dValue.getHours();
+  const minutes = dValue.getMinutes();
 
   if (pattern === 'dd.mm.yyyy') {
     return `${date}.${month}.${year}`;
-  } else if (pattern === 'yyyy-mm-dd') {
-    return `${year}-${month}-${date}`;
-  } else {
-    return null;
   }
+  
+  else if (pattern === 'yyyy-mm-dd') {
+    return `${year}-${month}-${date}`;
+  }
+
+  else if (pattern === 'hh:mm') {
+    return `${hours}:${minutes}`
+  }
+  
+  else return null;
 }
 
 /* GENERAL HELPERS */

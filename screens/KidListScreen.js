@@ -58,9 +58,6 @@ function KidListScreen() {
   return (
     <View style={styles.container}>
       <Header title="kidTracker_3000" />
-      <TouchableOpacity onPress={globalActions.getJson}>
-        <Text>get JSON</Text>
-      </TouchableOpacity>
       <View style={styles.dateButtonContainer}>
         <TouchableOpacity
           style={styles.dateButton}
