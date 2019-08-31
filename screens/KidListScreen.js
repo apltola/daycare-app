@@ -1,54 +1,65 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Image, Button } from 'react-native';
+import DateTimePicker from "react-native-modal-datetime-picker";
+import axios from 'axios';
 import useGlobalHook from '../store';
 import KidList from '../components/KidList';
 import IsPresentButton from '../components/IsPresentButton';
 import Header from '../components/Header';
+import { formatDateString, iosColors } from '../util';
+import orderBy from 'lodash/orderBy';
 
 function KidListScreen() {
   const [globalState, globalActions] = useGlobalHook();
   const [kids, setKids] = useState([]);
   const [kidsFiltered, setKidsFiltered] = useState(true);
-  const [date, setDate] = useState(new Date("2019/09/23"));
+  const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   this._scrollViewRef = React.createRef();
 
   const renderKids = kids => {
     if (kids.length === 0) return null;
-    /* const kids = kidsFiltered
-    ? p_kids.filter(kid => kid.childGroup.id === globalState.auth.groupId)
-    : p_kids; */
 
-    return <KidList
-              kids={kids}
-              buttonRenderer={ kid => <IsPresentButton kid={kid} /> }
-            />
+    const sortedKids = orderBy(kids, ['arrival'], ['asc']);
+    
+    return sortedKids.map((kid, idx) => {
+      const style = idx === 0 ? styles.kidItem_first : styles.kidItem;
+
+      return (
+        <View style={style}>
+          <View style={{display:'flex',flexDirection:'row'}}>
+            <View style={styles.kidItem_left}>
+              <Text style={styles.kidName}>
+                {kid.firstName}
+              </Text>
+              <Text style={styles.kidArrival}>
+                Tuloaika: {kid.arrival.substring(0, 5)}
+              </Text>
+            </View>
+            <View style={styles.kidItem_right}>
+              <TouchableOpacity
+                style={styles.isPresentButton}
+                onPress={setKidPresent}
+              >
+                <Text style={{textTransform:'uppercase',color:'white',fontWeight:'bold'}}>
+                  Paikalla
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )
+    });
   }
 
-  const onDateChange = d => {
-    console.log('DATE CHANGE!!!');
-    console.log(d);
-    setDate(prev => d);
+  const setKidPresent = (kid = {}) => {
+    console.log('TO BE DONE');
   }
 
-  const renderDatePicker = () => {
-    if (!showDatePicker) return null;
-
-    return (
-      <DatePickerIOS
-        date={date}
-        onDateChange={onDateChange}
-        mode="date"
-      />
-    );
-  }
-
-  const getIconSource = () => {
-    if (showDatePicker) {
-      return require('../assets/chevron_up.png');
-    } else {
-      return require('../assets/chevron_down.png');
-    }
+  const onDatePicked = date => {
+    setShowDatePicker(() => false);
+    setDate(() => date);
   }
   
   useEffect(() => {
@@ -58,25 +69,18 @@ function KidListScreen() {
   return (
     <View style={styles.container}>
       <Header title="kidTracker_3000" />
+
       <View style={styles.dateButtonContainer}>
         <TouchableOpacity
           style={styles.dateButton}
           onPress={() => setShowDatePicker(prev => !prev)}
         >
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text style={styles.dateButtonTxt}>
-              {date.toLocaleDateString()}
-            </Text>
-            <Image
-              source={getIconSource()}
-              style={{ height: 20, width: 20, marginLeft: 10 }}
-            />
-          </View>
+          <Text style={styles.dateButtonTxt}>
+            {formatDateString(date, 'dd.mm.yyyy')}
+          </Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.datePickerContainer}>
-        {renderDatePicker()}
-      </View>
+
       <View style={styles.filterButtonsContainer}>
         <TouchableOpacity
           onPress={() => {
@@ -102,12 +106,24 @@ function KidListScreen() {
           </Text>
         </TouchableOpacity>
       </View>
+
       <Animated.ScrollView
         ref={e => this._scrollViewRef = e}
         style={styles.scrollView}
       >
         {renderKids(globalState.kidsForDate)}
       </Animated.ScrollView>
+
+      <DateTimePicker
+        date={date}
+        isVisible={showDatePicker}
+        onConfirm={onDatePicked}
+        onCancel={() => setShowDatePicker(false)}
+        mode="date"
+        cancelTextIOS="Peruuta"
+        confirmTextIOS="Ok"
+        titleIOS={'Valitse päivä'}
+        />
     </View>
   );
 }
@@ -118,46 +134,52 @@ KidListScreen.navigationOptions = ({ navigation }) => ({
 
 const styles = StyleSheet.create({
   container: {
-    //borderWidth: 1,
-    //borderColor: 'red',
     flex: 1,
     flexDirection: 'column'
   },
   scrollView: {
-    paddingLeft: 10,
-    paddingRight: 10,
+    //paddingLeft: 10,
+    //paddingRight: 10,
     marginTop: 20
-    //borderWidth: 2,
-    //borderColor: 'goldenrod',
+  },
+  kidItem_first: {
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#ededed',
+    padding: 20
   },
   kidItem: {
-    flexDirection: 'row',
-    padding: 5,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#d1d5da',
+    borderBottomWidth: 1,
+    borderColor: '#ededed',
+    padding: 20,
   },
-  kidItemLeft: {
+  kidItem_left: {
     flex: 1,
   },
-  kidItemRight: {
+  kidItem_right: {
     flex: 1,
     //borderWidth: 1,
-    //borderColor: 'red',
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-end'
   },
   kidName: {
-    fontSize: 25,
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    fontSize: 18,
+    textAlign: 'left'
+  },
+  kidArrival: {
+    paddingTop: 3,
+    fontSize: 16,
   },
   filterButtonsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingLeft: 25,
-    paddingRight: 25,
-    marginBottom: 10,
-    //borderWidth: 1,
-    //borderColor: 'black'
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 40,
   },
   filterButton: {
     flex: 1,
@@ -190,21 +212,36 @@ const styles = StyleSheet.create({
     borderRadius: 3
   },
   dateButtonContainer: {
-    //borderWidth: 1,
-    //borderColor: 'black',
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingBottom: 20
   },
   dateButton: {
-    //borderWidth: 1,
-    //borderColor: 'black',
     width: 200,
     alignItems: 'center',
+    //backgroundColor: iosColors.grey,
+    paddingTop: 5,
+    paddingBottom: 5,
+    borderWidth: 1,
+    borderColor: iosColors.grey,
+    borderRadius: 4,
+    //paddingLeft: 10,
+    //paddingRight: 10,
   },
   dateButtonTxt: {
-    fontSize: 24
+    fontSize: 20,
+    //color: 'white',
+    fontWeight: 'bold'
   },
+  isPresentButton: {
+    borderWidth: 1,
+    borderColor: iosColors.green,
+    backgroundColor: iosColors.darkGreen,
+    borderRadius: 5,
+    paddingTop: 7,
+    paddingBottom: 7,
+    paddingLeft: 18,
+    paddingRight: 18,
+  }
 });
 
 export default KidListScreen;

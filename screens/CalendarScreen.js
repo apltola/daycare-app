@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Button } from 'react-native';
-import { initMonth, parseRange, getDays, dateIsBetween, dateIsOut, getDateWithoutTime, formatDateString, arraysAreEqual, iosColors } from '../util';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
+import axios from 'axios';
 import Spinner from '../components/Spinner';
+import { initMonth, getDays, dateIsOut, getDateWithoutTime, formatDateString, iosColors, apiRoot } from '../util';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -27,6 +28,8 @@ const CalendarScreen = props => {
   const [daysWithArrival, setDaysWithArrival] = useState([]);
   const [daysWithDeparture, setDaysWithDeparture] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [res, setRes] = useState(null)
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
@@ -127,9 +130,6 @@ const CalendarScreen = props => {
       const minutes = time.getMinutes();
       const timeWithHours = t.addHours(selectedDay, hours);
       const timeWithHoursAndMin = t.addMinutes(timeWithHours, minutes);
-      console.log('hours ==> ', hours);
-      console.log('minutes ==> ', minutes);
-      console.log('NEW DATE => ', new Date(timeWithHoursAndMin));
 
       const dayHasArrival = daysWithArrival.findIndex(i => i === selectedDay) > -1;
       const dayHasDeparture = daysWithDeparture.findIndex(i => i === selectedDay) > -1;
@@ -275,8 +275,18 @@ const CalendarScreen = props => {
     }
   }
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     setLoading(() => true);
+    const url = `${apiRoot}/schedule/add/many`;
+    axios.post(url, postData)
+      .then(res => {
+        setRes(res.status)
+        setLoading(false);
+      })
+      .catch(error => {
+        setError(error)
+        setLoading(false);
+      })
   }
 
   return (
@@ -356,6 +366,12 @@ const CalendarScreen = props => {
           </Text>
           <Text>
             timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
+          </Text>
+          <Text>
+            error: {JSON.stringify(error, null, 2)}
+          </Text>
+          <Text>
+            res: {JSON.stringify(res, null, 2)}
           </Text>
         </View>
 
