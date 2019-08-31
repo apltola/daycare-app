@@ -181,7 +181,6 @@ const CalendarScreen = props => {
   const renderCalendarNavigation = () => {
     let monthLabel = null;
     if (dateData.month[0] === '0') {
-      _month = dateData.month[1];
       monthLabel = MONTH_LABELS[dateData.month[1] - 1];
     } else {
       monthLabel = MONTH_LABELS[dateData.month - 1];
