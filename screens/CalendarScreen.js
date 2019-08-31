@@ -11,12 +11,15 @@ const DAY_LABELS = ['MA', 'TI', 'KE', 'TO', 'PE', 'LA', 'SU'];
 const MONTH_LABELS = ['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','Kesäkuu','Heinäkuu','Elokuu','Syyskuu','Lokakuu','Marraskuu','Joulukuu'];
 
 const CalendarScreen = props => {
-  const initialDateData = {...initMonth(), ...parseRange()}
+  /* const initialDateData = {...initMonth(), ...parseRange()}
   const [firstDateToShow, setFirstDateToShow] = useState(initialDateData.firstDayToDisplay);
   const [firstMonthDay, setFirstMonthDay] = useState(initialDateData.firstMonthDay);
   const [lastMonthDay, setLastMonthDay] = useState(initialDateData.lastMonthDay);
   const [month, setMonth] = useState(initialDateData.month);
-  const [year, setYear] = useState(initialDateData.year);
+  const [year, setYear] = useState(initialDateData.year); */
+
+  const [dateData, setDateData] = useState({...initMonth()});
+
   const [selectedDays, setSelectedDays] = useState([]);
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [timePickerTarget, setTimePickerTarget] = useState('');
@@ -45,7 +48,7 @@ const CalendarScreen = props => {
         'day': true,
         'dayToday': day === getDateWithoutTime(new Date().getTime()),
         'daySelected': selectedDays.includes(day),
-        'dayOutOfMonth': dateIsOut(day, firstMonthDay, lastMonthDay),
+        'dayOutOfMonth': dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay),
         'dayWithSchedule': dayHasFullSchedule(),
         //'day-inside-selection': dateIsBetween(day, sDate, eDate),
         //'day-selected': !endDate && (sDate === day),
@@ -59,7 +62,7 @@ const CalendarScreen = props => {
         'day_text': true,
         'dayToday_text': day === getDateWithoutTime(new Date().getTime()),
         'daySelected_text': selectedDays.includes(day),
-        'dayOutOfMonth_text': dateIsOut(day, firstMonthDay, lastMonthDay),
+        'dayOutOfMonth_text': dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay),
         'dayWithSchedule_text': dayHasFullSchedule(),
         //'day-inside-selection': dateIsBetween(day, sDate, eDate),
         //'day-selected': !endDate && (sDate === day),
@@ -169,6 +172,47 @@ const CalendarScreen = props => {
     });
   }
 
+  const changeMonth = (monthOffset) => {
+    const fmd = dateData.firstMonthDay;
+    const timestamp = t.addMonths(fmd, monthOffset);
+    setDateData(() => initMonth(timestamp));
+  }
+
+  const renderCalendarNavigation = () => {
+    let _month = null;
+    let label = null;
+    if (dateData.month[0] === '0') {
+      _month = dateData.month[1];
+      monthLabel = MONTH_LABELS[dateData.month[1] - 1];
+    } else {
+      monthLabel = MONTH_LABELS[dateData.month - 1];
+    }
+
+    return (
+      <View style={styles.calendarNavigation}>
+        <TouchableOpacity
+          style={{marginRight: 15}}
+          onPress={() => changeMonth(-1)}
+        >
+          <Text style={{fontSize: 25, color: iosColors.darkBlue}}>
+            {'<'}
+          </Text>
+        </TouchableOpacity>
+        <Text style={{fontSize: 20, color: iosColors.darkBlue, paddingTop: 2}}>
+          {`${monthLabel} ${dateData.year}`}
+        </Text>
+        <TouchableOpacity
+          style={{marginLeft: 15}}
+          onPress={() => changeMonth(1)}
+        >
+          <Text style={{fontSize: 25, color: iosColors.darkBlue}}>
+            {'>'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   const renderTimeTable = () => {
     const daysWithSchedule = getDaysWithSchedule();
     if (daysWithSchedule.length === 0) return;
@@ -239,7 +283,14 @@ const CalendarScreen = props => {
   return (
     <View style={{flex: 1}}>
       <Animated.ScrollView style={{flex: 1}}>
+        <View style={styles.kidTitle}>
+          <Text style={styles.kidTitle_text}>
+            {kid.firstName}
+          </Text>
+        </View>
+        
         <View style={styles.calendarContainer}>
+          {renderCalendarNavigation()}
           <View style={styles.dayLabels}>
             {DAY_LABELS.map(label => {
               return (
@@ -250,7 +301,7 @@ const CalendarScreen = props => {
             })}
           </View>
           <View style={styles.calendar}>
-            {getDays(firstDateToShow).map(day => {
+            {getDays(dateData.firstDayToDisplay).map(day => {
               return (
                 <TouchableOpacity
                   key={day}
@@ -323,6 +374,19 @@ const CalendarScreen = props => {
 }
 
 const styles = StyleSheet.create({
+  kidTitle_text: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'left',
+    paddingTop: 18,
+    paddingLeft: 10,
+  },
+  calendarNavigation: {
+    display: 'flex',
+    flexDirection: 'row',
+    //alignContent: 'flex-end',
+    alignItems: 'center',
+  },
   calendarContainer: {
     //borderWidth: 2,
     borderColor: 'red',
@@ -334,7 +398,8 @@ const styles = StyleSheet.create({
   dayLabels: {
     flexDirection: 'row',
     marginLeft: -1,
-    marginBottom: 10
+    marginBottom: 10,
+    paddingTop: 20,
   },
   dayLabel_text: {
     width: (SCREEN_WIDTH/7.05)-(20/7),
