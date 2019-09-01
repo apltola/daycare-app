@@ -33,11 +33,7 @@ const MainNavigator = createBottomTabNavigator({
     }
   })
 },{
-  tabBarOptions: {
-    labelStyle: {
-      //fontSize: 20
-    }
-  }
+  initialRouteName: 'schedule',
 });
 
 const AppContainer = createAppContainer(MainNavigator);
