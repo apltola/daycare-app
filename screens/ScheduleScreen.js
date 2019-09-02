@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useGlobalHook from '../store';
-import { StyleSheet, View, Text, Animated } from 'react-native';
+import { StyleSheet, View, Text, Animated, Image } from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { iosColors } from '../util';
@@ -8,7 +8,7 @@ import { iosColors } from '../util';
 
 export default ScheduleScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
-
+  const [showSearchBar, setShowSearchBar] = useState(false);
 
   return (
     <View style={styles.container}>
@@ -16,11 +16,22 @@ export default ScheduleScreen = ({ navigation }) => {
         contentContainerStyle={{paddingTop: 20}}
         style={styles.scrollView}
       >
+        <View style={styles.searchBar}>
+        </View>
 
-        <View style={styles.title}>
+        <View style={styles.titleContainer}>
           <Text style={styles.title_text}>
-            Valitse muksun kalenterinäkymä
+            Avaa muksun kalenteri
           </Text>
+          <TouchableOpacity
+            style={styles.searchButton}
+            onPress={() => setShowSearchBar(() => true)}
+          >
+            <Image
+              style={styles.icon}
+              source={require('../assets/search.png')}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.listContainer}>
@@ -54,16 +65,43 @@ ScheduleScreen.navigationOptions = () => ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column'
+    flexDirection: 'column',
+    paddingTop: 0,
   },
   scrollView: {
     paddingLeft: 10,
     paddingRight: 10,
     //paddingTop: 10
   },
+  titleContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    position: 'relative',
+    //borderWidth: 1,
+  },
   title_text: {
-    textAlign: 'center',
+    textAlign: 'left',
     fontWeight: 'bold',
+    flexGrow: 1,
+    position: 'absolute',
+    //borderWidth: 1,
+    left: 0,
+    right: 0,
+    textAlign: 'center',
+  },
+  searchButton: {
+    borderWidth: 0.5,
+    borderColor: iosColors.grey,
+    borderRadius: 5,
+    backgroundColor: '#fefefe',
+    flexGrow: 0,
+    padding: 10,
+  },
+  icon: {
+    height: 20,
+    width: 20,
   },
   listContainer: {
     paddingTop: 20,
@@ -80,6 +118,6 @@ const styles = StyleSheet.create({
   kidButton_text: {
     color: iosColors.darkBlue,
     fontSize: 20,
-
   }
+
 });
