@@ -10,10 +10,7 @@ const GroupScreen = () => {
   return (
     <View>
       <Header title="Ryhmät" />
-      <Text>GROUP SCREEN</Text>
-      <Text>GROUP SCREEN</Text>
-      <Text>GROUP SCREEN</Text>
-      <Text>GROUP SCREEN</Text>
+      <Text>TO BE DONE</Text>
     </View>
   );
 }

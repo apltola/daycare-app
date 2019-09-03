@@ -10,10 +10,7 @@ const TeacherScreen = () => {
   return (
     <View>
       <Header title="ope" />
-      <Text>TEACHER SCREEN</Text>
-      <Text>TEACHER SCREEN</Text>
-      <Text>TEACHER SCREEN</Text>
-      <Text>TEACHER SCREEN</Text>
+      <Text>TO BE DONE</Text>
     </View>
   );
 }

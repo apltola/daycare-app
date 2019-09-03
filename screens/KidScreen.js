@@ -10,10 +10,7 @@ const KidScreen = () => {
   return (
     <View>
       <Header title="Muksu" />
-      <Text>KID SCREEN</Text>
-      <Text>KID SCREEN</Text>
-      <Text>KID SCREEN</Text>
-      <Text>KID SCREEN</Text>
+      <Text>TO BE DONE</Text>
     </View>
   );
 }

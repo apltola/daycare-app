@@ -22,7 +22,6 @@ function KidListScreen() {
     if (kids.length === 0) return null;
 
     const sortedKids = orderBy(kids, ['arrival'], ['asc']);
-    
     return sortedKids.map((kid, idx) => {
       const style = idx === 0 ? styles.kidItem_first : styles.kidItem;
 
