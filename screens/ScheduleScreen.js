@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useGlobalHook from '../store';
-import { StyleSheet, View, Text, Animated, Image } from 'react-native';
+import { StyleSheet, View, Text, Animated, Image, TextInput} from 'react-native';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { iosColors } from '../util';
@@ -9,6 +9,8 @@ import { iosColors } from '../util';
 export default ScheduleScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchFilter, setSearchFilter] = useState('');
 
   return (
     <View style={styles.container}>
@@ -16,8 +18,43 @@ export default ScheduleScreen = ({ navigation }) => {
         contentContainerStyle={{paddingTop: 20}}
         style={styles.scrollView}
       >
+      {showSearchBar &&
         <View style={styles.searchBar}>
+          <View style={styles.searchBar_top}>
+            <TextInput
+              style={styles.searchInput}
+              onChangeText={text => setSearchTerm(() => text)}
+            />
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowSearchBar(() => false)}
+            >
+              <Image
+                style={styles.closeIcon}
+                source={require('../assets/close.png')}
+              />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.searchBar_bottom}>
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setSearchFilter(() => 'kid')}
+            >
+              <Text style={searchFilter === 'kid' ? styles.filterButtonSelected_text : styles.filterButton_text}>
+                Hae muksun nimellä
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setSearchFilter(() => 'group')}
+            >
+              <Text style={searchFilter === 'group' ? styles.filterButtonSelected_text : styles.filterButton_text}>
+                Hae ryhmällä
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
+      }
 
         <View style={styles.titleContainer}>
           <Text style={styles.title_text}>
@@ -28,7 +65,7 @@ export default ScheduleScreen = ({ navigation }) => {
             onPress={() => setShowSearchBar(() => true)}
           >
             <Image
-              style={styles.icon}
+              style={styles.searchIcon}
               source={require('../assets/search.png')}
             />
           </TouchableOpacity>
@@ -67,6 +104,48 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     paddingTop: 0,
+    position: 'relative',
+  },
+  searchBar: {
+    backgroundColor: '#ededed',
+    position: 'absolute',
+    left: -10,
+    top: -10,
+    right: -10,
+    zIndex: 99,
+    paddingTop: 28,
+    paddingBottom: 15,
+    paddingLeft: 15,
+    paddingRight: 15,
+  },
+  searchBar_top: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  searchBar_bottom: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    paddingTop: 15,
+  },
+  searchInput: {
+    flex: 1,
+    padding: 7,
+    fontSize: 18,
+    borderRadius: 3,
+    color: 'white',
+    backgroundColor: '#bfbfbf',
+    marginRight: 15
+  },
+  filterButton: {
+    padding: 5,
+  },
+  filterButton_text: {
+    color: iosColors.grey,
+  },
+  filterButtonSelected_text: {
+    fontWeight: 'bold',
+    color: iosColors.grey,
   },
   scrollView: {
     paddingLeft: 10,
@@ -99,9 +178,20 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     padding: 10,
   },
-  icon: {
+  closeButton: {
+    padding: 10,
+    borderWidth: 0.5,
+    borderColor: iosColors.grey,
+    borderRadius: 5,
+    backgroundColor: '#fefefe',
+  },
+  searchIcon: {
     height: 20,
     width: 20,
+  },
+  closeIcon: {
+    height: 15,
+    width: 15,
   },
   listContainer: {
     paddingTop: 20,
@@ -119,5 +209,4 @@ const styles = StyleSheet.create({
     color: iosColors.darkBlue,
     fontSize: 20,
   }
-
 });
