@@ -83,8 +83,8 @@ function KidListScreen() {
       <View style={styles.filterButtonsContainer}>
         <TouchableOpacity
           onPress={() => {
-            setKidsFiltered(prev => false);
-            this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
+            setKidsFiltered(() => false);
+            this._scrollViewRef.getNode && this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
           }}
           style={kidsFiltered ? styles.filterButton : [styles.filterButton, styles.filterButtonSelected]}
         >
@@ -94,8 +94,8 @@ function KidListScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            setKidsFiltered(prev => true)
-            this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
+            setKidsFiltered(() => true)
+            this._scrollViewRef.getNode && this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
           }
         }
           style={kidsFiltered ? [styles.filterButton, styles.filterButtonSelected]: styles.filterButton}

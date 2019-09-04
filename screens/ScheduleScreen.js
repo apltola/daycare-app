@@ -10,20 +10,52 @@ export default ScheduleScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchFilter, setSearchFilter] = useState('');
+  const [searchFilter, setSearchFilter] = useState('kid');
+
+  const renderList = () => {
+    let arr = null
+    if (!showSearchBar) {
+      arr = globalState.allKids;
+    } else {
+      if (searchTerm === '') {
+        arr = globalState.allKids;
+      } else {
+        if (searchFilter === 'kid') {
+          arr = globalState.allKids.filter(kid => kid.firstName.toUpperCase().includes(searchTerm.toUpperCase()))
+        } else {
+          arr = globalState.allKids.filter(kid => kid.childgroup.name.toUpperCase().includes(searchTerm.toUpperCase()))
+        }
+      }
+    }
+
+    return arr.map(kid => {
+      return (
+        <View style={styles.kidItem}>
+          <TouchableOpacity
+            style={styles.kidButton}
+            onPress={() => navigation.navigate('calendar', {
+              kid: kid
+            })}
+          >
+            <Text style={styles.kidButton_text}>
+              {kid.firstName}, {kid.childgroup.name}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      );
+    })
+  }
 
   return (
     <View style={styles.container}>
-      <Animated.ScrollView
-        contentContainerStyle={{paddingTop: 20}}
-        style={styles.scrollView}
-      >
+
       {showSearchBar &&
         <View style={styles.searchBar}>
           <View style={styles.searchBar_top}>
             <TextInput
               style={styles.searchInput}
               onChangeText={text => setSearchTerm(() => text)}
+              autoFocus={true}
             />
             <TouchableOpacity
               style={styles.closeButton}
@@ -56,38 +88,29 @@ export default ScheduleScreen = ({ navigation }) => {
         </View>
       }
 
-        <View style={styles.titleContainer}>
-          <Text style={styles.title_text}>
-            Avaa muksun kalenteri
-          </Text>
-          <TouchableOpacity
-            style={styles.searchButton}
-            onPress={() => setShowSearchBar(() => true)}
-          >
-            <Image
-              style={styles.searchIcon}
-              source={require('../assets/search.png')}
-            />
-          </TouchableOpacity>
-        </View>
+      <Animated.ScrollView
+        contentContainerStyle={{paddingTop: 20}}
+        style={styles.scrollView}
+      >
+        {!showSearchBar &&
+          <View style={styles.titleContainer}>
+            <Text style={styles.title_text}>
+              Avaa muksun kalenteri
+            </Text>
+            <TouchableOpacity
+              style={styles.searchButton}
+              onPress={() => setShowSearchBar(() => true)}
+            >
+              <Image
+                style={styles.searchIcon}
+                source={require('../assets/search.png')}
+              />
+            </TouchableOpacity>
+          </View>
+        }
 
-        <View style={styles.listContainer}>
-          {globalState.allKids.map(kid => {
-            return (
-              <View style={styles.kidItem}>
-                <TouchableOpacity
-                  style={styles.kidButton}
-                  onPress={() => navigation.navigate('calendar', {
-                    kid: kid
-                  })}
-                >
-                  <Text style={styles.kidButton_text}>
-                    {kid.firstName}, {kid.childgroup.name}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            );
-          })}
+        <View style={{paddingTop: showSearchBar ? 0 : 20}}>
+          {renderList()}
         </View>
 
       </Animated.ScrollView>
@@ -108,11 +131,11 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     backgroundColor: '#ededed',
-    position: 'absolute',
+    /* position: 'absolute',
     left: -10,
     top: -10,
     right: -10,
-    zIndex: 99,
+    zIndex: 99, */
     paddingTop: 28,
     paddingBottom: 15,
     paddingLeft: 15,
