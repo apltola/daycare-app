@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Button } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Button, Image } from 'react-native';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import axios from 'axios';
@@ -12,15 +12,8 @@ const DAY_LABELS = ['MA', 'TI', 'KE', 'TO', 'PE', 'LA', 'SU'];
 const MONTH_LABELS = ['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','Kesäkuu','Heinäkuu','Elokuu','Syyskuu','Lokakuu','Marraskuu','Joulukuu'];
 
 const CalendarScreen = props => {
-  /* const initialDateData = {...initMonth(), ...parseRange()}
-  const [firstDateToShow, setFirstDateToShow] = useState(initialDateData.firstDayToDisplay);
-  const [firstMonthDay, setFirstMonthDay] = useState(initialDateData.firstMonthDay);
-  const [lastMonthDay, setLastMonthDay] = useState(initialDateData.lastMonthDay);
-  const [month, setMonth] = useState(initialDateData.month);
-  const [year, setYear] = useState(initialDateData.year); */
-
+  const [kidSchedules, setKidSchedules] = useState([]);
   const [dateData, setDateData] = useState({...initMonth()});
-
   const [selectedDays, setSelectedDays] = useState([]);
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
   const [timePickerTarget, setTimePickerTarget] = useState('');
@@ -34,16 +27,33 @@ const CalendarScreen = props => {
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
 
+  const fetchSchedules = async () => {
+    const res = await axios.get(`${apiRoot}/schedule/child/${kid.id}`);
+    const schedules = await res.data;
+    setKidSchedules(() => schedules);
+  }
+
+  useEffect(() => {
+    fetchSchedules();
+
+    return () => {
+      return setKidSchedules([]);
+    };
+  }, []);
+
   getCalendarClassNames = (day, elementType) => {
     //const { firstMonthDay, lastMonthDay, startDate, endDate } = this.state
     //const { disableDates } = this.props
     //const sDate = getDateWithoutTime(startDate)
     //const eDate = getDateWithoutTime(endDate)
+
     const dayHasFullSchedule = () => {
-      const dayHasArrival = daysWithArrival.findIndex(i => i === day) > -1;
+      /* const dayHasArrival = daysWithArrival.findIndex(i => i === day) > -1;
       const dayHasDeparture = daysWithDeparture.findIndex(i => i === day) > -1;
-      return dayHasArrival && dayHasDeparture;
+      return dayHasArrival && dayHasDeparture; */
+
     }
+    const dayHasSchedule = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd')) > -1;
 
     let conditions = {};
     if (elementType === 'view') {
@@ -52,7 +62,7 @@ const CalendarScreen = props => {
         'dayToday': day === getDateWithoutTime(new Date().getTime()),
         'daySelected': selectedDays.includes(day),
         'dayOutOfMonth': dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay),
-        'dayWithSchedule': dayHasFullSchedule(),
+        'dayWithSchedule': dayHasSchedule,
         //'day-inside-selection': dateIsBetween(day, sDate, eDate),
         //'day-selected': !endDate && (sDate === day),
         //'day-start-selection': endDate && (sDate === day),
@@ -66,7 +76,7 @@ const CalendarScreen = props => {
         'dayToday_text': day === getDateWithoutTime(new Date().getTime()),
         'daySelected_text': selectedDays.includes(day),
         'dayOutOfMonth_text': dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay),
-        'dayWithSchedule_text': dayHasFullSchedule(),
+        'dayWithSchedule_text': dayHasSchedule,
         //'day-inside-selection': dateIsBetween(day, sDate, eDate),
         //'day-selected': !endDate && (sDate === day),
         //'day-start-selection': endDate && (sDate === day),
@@ -172,7 +182,7 @@ const CalendarScreen = props => {
     });
   }
 
-  const changeMonth = (monthOffset) => {
+  const changeMonth = monthOffset => {
     const fmd = dateData.firstMonthDay;
     const timestamp = t.addMonths(fmd, monthOffset);
     setDateData(() => initMonth(timestamp));
@@ -274,18 +284,31 @@ const CalendarScreen = props => {
     }
   }
 
+  const renderCheckmark = day => {
+    const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
+    if (idx > -1) {
+      return (
+        <Image
+          style={styles.checkmark}
+          source={require('../assets/checkmark.png')}
+        />
+      )
+    }
+  }
+
   const onSubmit = async () => {
     setLoading(() => true);
-    const url = `${apiRoot}/schedule/add/many`;
-    axios.post(url, postData)
-      .then(res => {
-        setRes(res.status)
-        setLoading(false);
-      })
-      .catch(error => {
-        setError(error)
-        setLoading(false);
-      })
+    
+    try {
+      const res = await axios.post(`${apiRoot}/schedule/add/many`, postData);
+      setRes(res);
+      setLoading(() => false);
+      await fetchSchedules();
+      setSelectedDays([]);
+    } catch (e) {
+      setError(e);
+      setLoading(() => false);
+    }
   }
 
   return (
@@ -320,6 +343,7 @@ const CalendarScreen = props => {
                   <Text style={getCalendarClassNames(day, 'text')}>
                     {parseInt(t.getDay(day), 10)}
                   </Text>
+                  {renderCheckmark(day)}
                 </TouchableOpacity>
               )
             })}
@@ -371,6 +395,9 @@ const CalendarScreen = props => {
           </Text>
           <Text>
             res: {JSON.stringify(res, null, 2)}
+          </Text>
+          <Text>
+            kidSchedules: {JSON.stringify(kidSchedules, null, 2)}
           </Text>
         </View>
 
@@ -433,6 +460,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center',
+    position: 'relative'
   },
   day_text: {
     fontSize: 18,
@@ -447,16 +475,16 @@ const styles = StyleSheet.create({
   },
   dayToday: {
     //borderWidth: 1,
-    borderColor: 'red'
+    //borderColor: 'red'
   },
   dayToday_text: {
     textAlign: 'center',
     color: iosColors.red,
     fontWeight: 'bold',
-    //borderWidth: 2,
-    //borderRadius: 18,
+    //borderWidth: 1,
+    //borderRadius: 17,
     //borderColor: iosColors.red,
-    //padding: 5,
+    padding: 5,
   },
   daySelected: {
     backgroundColor: iosColors.lightBlue,
@@ -464,6 +492,13 @@ const styles = StyleSheet.create({
   daySelected_text: {
     color: 'white',
     fontWeight: 'bold'
+  },
+  dayWithSchedule: {
+
+  },
+  dayWithSchedule_text: {
+    //color: iosColors.darkGreen,
+    //fontWeight: 'bold',
   },
   selectedDaysTitle: {
     display: 'flex',
@@ -490,17 +525,19 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   submitButton: {
-    borderRadius: 3,
+    borderWidth: 1,
+    borderColor: iosColors.green,
+    backgroundColor: iosColors.darkGreen,
+    borderRadius: 5,
     paddingTop: 8,
     paddingBottom: 8,
     paddingLeft: 45,
     paddingRight: 45,
-    //backgroundColor: '#099cec',
-    backgroundColor: iosColors.darkBlue
   },
   submitButton_text: {
-    fontSize: 19,
+    textTransform: 'uppercase',
     color: 'white',
+    fontWeight: 'bold',
   },
   timeTable: {
     padding: 10,
@@ -517,6 +554,13 @@ const styles = StyleSheet.create({
   timeTableCol_mid: {
     width: 116,
   },
+  checkmark: {
+    width: 10,
+    height: 10,
+    position: 'absolute',
+    right: 5,
+    bottom: 5,
+  }
 });
 
 

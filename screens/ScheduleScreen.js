@@ -131,15 +131,12 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     backgroundColor: '#ededed',
-    /* position: 'absolute',
-    left: -10,
-    top: -10,
-    right: -10,
-    zIndex: 99, */
     paddingTop: 28,
     paddingBottom: 15,
     paddingLeft: 15,
     paddingRight: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#bfbfbf',
   },
   searchBar_top: {
     display: 'flex',
