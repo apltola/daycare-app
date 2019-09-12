@@ -47,12 +47,6 @@ const CalendarScreen = props => {
     //const sDate = getDateWithoutTime(startDate)
     //const eDate = getDateWithoutTime(endDate)
 
-    const dayHasFullSchedule = () => {
-      /* const dayHasArrival = daysWithArrival.findIndex(i => i === day) > -1;
-      const dayHasDeparture = daysWithDeparture.findIndex(i => i === day) > -1;
-      return dayHasArrival && dayHasDeparture; */
-
-    }
     const dayHasSchedule = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd')) > -1;
 
     let conditions = {};
@@ -149,7 +143,6 @@ const CalendarScreen = props => {
         // eli kun tullaan tähän, ei luoda uutta alkiota vaan etitään se indeksillä ja muokataan sitä
         let postArr = postData;
         const idx = postArr.findIndex(i => i.temp_id === selectedDay);
-        //console.log('SILLÄ ON JOTAIN SCHEDULEE ==> ', idx);
         if (timePickerTarget === 'arrival') {
           postArr[idx].arrive = timeWithHoursAndMin;
           addDayToScheduledList(selectedDay, 'arrival');
@@ -162,7 +155,6 @@ const CalendarScreen = props => {
         
       } else {
         // pittää lissää selectedDaylle tunnit ja minuutit jotta saadaan oikee aika
-        //console.log('PITÄÄ LUODA ALKIO!!');
         let data = {
           temp_id: selectedDay,
           child: kid,
@@ -298,7 +290,7 @@ const CalendarScreen = props => {
 
   const onSubmit = async () => {
     setLoading(() => true);
-    
+
     try {
       const res = await axios.post(`${apiRoot}/schedule/add/many`, postData);
       setRes(res);
@@ -421,16 +413,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     paddingTop: 18,
-    //paddingLeft: 10,
   },
   calendarNavigation: {
     display: 'flex',
     flexDirection: 'row',
-    //alignContent: 'flex-end',
     alignItems: 'center',
   },
   calendarContainer: {
-    //borderWidth: 2,
     borderColor: 'red',
     padding: 10,
     paddingTop: 20,
@@ -464,7 +453,6 @@ const styles = StyleSheet.create({
   },
   day_text: {
     fontSize: 18,
-    //margin: 10,
     textAlign: 'center',
   },
   dayOutOfMonth: {
@@ -492,9 +480,6 @@ const styles = StyleSheet.create({
   daySelected_text: {
     color: 'white',
     fontWeight: 'bold'
-  },
-  dayWithSchedule: {
-
   },
   dayWithSchedule_text: {
     //color: iosColors.darkGreen,
@@ -562,6 +547,5 @@ const styles = StyleSheet.create({
     bottom: 5,
   }
 });
-
 
 export default CalendarScreen;
