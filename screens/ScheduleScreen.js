@@ -28,9 +28,11 @@ export default ScheduleScreen = ({ navigation }) => {
       }
     }
 
-    return arr.map(kid => {
+    return arr.map((kid, idx) => {
+      const style = idx === 0 ? styles.kidItem_first : styles.kidItem
+
       return (
-        <View style={styles.kidItem}>
+        <View style={style}>
           <TouchableOpacity
             style={styles.kidButton}
             onPress={() => navigation.navigate('calendar', {
@@ -61,10 +63,6 @@ export default ScheduleScreen = ({ navigation }) => {
               style={styles.closeButton}
               onPress={() => setShowSearchBar(() => false)}
             >
-              {/* <Image
-                style={styles.closeIcon}
-                source={require('../assets/close.png')}
-              /> */}
               <Icon
                 name="close"
                 type="material"
@@ -105,10 +103,6 @@ export default ScheduleScreen = ({ navigation }) => {
               style={styles.searchButton}
               onPress={() => setShowSearchBar(() => true)}
             >
-              {/* <Image
-                style={styles.searchIcon}
-                source={require('../assets/search.png')}
-              /> */}
               <Icon
                 name="search"
                 type="material"
@@ -176,8 +170,8 @@ const styles = StyleSheet.create({
     color: iosColors.grey,
   },
   scrollView: {
-    paddingLeft: 10,
-    paddingRight: 10,
+    //paddingLeft: 10,
+    //paddingRight: 10,
     //paddingTop: 10
   },
   titleContainer: {
@@ -186,6 +180,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
     position: 'relative',
+    paddingLeft: 10,
+    paddingRight: 10,
     //borderWidth: 1,
   },
   title_text: {
@@ -208,10 +204,6 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 6,
-    //borderWidth: 0.5,
-    //borderColor: iosColors.grey,
-    //borderRadius: 5,
-    //backgroundColor: '#fefefe',
     backgroundColor: '#ededed',
   },
   searchIcon: {
@@ -226,16 +218,21 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   kidItem: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    borderBottomWidth: 0.5,
+    borderColor: iosColors.grey,
+  },
+  kidItem_first: {
+    borderTopWidth: 0.5,
+    borderBottomWidth: 0.5,
+    borderColor: iosColors.grey,
   },
   kidButton: {
-    //borderWidth: 1,
-    marginBottom: 10,
+    padding: 8,
+    paddingLeft: 20,
   },
   kidButton_text: {
     color: iosColors.darkBlue,
     fontSize: 20,
+    textAlign: 'left',
   }
 });
