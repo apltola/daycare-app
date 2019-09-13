@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useGlobalHook from '../store';
 import { StyleSheet, View, Text, Animated, Image, TextInput} from 'react-native';
-
+import { Icon } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { iosColors } from '../util';
 
@@ -61,9 +61,13 @@ export default ScheduleScreen = ({ navigation }) => {
               style={styles.closeButton}
               onPress={() => setShowSearchBar(() => false)}
             >
-              <Image
+              {/* <Image
                 style={styles.closeIcon}
                 source={require('../assets/close.png')}
+              /> */}
+              <Icon
+                name="close"
+                type="material"
               />
             </TouchableOpacity>
           </View>
@@ -101,9 +105,13 @@ export default ScheduleScreen = ({ navigation }) => {
               style={styles.searchButton}
               onPress={() => setShowSearchBar(() => true)}
             >
-              <Image
+              {/* <Image
                 style={styles.searchIcon}
                 source={require('../assets/search.png')}
+              /> */}
+              <Icon
+                name="search"
+                type="material"
               />
             </TouchableOpacity>
           </View>
@@ -196,14 +204,15 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: '#fefefe',
     flexGrow: 0,
-    padding: 10,
+    padding: 6,
   },
   closeButton: {
-    padding: 10,
-    borderWidth: 0.5,
-    borderColor: iosColors.grey,
-    borderRadius: 5,
-    backgroundColor: '#fefefe',
+    padding: 6,
+    //borderWidth: 0.5,
+    //borderColor: iosColors.grey,
+    //borderRadius: 5,
+    //backgroundColor: '#fefefe',
+    backgroundColor: '#ededed',
   },
   searchIcon: {
     height: 20,
