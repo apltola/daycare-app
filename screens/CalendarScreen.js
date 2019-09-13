@@ -139,8 +139,6 @@ const CalendarScreen = props => {
       const dayHasDeparture = daysWithDeparture.findIndex(i => i === selectedDay) > -1;
       
       if (dayHasArrival || dayHasDeparture) {
-        // selectedDaylle on jo laitettu tuloaika tai lähtöaika, eli sille on luotu alkio postDataan
-        // eli kun tullaan tähän, ei luoda uutta alkiota vaan etitään se indeksillä ja muokataan sitä
         let postArr = postData;
         const idx = postArr.findIndex(i => i.temp_id === selectedDay);
         if (timePickerTarget === 'arrival') {
@@ -150,11 +148,10 @@ const CalendarScreen = props => {
           postArr[idx].departure = timeWithHoursAndMin;
           addDayToScheduledList(selectedDay, 'departure');
         }
-        // päivitetään postData
+
         setPostData(() => postArr);
         
       } else {
-        // pittää lissää selectedDaylle tunnit ja minuutit jotta saadaan oikee aika
         let data = {
           temp_id: selectedDay,
           child: kid,
@@ -168,7 +165,6 @@ const CalendarScreen = props => {
           addDayToScheduledList(selectedDay, 'departure');
         }
 
-        // lisätään postDataan alkio
         setPostData(prev => [...prev, data])
       }
     });

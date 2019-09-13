@@ -3,8 +3,6 @@ import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Imag
 import DateTimePicker from "react-native-modal-datetime-picker";
 import axios from 'axios';
 import useGlobalHook from '../store';
-import KidList from '../components/KidList';
-import IsPresentButton from '../components/IsPresentButton';
 import Header from '../components/Header';
 import { formatDateString, iosColors } from '../util';
 import orderBy from 'lodash/orderBy';

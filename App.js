@@ -3,7 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import { createAppContainer, createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import useGlobalHook from './store';
 
-import Header from './components/Header';
 import KidListScreen from './screens/KidListScreen';
 import KidScreen from './screens/KidScreen';
 import TeacherScreen from './screens/TeacherScreen';
@@ -21,14 +20,12 @@ const MainNavigator = createBottomTabNavigator({
     calendar: CalendarScreen,
   },{
     navigationOptions: {
-      //header: null,
       tabBarLabel: 'Aikataulut',
       headerStyle: {
         height: 50,
         fontSize: 30,
         borderBottomWidth: 1,
         borderBottomColor: 'black',
-        //marginBottom: 15
       }
     }
   })
@@ -48,7 +45,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      {/* <Header title="kidTracker_3000" /> */}
       <AppContainer />
     </View>
   );
@@ -58,8 +54,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    //paddingTop: 50
-    //alignItems: 'center',
-    //justifyContent: 'center',
   },
 });
