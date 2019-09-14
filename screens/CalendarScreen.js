@@ -458,16 +458,12 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   dayToday: {
-    //borderWidth: 1,
-    //borderColor: 'red'
+
   },
   dayToday_text: {
     textAlign: 'center',
     color: iosColors.red,
     fontWeight: 'bold',
-    //borderWidth: 1,
-    //borderRadius: 17,
-    //borderColor: iosColors.red,
     padding: 5,
   },
   daySelected: {
@@ -478,8 +474,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   dayWithSchedule_text: {
-    //color: iosColors.darkGreen,
-    //fontWeight: 'bold',
+
   },
   selectedDaysTitle: {
     display: 'flex',
@@ -495,7 +490,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignContent: 'center',
     alignItems: 'center',
-    //borderWidth: 1,
   },
   timeButton: {
     display: 'flex',

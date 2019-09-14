@@ -135,8 +135,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   scrollView: {
-    //paddingLeft: 10,
-    //paddingRight: 10,
     marginTop: 20
   },
   kidItem_first: {
@@ -215,18 +213,14 @@ const styles = StyleSheet.create({
   dateButton: {
     width: 200,
     alignItems: 'center',
-    //backgroundColor: iosColors.grey,
     paddingTop: 5,
     paddingBottom: 5,
     borderWidth: 1,
     borderColor: iosColors.grey,
     borderRadius: 4,
-    //paddingLeft: 10,
-    //paddingRight: 10,
   },
   dateButtonTxt: {
     fontSize: 20,
-    //color: 'white',
     fontWeight: 'bold'
   },
   isPresentButton: {

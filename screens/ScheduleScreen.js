@@ -170,9 +170,7 @@ const styles = StyleSheet.create({
     color: iosColors.grey,
   },
   scrollView: {
-    //paddingLeft: 10,
-    //paddingRight: 10,
-    //paddingTop: 10
+
   },
   titleContainer: {
     display: 'flex',
@@ -182,14 +180,12 @@ const styles = StyleSheet.create({
     position: 'relative',
     paddingLeft: 10,
     paddingRight: 10,
-    //borderWidth: 1,
   },
   title_text: {
     textAlign: 'left',
     fontWeight: 'bold',
     flexGrow: 1,
     position: 'absolute',
-    //borderWidth: 1,
     left: 0,
     right: 0,
     textAlign: 'center',
