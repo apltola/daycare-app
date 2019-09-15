@@ -9,10 +9,25 @@ import TeacherScreen from './screens/TeacherScreen';
 import GroupScreen from './screens/GroupScreen';
 import ScheduleScreen from './screens/ScheduleScreen';
 import CalendarScreen from './screens/CalendarScreen';
+import EditKidScreen from './screens/EditKidScreen';
 
 const MainNavigator = createBottomTabNavigator({
   main: KidListScreen,
-  kid: KidScreen,
+  //kid: KidScreen,
+  kid: createStackNavigator({
+    kid: KidScreen,
+    editKid: EditKidScreen
+  },{
+    navigationOptions: {
+      tabBarLabel: 'Muksut',
+      headerStyle: {
+        height: 50,
+        fontSize: 30,
+        borderBottomWidth: 1,
+        borderBottomColor: 'black',
+      }
+    }
+  }),
   teacher: TeacherScreen,
   group: GroupScreen,
   schedule: createStackNavigator({

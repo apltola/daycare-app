@@ -5,7 +5,7 @@ import useGlobalHook from '../store';
 import Header from '../components/Header';
 import { iosColors } from '../util';
 
-const KidScreen = () => {
+const KidScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
 
   const renderList = () => {
@@ -33,7 +33,7 @@ const KidScreen = () => {
           <View style={styles.listItem_right}>
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => console.log('MUOKKAA')}
+              onPress={() => navigation.navigate('editKid')}
             >
               <View style={styles.buttonContent}>
                 <Icon
@@ -44,6 +44,19 @@ const KidScreen = () => {
                 <Text style={styles.buttonText}>MUOKKAA</Text>
               </View>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => console.log('POISTA')}
+            >
+              <View style={styles.buttonContent}>
+                <Icon
+                  name="trash"
+                  type="font-awesome"
+                  color="white"
+                />
+                <Text style={styles.buttonText}>POISTA</Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
       )
@@ -52,7 +65,7 @@ const KidScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header title="Muksut" noMargin={true} />
+      {/* <Header title="Muksut" noMargin={true} /> */}
 
       <Animated.ScrollView
         contentContainerStyle={{paddingTop: 20}}
@@ -91,10 +104,15 @@ const styles = StyleSheet.create({
     flex: 1,
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingTop: 15,
   },
   editButton: {
     backgroundColor: iosColors.darkGreen,
+    borderRadius: 4,
+  },
+  deleteButton: {
+    backgroundColor: iosColors.red,
     borderRadius: 4,
   },
   buttonContent: {
