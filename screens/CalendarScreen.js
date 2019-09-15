@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Button, Image } from 'react-native';
+import { Icon } from 'react-native-elements';
+import Dialog, { DialogContent, DialogFooter, DialogButton, ScaleAnimation } from 'react-native-popup-dialog';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import axios from 'axios';
@@ -23,7 +25,12 @@ const CalendarScreen = props => {
   const [daysWithDeparture, setDaysWithDeparture] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [res, setRes] = useState(null)
+  const [res, setRes] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupType, setPopupType] = useState('');
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [showErrorDialog, setShowErrorDialog] = useState(false);
+  const [submitWasSuccessful, setSubmitWasSuccessful] = useState(false);
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
@@ -311,16 +318,26 @@ const CalendarScreen = props => {
       const res = await axios.post(`${apiRoot}/schedule/add/many`, postData);
       setRes(res);
       setLoading(() => false);
+      setShowPopup(() => true);
+      setSubmitWasSuccessful(() => true);
       await fetchSchedules();
       setSelectedDays([]);
     } catch (e) {
       setError(e);
+      setSubmitWasSuccessful(() => false);
       setLoading(() => false);
+      setShowPopup(() => true);
     }
   }
 
   return (
     <View style={{flex: 1}}>
+      {/* <TouchableOpacity
+        onPress={() => setShowPopup(() => true)}
+        style={{padding: 20}}
+      >
+        <Text>test popup</Text>
+      </TouchableOpacity> */}
       <Animated.ScrollView style={{flex: 1}}>
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
@@ -403,10 +420,10 @@ const CalendarScreen = props => {
           </Text>
           {/* <Text>
             res: {JSON.stringify(res, null, 2)}
-          </Text> */}
+          </Text>
           <Text>
             kidSchedules: {JSON.stringify(kidSchedules, null, 2)}
-          </Text>
+          </Text> */}
         </View>
 
         <DateTimePicker
@@ -418,6 +435,39 @@ const CalendarScreen = props => {
           confirmTextIOS="Ok"
           titleIOS={timePickerTarget === 'arrival' ? 'Aseta saapumisaika' : 'Aseta lähtöaika'}
         />
+        
+        <Dialog
+          visible={showPopup}
+          onTouchOutside={() => setShowPopup(false)}
+          dialogAnimation={new ScaleAnimation({ initialValue: 0, useNativeDriver: true })}
+          footer={
+            <DialogFooter>
+              <DialogButton
+                text="OK"
+                onPress={() => setShowPopup(false)}
+                textStyle={{color: iosColors.darkBlue, fontSize: 18}}
+              />
+            </DialogFooter>
+          }
+        >
+          <DialogContent style={{paddingTop: 10}}>
+            <Icon
+              name={submitWasSuccessful ? 'check-circle' : 'exclamation-circle'}
+              type='font-awesome'
+              color={submitWasSuccessful ? iosColors.green : iosColors.red}
+              size={60}
+            />
+            <Text style={{paddingTop:13, fontSize: 18, color: iosColors.black, textAlign: 'center'}}>
+              {submitWasSuccessful ? 'Tallentaminen onnistui' : 'Tallentaminen epäonnistui!'}
+            </Text>
+            {
+              !submitWasSuccessful &&
+              <Text style={{paddingTop:13, fontSize: 18, color: iosColors.black, textAlign: 'center'}}>
+                Yritä uudelleen.
+              </Text>
+            }
+          </DialogContent>
+        </Dialog>
       </Animated.ScrollView>
     </View>
   );
