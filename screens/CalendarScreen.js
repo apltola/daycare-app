@@ -5,6 +5,7 @@ import DateTimePicker from "react-native-modal-datetime-picker";
 import axios from 'axios';
 import Spinner from '../components/Spinner';
 import { initMonth, getDays, dateIsOut, getDateWithoutTime, formatDateString, iosColors, apiRoot } from '../util';
+import union from 'lodash/union';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -210,8 +211,13 @@ const CalendarScreen = props => {
   }
 
   const renderTimeTable = () => {
-    const daysWithSchedule = getDaysWithSchedule();
-    if (daysWithSchedule.length === 0) return;
+    const arr1 = kidSchedules.map(i => new Date(i.date).getTime());
+    const arr2 = getDaysWithSchedule();
+    const arr3 = union(arr1, arr2);
+    const daysWithSchedule = arr3.filter(i => i > new Date().getTime());
+    daysWithSchedule.sort();
+
+    if (daysWithSchedule.length === 0) return null;
 
     return (
       <View style={styles.timeTable}>
@@ -222,17 +228,26 @@ const CalendarScreen = props => {
           <Text style={[styles.timeTableCol_mid, {fontWeight: 'bold'}]}>
             Saapumisaika
           </Text>
-          <Text style={{fontWeight: 'bold'}}>
+          <Text style={[styles.timeTableCol_right, {fontWeight: 'bold'}]}>
             Lähtöaika
           </Text>
         </View>
         {
           daysWithSchedule.map(day => {
             const dateStr = formatDateString(day, 'dd.mm.yyyy');
-            const dayData = postData.find(item => item.temp_id === day);
-            const arrivalStr = formatDateString(dayData.arrive, 'hh:mm');
-            const departureStr = formatDateString(dayData.departure, 'hh:mm');
-      
+            let arrivalStr;
+            let departureStr;
+            let dayData;
+            if (postData.findIndex(i => i.temp_id === day) === -1) {
+              dayData = kidSchedules.find(item => new Date(item.date).getTime() === day);
+              arrivalStr = dayData.arrive.substring(0,5);
+              departureStr = dayData.departure.substring(0,5);
+            } else {
+              dayData = postData.find(item => item.temp_id === day);
+              arrivalStr = formatDateString(dayData.arrive, 'hh:mm');
+              departureStr = formatDateString(dayData.departure, 'hh:mm');
+            }
+
             return (
               <View style={styles.timeTableRow}>
                 <Text style={styles.timeTableCol_left}>
@@ -241,7 +256,7 @@ const CalendarScreen = props => {
                 <Text style={styles.timeTableCol_mid}>
                   {arrivalStr || '-'}
                 </Text>
-                <Text>
+                <Text style={styles.timeTableCol_right}>
                   {departureStr || '-'}
                 </Text>
               </View>
@@ -273,14 +288,19 @@ const CalendarScreen = props => {
   }
 
   const renderCheckmark = day => {
-    const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
-    if (idx > -1) {
-      return (
-        <Image
-          style={styles.checkmark}
-          source={require('../assets/checkmark.png')}
-        />
-      )
+    const today = new Date().getTime();
+    if (day >= today) {
+      const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
+      if (idx > -1) {
+        return (
+          <Image
+            style={styles.checkmark}
+            source={require('../assets/checkmark.png')}
+          />
+        )
+      }
+    } else {
+      return null;
     }
   }
 
@@ -381,9 +401,9 @@ const CalendarScreen = props => {
           <Text>
             error: {JSON.stringify(error, null, 2)}
           </Text>
-          <Text>
+          {/* <Text>
             res: {JSON.stringify(res, null, 2)}
-          </Text>
+          </Text> */}
           <Text>
             kidSchedules: {JSON.stringify(kidSchedules, null, 2)}
           </Text>
@@ -504,8 +524,8 @@ const styles = StyleSheet.create({
     borderColor: iosColors.green,
     backgroundColor: iosColors.darkGreen,
     borderRadius: 5,
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingTop: 12,
+    paddingBottom: 12,
     paddingLeft: 45,
     paddingRight: 45,
   },
@@ -524,10 +544,21 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   timeTableCol_left: {
-    width: 105,
+    width: 115,
+    fontSize: 16,
+    color: iosColors.black,
+    marginBottom: 4,
   },
   timeTableCol_mid: {
-    width: 116,
+    width: 125,
+    fontSize: 16,
+    color: iosColors.black,
+    marginBottom: 4,
+  },
+  timeTableCol_right: {
+    fontSize: 16,
+    color: iosColors.black,
+    marginBottom: 4,
   },
   checkmark: {
     width: 10,

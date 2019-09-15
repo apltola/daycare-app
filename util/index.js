@@ -78,8 +78,17 @@ export const formatDateString = (value, pattern) => {
   }
   
   else if (pattern === 'hh:mm') {
-    const hours = t.getHours(value);
-    const minutes = t.getMinutes(value);
+    let hours;
+    let minutes
+    try {
+      hours = t.getHours(value);
+      minutes = t.getMinutes(value);
+    } catch(error) {
+      console.log('CATCH!!!');
+      //console.log('dValue ==> ', dValue);
+      //hours = dValue.getHours();
+      //minutes = dValue.getMinutes();
+    }
     return `${hours}:${minutes}`
   }
   

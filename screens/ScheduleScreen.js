@@ -42,6 +42,10 @@ export default ScheduleScreen = ({ navigation }) => {
             <Text style={styles.kidButton_text}>
               {kid.firstName}, {kid.childgroup.name}
             </Text>
+            <Icon
+              name="chevron-right"
+              type="material"
+            />
           </TouchableOpacity>
         </View>
       );
@@ -91,7 +95,7 @@ export default ScheduleScreen = ({ navigation }) => {
       }
 
       <Animated.ScrollView
-        contentContainerStyle={{paddingTop: 20}}
+        contentContainerStyle={{paddingTop: showSearchBar ? 0 : 20}}
         style={styles.scrollView}
       >
         {!showSearchBar &&
@@ -180,6 +184,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     paddingLeft: 10,
     paddingRight: 10,
+    //marginBottom: 20,
   },
   title_text: {
     textAlign: 'left',
@@ -189,6 +194,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     textAlign: 'center',
+    color: iosColors.black,
   },
   searchButton: {
     borderWidth: 0.5,
@@ -211,7 +217,7 @@ const styles = StyleSheet.create({
     width: 15,
   },
   listContainer: {
-    paddingTop: 20,
+    //paddingTop: 20,
   },
   kidItem: {
     borderBottomWidth: 0.5,
@@ -223,12 +229,17 @@ const styles = StyleSheet.create({
     borderColor: iosColors.grey,
   },
   kidButton: {
-    padding: 8,
     paddingLeft: 20,
+    paddingRight: 20,
+    paddingBottom: 10,
+    paddingTop: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   kidButton_text: {
-    color: iosColors.darkBlue,
-    fontSize: 20,
+    color: iosColors.black,
+    fontSize: 18,
     textAlign: 'left',
   }
 });
