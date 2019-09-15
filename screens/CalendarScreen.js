@@ -27,9 +27,6 @@ const CalendarScreen = props => {
   const [error, setError] = useState(null);
   const [res, setRes] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
-  const [popupType, setPopupType] = useState('');
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [showErrorDialog, setShowErrorDialog] = useState(false);
   const [submitWasSuccessful, setSubmitWasSuccessful] = useState(false);
 
   /* Navigation props */

@@ -30,7 +30,7 @@ const MainNavigator = createBottomTabNavigator({
     }
   })
 },{
-  initialRouteName: 'schedule',
+  initialRouteName: 'kid',
 });
 
 const AppContainer = createAppContainer(MainNavigator);

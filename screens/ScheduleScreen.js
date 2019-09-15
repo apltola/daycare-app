@@ -6,7 +6,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { iosColors } from '../util';
 
 
-export default ScheduleScreen = ({ navigation }) => {
+const ScheduleScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,9 +39,14 @@ export default ScheduleScreen = ({ navigation }) => {
               kid: kid
             })}
           >
-            <Text style={styles.kidButton_text}>
-              {kid.firstName}, {kid.childgroup.name}
-            </Text>
+            <View>
+              <Text style={styles.kidButton_text}>
+                {kid.firstName}
+              </Text>
+              <Text>
+                {kid.childgroup.name}
+              </Text>
+            </View>
             <Icon
               name="chevron-right"
               type="material"
@@ -236,10 +241,14 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   kidButton_text: {
     color: iosColors.black,
     fontSize: 18,
     textAlign: 'left',
+    paddingBottom: 3,
   }
 });
+
+export default ScheduleScreen;

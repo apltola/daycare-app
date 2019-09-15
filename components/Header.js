@@ -1,9 +1,13 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-const Header = ({ title }) => {
+const Header = ({ title, noMargin = false }) => {
+  const style = {
+    marginBottom: noMargin ? 0 : 20
+  }
+  
   return (
-    <View style={styles.header}>
+    <View style={[styles.header, style]}>
       <Text style={styles.logo}>
         {title}
       </Text>
@@ -18,7 +22,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.3,
     borderBottomColor: 'black',
     height: 64,
-    marginBottom: 20
+    //marginBottom: 20
   },
   logo: {
     fontWeight: '600',
