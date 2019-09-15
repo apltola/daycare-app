@@ -18,16 +18,14 @@ const KidScreen = ({ navigation }) => {
       return (
         <View style={styles.listItem}>
           <View style={styles.listItem_left}>
-            <View style={{display:'flex', flexDirection: 'row',paddingBottom: 5}}>
-              <Text style={{fontWeight: 'bold', textTransform: 'uppercase', flex: 1}}>
-                {kid.firstName}
-              </Text>
-              <Text style={{flex: 1}}>
-                Syntymäpäivä: {kid.birthday || '–'}
-              </Text>
-            </View>
-            <Text>
+            <Text style={{fontWeight: 'bold', textTransform: 'uppercase', color: iosColors.black}}>
+              {kid.firstName}
+            </Text>
+            <Text style={{paddingTop: 5, color: iosColors.black}}>
               {kid.childgroup.name}
+            </Text>
+            <Text style={{paddingTop: 5, color: iosColors.black}}>
+              Syntymäpäivä: {kid.birthday || '–'}
             </Text>
           </View>
           <View style={styles.listItem_right}>
@@ -39,22 +37,10 @@ const KidScreen = ({ navigation }) => {
                 <Icon
                   name="edit"
                   type="font-awesome"
-                  color="white"
+                  color={iosColors.grey}
+                  size={30}
                 />
                 <Text style={styles.buttonText}>MUOKKAA</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => console.log('POISTA')}
-            >
-              <View style={styles.buttonContent}>
-                <Icon
-                  name="trash"
-                  type="font-awesome"
-                  color="white"
-                />
-                <Text style={styles.buttonText}>POISTA</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -65,7 +51,6 @@ const KidScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* <Header title="Muksut" noMargin={true} /> */}
 
       <Animated.ScrollView
         contentContainerStyle={{paddingTop: 20}}
@@ -95,21 +80,24 @@ const styles = StyleSheet.create({
     borderColor: '#ededed',
     padding: 20,
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'row',
   },
   listItem_left: {
-    //flex: 1,
+    flex: 1,
+
   },
   listItem_right: {
-    flex: 1,
+    //flex: 1,
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingTop: 15,
+    alignItems: 'center',
   },
   editButton: {
-    backgroundColor: iosColors.darkGreen,
+    //backgroundColor: '#ededed',
     borderRadius: 4,
+    //borderWidth: 2,
+    borderColor: iosColors.grey,
+
   },
   deleteButton: {
     backgroundColor: iosColors.red,
@@ -117,14 +105,14 @@ const styles = StyleSheet.create({
   },
   buttonContent: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     alignItems: 'center',
     padding: 10,
     paddingTop: 5,
     paddingBottom: 5,
   },
   buttonText: {
-    color: 'white',
+    color: iosColors.grey,
     fontWeight: 'bold',
     //paddingTop: 8,
   }
