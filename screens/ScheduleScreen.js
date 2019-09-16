@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 7,
     fontSize: 18,
-    borderRadius: 3,
+    borderRadius: 8,
     color: 'white',
     backgroundColor: '#bfbfbf',
     marginRight: 15

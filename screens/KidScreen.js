@@ -1,17 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Animated, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Platform, Animated, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Icon, SearchBar } from 'react-native-elements';
 import useGlobalHook from '../store';
 import Header from '../components/Header';
 import { iosColors } from '../util';
 
 const KidScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
+  const [searchFilter, setSearchFilter] = useState('name');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const renderList = () => {
     if (!globalState.allKids || globalState.allKids.length === 0) return null;
 
-    const arr = globalState.allKids;
+    let arr = null;
+    if (searchTerm === '') {
+      arr = globalState.allKids;
+    } else {
+      if (searchFilter === 'name') {
+        arr = globalState.allKids.filter(kid => kid.firstName.toUpperCase().includes(searchTerm.toUpperCase()))
+      } else if (searchFilter === 'group') {
+        arr = globalState.allKids.filter(kid => kid.childgroup.name.toUpperCase().includes(searchTerm.toUpperCase()))
+      }
+    }
+
     return arr.map((kid, idx) => {
       const _styles = idx === 0 ? [styles.listItem_first, styles.listItem] : [styles.listItem];
 
@@ -49,13 +61,53 @@ const KidScreen = ({ navigation }) => {
     })
   }
 
+  const getSearchBarPlatform = () => {
+    if (Platform.OS === 'android') {
+      return 'android';
+    } else if (Platform.OS === 'ios') {
+      return 'ios';
+    } else {
+      return 'default';
+    }
+  }
+
   return (
     <View style={styles.container}>
 
       <Animated.ScrollView
-        contentContainerStyle={{paddingTop: 20}}
+        contentContainerStyle={{paddingTop: 20, paddingBottom: searchTerm === '' ? 20 : 230}}
       >
-        {renderList()}
+        <View>
+          <SearchBar
+            platform={getSearchBarPlatform()}
+            containerStyle={styles.searchBarContainer}
+            placeholder="Hae"
+            onChangeText={search => setSearchTerm(() => search)}
+            value={searchTerm}
+          />
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setSearchFilter(() => 'name')}
+            >
+              <Text style={searchFilter === 'name' ? styles.filterButtonSelected_text : styles.filterButton_text}>
+                Hae muksun nimellä
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setSearchFilter(() => 'group')}
+            >
+              <Text style={searchFilter === 'group' ? styles.filterButtonSelected_text : styles.filterButton_text}>
+                Hae ryhmällä
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={{paddingTop: 10}}>
+          {renderList()}
+        </View>
       </Animated.ScrollView>
     </View>
   );
@@ -68,6 +120,22 @@ KidScreen.navigationOptions = ({ navigation }) => ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  searchBarContainer: {
+    backgroundColor: 'white',
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 0,
+  },
+  filterButton: {
+    padding: 5,
+  },
+  filterButton_text: {
+    color: iosColors.grey,
+  },
+  filterButtonSelected_text: {
+    fontWeight: 'bold',
+    color: iosColors.grey,
   },
   listItem_first: {
     borderTopWidth: 1,

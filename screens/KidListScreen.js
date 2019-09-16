@@ -94,8 +94,7 @@ function KidListScreen() {
           onPress={() => {
             setKidsFiltered(() => true)
             this._scrollViewRef.getNode && this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
-          }
-        }
+          }}
           style={kidsFiltered ? [styles.filterButton, styles.filterButtonSelected]: styles.filterButton}
         >
           <Text style={kidsFiltered ? styles.btnTextSelected : styles.btnText}>
@@ -221,7 +220,8 @@ const styles = StyleSheet.create({
   },
   dateButtonTxt: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    color: iosColors.black,
   },
   isPresentButton: {
     borderWidth: 1,
