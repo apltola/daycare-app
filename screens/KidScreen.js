@@ -114,7 +114,20 @@ const KidScreen = ({ navigation }) => {
 }
 
 KidScreen.navigationOptions = ({ navigation }) => ({
-  title: 'Muksut'
+  title: 'Muksut',
+  headerRight: (
+    <TouchableOpacity style={{marginRight: 15}}>
+      <Text style={{color: iosColors.darkBlue, fontSize: 16}}>
+        Lisää muksu
+      </Text>
+    </TouchableOpacity>
+  ),
+  headerStyle: {
+    height: 50,
+    borderBottomWidth: 0.5,
+    borderBottomColor: iosColors.black,
+    backgroundColor: '#fafafa'
+  }
 });
 
 const styles = StyleSheet.create({

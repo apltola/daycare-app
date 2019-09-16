@@ -131,6 +131,12 @@ const ScheduleScreen = ({ navigation }) => {
 
 ScheduleScreen.navigationOptions = () => ({
   title: 'Aikataulut',
+  headerStyle: {
+    height: 50,
+    borderBottomWidth: 0.5,
+    borderBottomColor: iosColors.black,
+    backgroundColor: '#fafafa'
+  }
 });
 
 const styles = StyleSheet.create({

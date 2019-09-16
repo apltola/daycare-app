@@ -1,33 +1,38 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { iosColors } from '../util';
 
 const Header = ({ title, noMargin = false }) => {
-  const style = {
+  const wrapperStyle = {
     marginBottom: noMargin ? 0 : 20
   }
   
   return (
-    <View style={[styles.header, style]}>
-      <Text style={styles.logo}>
-        {title}
-      </Text>
+    <View style={wrapperStyle}>
+      <View style={{height: 20, backgroundColor: '#fafafa'}} />
+      <View style={styles.header}>
+        <Text style={styles.logo}>
+          {title}
+        </Text>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    alignItems: 'center',
+    display: 'flex',
+    flexDirection: 'row',
     justifyContent: 'center',
-    borderBottomWidth: 0.3,
-    borderBottomColor: 'black',
-    height: 64,
-    //marginBottom: 20
+    alignItems: 'center',
+    borderBottomWidth: 0.5,
+    borderBottomColor: iosColors.black,
+    height: 50,
+    backgroundColor: '#fafafa'
   },
   logo: {
     fontWeight: '600',
     fontSize: 17,
-    paddingTop: 20
   },
 });
 

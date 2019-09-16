@@ -20,12 +20,6 @@ const MainNavigator = createBottomTabNavigator({
   },{
     navigationOptions: {
       tabBarLabel: 'Muksut',
-      headerStyle: {
-        height: 50,
-        fontSize: 30,
-        borderBottomWidth: 1,
-        borderBottomColor: 'black',
-      }
     }
   }),
   teacher: TeacherScreen,
@@ -36,12 +30,6 @@ const MainNavigator = createBottomTabNavigator({
   },{
     navigationOptions: {
       tabBarLabel: 'Aikataulut',
-      headerStyle: {
-        height: 50,
-        fontSize: 30,
-        borderBottomWidth: 1,
-        borderBottomColor: 'black',
-      }
     }
   })
 },{
