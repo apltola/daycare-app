@@ -84,7 +84,7 @@ function KidListScreen() {
             setKidsFiltered(() => false);
             this._scrollViewRef.getNode && this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
           }}
-          style={kidsFiltered ? styles.filterButton : [styles.filterButton, styles.filterButtonSelected]}
+          style={kidsFiltered ? [styles.filterButton, styles.filterButton_left] : [styles.filterButton, styles.filterButtonSelected, styles.filterButton_left]}
         >
           <Text style={kidsFiltered ? styles.btnText : styles.btnTextSelected}>
             Kaikki muksut
@@ -95,7 +95,7 @@ function KidListScreen() {
             setKidsFiltered(() => true)
             this._scrollViewRef.getNode && this._scrollViewRef.getNode().scrollTo({x: 0, y: 0, animated: false});
           }}
-          style={kidsFiltered ? [styles.filterButton, styles.filterButtonSelected]: styles.filterButton}
+          style={kidsFiltered ? [styles.filterButton, styles.filterButton_right, styles.filterButtonSelected]: [styles.filterButton, styles.filterButton_right]}
         >
           <Text style={kidsFiltered ? styles.btnTextSelected : styles.btnText}>
             Omat muksut
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column'
   },
   scrollView: {
-    marginTop: 20
+    paddingTop: 20
   },
   kidItem_first: {
     borderTopWidth: 1,
@@ -188,6 +188,14 @@ const styles = StyleSheet.create({
   filterButtonSelected: {
     backgroundColor: '#147efb',
   },
+  filterButton_left: {
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+  },
+  filterButton_right: {
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+  },
   btnTextSelected: {
     color: 'white',
     fontSize: 16,
@@ -216,7 +224,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     borderWidth: 1,
     borderColor: iosColors.grey,
-    borderRadius: 4,
+    borderRadius: 5,
   },
   dateButtonTxt: {
     fontSize: 20,

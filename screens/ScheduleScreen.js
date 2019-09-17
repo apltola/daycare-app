@@ -1,38 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import useGlobalHook from '../store';
 import { StyleSheet, View, Text, Animated, Image, TextInput} from 'react-native';
-import { Icon } from 'react-native-elements';
+import { Icon, SearchBar } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { iosColors } from '../util';
+import orderBy from 'lodash/orderBy';
 
 
 const ScheduleScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
-  const [showSearchBar, setShowSearchBar] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchFilter, setSearchFilter] = useState('kid');
+  const [searchFilter, setSearchFilter] = useState('name');
 
   const renderList = () => {
     let arr = null
-    if (!showSearchBar) {
+    if (searchTerm === '') {
       arr = globalState.allKids;
     } else {
-      if (searchTerm === '') {
-        arr = globalState.allKids;
-      } else {
-        if (searchFilter === 'kid') {
-          arr = globalState.allKids.filter(kid => kid.firstName.toUpperCase().includes(searchTerm.toUpperCase()))
-        } else {
-          arr = globalState.allKids.filter(kid => kid.childgroup.name.toUpperCase().includes(searchTerm.toUpperCase()))
-        }
+      if (searchFilter === 'name') {
+        arr = globalState.allKids.filter(kid => kid.firstName.toUpperCase().includes(searchTerm.toUpperCase()))
+      } else if (searchFilter === 'group') {
+        arr = globalState.allKids.filter(kid => kid.childgroup.name.toUpperCase().includes(searchTerm.toUpperCase()))
       }
     }
 
+    arr = orderBy(arr, ['childgroup.name'], ['asc']);
+
     return arr.map((kid, idx) => {
-      const style = idx === 0 ? styles.kidItem_first : styles.kidItem
 
       return (
-        <View style={style}>
+        <View style={styles.listItem}>
           <TouchableOpacity
             style={styles.kidButton}
             onPress={() => navigation.navigate('calendar', {
@@ -40,16 +37,18 @@ const ScheduleScreen = ({ navigation }) => {
             })}
           >
             <View>
-              <Text style={styles.kidButton_text}>
-                {kid.firstName}
-              </Text>
-              <Text>
-                {kid.childgroup.name}
-              </Text>
+            <Text style={{fontWeight: 'bold', textTransform: 'uppercase', color: iosColors.black}}>
+              {kid.firstName}
+            </Text>
+            <Text style={{paddingTop: 5, color: iosColors.black}}>
+              {kid.childgroup.name}
+            </Text>
             </View>
             <Icon
               name="chevron-right"
-              type="material"
+              type="font-awesome"
+              color={iosColors.grey}
+              size={20}
             />
           </TouchableOpacity>
         </View>
@@ -57,33 +56,37 @@ const ScheduleScreen = ({ navigation }) => {
     })
   }
 
+  const getSearchBarPlatform = () => {
+    if (Platform.OS === 'android') {
+      return 'android';
+    } else if (Platform.OS === 'ios') {
+      return 'ios';
+    } else {
+      return 'default';
+    }
+  }
+
   return (
     <View style={styles.container}>
 
-      {showSearchBar &&
-        <View style={styles.searchBar}>
-          <View style={styles.searchBar_top}>
-            <TextInput
-              style={styles.searchInput}
-              onChangeText={text => setSearchTerm(() => text)}
-              autoFocus={true}
-            />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowSearchBar(() => false)}
-            >
-              <Icon
-                name="close"
-                type="material"
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.searchBar_bottom}>
+      <Animated.ScrollView
+        contentContainerStyle={{paddingTop: 20, paddingBottom: searchTerm === '' ? 20 : 230}}
+      >
+
+        <View>
+          <SearchBar
+            platform={getSearchBarPlatform()}
+            containerStyle={styles.searchBarContainer}
+            placeholder="Hae"
+            onChangeText={search => setSearchTerm(() => search)}
+            value={searchTerm}
+          />
+          <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly',}}>
             <TouchableOpacity
               style={styles.filterButton}
-              onPress={() => setSearchFilter(() => 'kid')}
+              onPress={() => setSearchFilter(() => 'name')}
             >
-              <Text style={searchFilter === 'kid' ? styles.filterButtonSelected_text : styles.filterButton_text}>
+              <Text style={searchFilter === 'name' ? styles.filterButtonSelected_text : styles.filterButton_text}>
                 Hae muksun nimellä
               </Text>
             </TouchableOpacity>
@@ -97,30 +100,8 @@ const ScheduleScreen = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      }
 
-      <Animated.ScrollView
-        contentContainerStyle={{paddingTop: showSearchBar ? 0 : 20}}
-        style={styles.scrollView}
-      >
-        {!showSearchBar &&
-          <View style={styles.titleContainer}>
-            <Text style={styles.title_text}>
-              Avaa muksun kalenteri
-            </Text>
-            <TouchableOpacity
-              style={styles.searchButton}
-              onPress={() => setShowSearchBar(() => true)}
-            >
-              <Icon
-                name="search"
-                type="material"
-              />
-            </TouchableOpacity>
-          </View>
-        }
-
-        <View style={{paddingTop: showSearchBar ? 0 : 20}}>
+        <View style={{paddingTop: 10}}>
           {renderList()}
         </View>
 
@@ -131,12 +112,6 @@ const ScheduleScreen = ({ navigation }) => {
 
 ScheduleScreen.navigationOptions = () => ({
   title: 'Aikataulut',
-  headerStyle: {
-    height: 50,
-    borderBottomWidth: 0.5,
-    borderBottomColor: iosColors.black,
-    backgroundColor: '#fafafa'
-  }
 });
 
 const styles = StyleSheet.create({
@@ -146,33 +121,11 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     position: 'relative',
   },
-  searchBar: {
-    backgroundColor: '#ededed',
-    paddingTop: 28,
-    paddingBottom: 15,
-    paddingLeft: 15,
-    paddingRight: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#bfbfbf',
-  },
-  searchBar_top: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
-  searchBar_bottom: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    paddingTop: 15,
-  },
-  searchInput: {
-    flex: 1,
-    padding: 7,
-    fontSize: 18,
-    borderRadius: 8,
-    color: 'white',
-    backgroundColor: '#bfbfbf',
-    marginRight: 15
+  searchBarContainer: {
+    backgroundColor: 'white',
+    paddingLeft: 5,
+    paddingRight: 5,
+    paddingTop: 0,
   },
   filterButton: {
     padding: 5,
@@ -183,9 +136,6 @@ const styles = StyleSheet.create({
   filterButtonSelected_text: {
     fontWeight: 'bold',
     color: iosColors.grey,
-  },
-  scrollView: {
-
   },
   titleContainer: {
     display: 'flex',
@@ -227,12 +177,9 @@ const styles = StyleSheet.create({
     height: 15,
     width: 15,
   },
-  listContainer: {
-    //paddingTop: 20,
-  },
-  kidItem: {
-    borderBottomWidth: 0.5,
-    borderColor: iosColors.grey,
+  listItem: {
+    borderBottomWidth: 1,
+    borderColor: '#ededed',
   },
   kidItem_first: {
     borderTopWidth: 0.5,
@@ -240,10 +187,7 @@ const styles = StyleSheet.create({
     borderColor: iosColors.grey,
   },
   kidButton: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingBottom: 10,
-    paddingTop: 10,
+    padding: 20,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',

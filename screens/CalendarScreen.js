@@ -470,6 +470,10 @@ const CalendarScreen = props => {
   );
 }
 
+CalendarScreen.navigationOptions = () => ({
+  
+});
+
 const styles = StyleSheet.create({
   kidTitle_text: {
     fontSize: 22,

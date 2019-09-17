@@ -10,6 +10,7 @@ import GroupScreen from './screens/GroupScreen';
 import ScheduleScreen from './screens/ScheduleScreen';
 import CalendarScreen from './screens/CalendarScreen';
 import EditKidScreen from './screens/EditKidScreen';
+import { iosColors } from './util';
 
 const MainNavigator = createBottomTabNavigator({
   main: KidListScreen,
@@ -20,6 +21,14 @@ const MainNavigator = createBottomTabNavigator({
   },{
     navigationOptions: {
       tabBarLabel: 'Muksut',
+    },
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 50,
+        borderBottomWidth: 0.5,
+        borderBottomColor: iosColors.black,
+        backgroundColor: '#fafafa',
+      }
     }
   }),
   teacher: TeacherScreen,
@@ -30,10 +39,18 @@ const MainNavigator = createBottomTabNavigator({
   },{
     navigationOptions: {
       tabBarLabel: 'Aikataulut',
+    },
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 50,
+        borderBottomWidth: 0.5,
+        borderBottomColor: iosColors.black,
+        backgroundColor: '#fafafa',
+      }
     }
   })
 },{
-  initialRouteName: 'kid',
+  initialRouteName: 'schedule',
 });
 
 const AppContainer = createAppContainer(MainNavigator);
