@@ -164,15 +164,12 @@ const styles = StyleSheet.create({
 
   },
   listItem_right: {
-    //flex: 1,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
   },
   editButton: {
-    //backgroundColor: '#ededed',
     borderRadius: 4,
-    //borderWidth: 2,
     borderColor: iosColors.grey,
 
   },

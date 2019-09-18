@@ -329,12 +329,6 @@ const CalendarScreen = props => {
 
   return (
     <View style={{flex: 1}}>
-      {/* <TouchableOpacity
-        onPress={() => setShowPopup(() => true)}
-        style={{padding: 20}}
-      >
-        <Text>test popup</Text>
-      </TouchableOpacity> */}
       <Animated.ScrollView style={{flex: 1}}>
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
@@ -471,7 +465,7 @@ const CalendarScreen = props => {
 }
 
 CalendarScreen.navigationOptions = () => ({
-  
+
 });
 
 const styles = StyleSheet.create({

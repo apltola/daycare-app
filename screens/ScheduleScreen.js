@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     paddingLeft: 10,
     paddingRight: 10,
-    //marginBottom: 20,
   },
   title_text: {
     textAlign: 'left',

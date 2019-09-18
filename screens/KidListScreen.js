@@ -152,7 +152,6 @@ const styles = StyleSheet.create({
   },
   kidItem_right: {
     flex: 1,
-    //borderWidth: 1,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
