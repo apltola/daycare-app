@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, } from 'react-native';
+import { StyleSheet, Animated, View, Text, TextInput, TouchableOpacity, } from 'react-native';
 import { iosColors } from '../util';
 import DateTimePicker from "react-native-modal-datetime-picker";
 
@@ -16,48 +16,51 @@ const EditKidScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.label}>
-          Nimi
-        </Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={text => setName(() => text)}
-        />
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.label}>
-          Syntymäpäivä
-        </Text>
-        <TouchableOpacity
-          style={styles.input}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text style={styles.bdButton_text}>
-            23.23.1002
+      <Animated.ScrollView
+        contentContainerStyle={{padding: 15}}
+      >
+        <View>
+          <Text style={styles.label}>
+            Nimi
           </Text>
-        </TouchableOpacity>
-      </View>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={text => setName(() => text)}
+          />
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.label}>
+            Syntymäpäivä
+          </Text>
+          <TouchableOpacity
+            style={styles.input}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text style={styles.bdButton_text}>
+              {birthday || '–'}
+            </Text>
+          </TouchableOpacity>
+        </View>
 
-      <DateTimePicker
-        date={birthday || new Date()}
-        isVisible={showDatePicker}
-        onConfirm={handleDatePicked}
-        onCancel={() => setShowDatePicker(false)}
-        mode="date"
-        cancelTextIOS="Peruuta"
-        confirmTextIOS="Ok"
-        titleIOS={'Aseta syntymäpäivä'}
-      />
+        <DateTimePicker
+          date={birthday || new Date()}
+          isVisible={showDatePicker}
+          onConfirm={handleDatePicked}
+          onCancel={() => setShowDatePicker(false)}
+          mode="date"
+          cancelTextIOS="Peruuta"
+          confirmTextIOS="Ok"
+          titleIOS={'Aseta syntymäpäivä'}
+        />
+      </Animated.ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    paddingTop: 20,
+    flex: 1
   },
   section: {
     paddingTop: 20,
