@@ -119,7 +119,7 @@ function KidListScreen() {
         cancelTextIOS="Peruuta"
         confirmTextIOS="Ok"
         titleIOS={'Valitse päivä'}
-        />
+      />
     </View>
   );
 }

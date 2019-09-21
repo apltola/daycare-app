@@ -45,7 +45,7 @@ const KidScreen = ({ navigation }) => {
           <View style={styles.listItem_right}>
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => navigation.navigate('editKid')}
+              onPress={() => navigation.navigate('editKid', { kid })}
             >
               <View style={styles.buttonContent}>
                 <Icon
@@ -75,7 +75,6 @@ const KidScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-
       <Animated.ScrollView
         contentContainerStyle={{paddingTop: 20, paddingBottom: searchTerm === '' ? 20 : 230}}
       >
