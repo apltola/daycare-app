@@ -10,6 +10,7 @@ const initialState = {
   },
   allKids: [],
   kidsForDate: [],
+  childGroups: [],
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);

@@ -22,3 +22,14 @@ export const fetchKidsForDate = async (store, date) => {
     console.error(error);
   }
 }
+
+export const fetchChildGroups = async store => {
+  try {
+    console.log('FETCH GROUPS');
+    const res = await axios.get(`${apiRoot}/childgroup/all`);
+    const groups = res.data;
+    store.setState({ childGroups: groups });
+  } catch (error) {
+    console.error(error);
+  }
+}

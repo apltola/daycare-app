@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Animated, View, Text, TextInput, TouchableOpacity, } from 'react-native';
+import { StyleSheet, Animated, View, Text, TextInput, TouchableOpacity, Picker } from 'react-native';
 import { iosColors } from '../util';
 import DateTimePicker from "react-native-modal-datetime-picker";
+import useGlobalHook from '../store';
 
 const EditKidScreen = ({ navigation }) => {
   const kid = navigation.getParam('kid', {});
+  const [postData, setPostData] = useState(kid);
   const [name, setName] = useState(kid.firstName);
   const [birthday, setBirthday] = useState(kid.birthday);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [globalState, globalActions] = useGlobalHook();
 
   const handleDatePicked = date => {
     setShowDatePicker(false);
     console.log('date picked ==> ', date);
   }
+
+  useEffect(() => {
+    globalActions.fetchChildGroups();
+
+    return () => {};
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -42,6 +51,9 @@ const EditKidScreen = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.section}>
+          
+        </View>
 
         <DateTimePicker
           date={birthday || new Date()}
@@ -53,6 +65,15 @@ const EditKidScreen = ({ navigation }) => {
           confirmTextIOS="Ok"
           titleIOS={'Aseta syntymäpäivä'}
         />
+
+        <View style={{marginTop: 60}}>
+          <Text>
+            postData: {JSON.stringify(postData || {}, null, 2)}
+          </Text>
+          <Text>
+            childGroups: {JSON.stringify(globalState.childGroups, null, 2)}
+          </Text>
+        </View>
       </Animated.ScrollView>
     </View>
   );
