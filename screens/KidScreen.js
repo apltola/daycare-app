@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Platform, Animated, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Icon, SearchBar } from 'react-native-elements';
 import useGlobalHook from '../store';
-import { iosColors } from '../util';
+import { iosColors, formatDateString } from '../util';
 import orderBy from 'lodash/orderBy';
 
 const KidScreen = ({ navigation }) => {
@@ -24,7 +24,7 @@ const KidScreen = ({ navigation }) => {
       }
     }
 
-    arr = orderBy(arr, ['childgroup.name'], ['asc']);
+    arr = orderBy(arr, ['childgroup.name', 'firstName'], ['asc']);
 
     return arr.map((kid, idx) => {
       const _styles = idx === 0 ? [styles.listItem_first, styles.listItem] : [styles.listItem];
@@ -39,7 +39,7 @@ const KidScreen = ({ navigation }) => {
               {kid.childgroup.name}
             </Text>
             <Text style={{paddingTop: 5, color: iosColors.black}}>
-              Syntymäpäivä: {kid.birthday || '–'}
+              Syntymäpäivä: {kid.birthday ? formatDateString(kid.birthday, 'dd.mm.yyyy') : '–'}
             </Text>
           </View>
           <View style={styles.listItem_right}>

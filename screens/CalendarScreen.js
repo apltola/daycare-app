@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Button, Image } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Image } from 'react-native';
 import { Icon } from 'react-native-elements';
+import Button from '../components/Button';
 import Dialog, { DialogContent, DialogFooter, DialogButton, ScaleAnimation } from 'react-native-popup-dialog';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -8,6 +9,7 @@ import axios from 'axios';
 import Spinner from '../components/Spinner';
 import { initMonth, getDays, dateIsOut, getDateWithoutTime, formatDateString, iosColors, apiRoot } from '../util';
 import union from 'lodash/union';
+import globalStyles from '../util/globalStyles';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -218,7 +220,8 @@ const CalendarScreen = props => {
     const arr1 = kidSchedules.map(i => new Date(i.date).getTime());
     const arr2 = getDaysWithSchedule();
     const arr3 = union(arr1, arr2);
-    const daysWithSchedule = arr3.filter(i => i > new Date().getTime());
+    const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
+    const daysWithSchedule = arr3.filter(i => i >= today);
     daysWithSchedule.sort();
 
     if (daysWithSchedule.length === 0) return null;
@@ -273,26 +276,19 @@ const CalendarScreen = props => {
 
   const renderSubmitButton = () => {
     const daysWithSchedule = getDaysWithSchedule();
-    if (daysWithSchedule.length === 0) return;
+    if (selectedDays.length === 0) {
+      return null;
+    };
 
     if (loading) {
       return <Spinner side="small" />;
     } else {
-      return (
-        <TouchableOpacity
-          onPress={onSubmit}
-          style={styles.submitButton}
-        >
-          <Text style={styles.submitButton_text}>
-            Tallenna
-          </Text>
-        </TouchableOpacity>
-      );
+      return <Button onPress={onSubmit} style="primary" title="Tallenna" />
     }
   }
 
   const renderCheckmark = day => {
-    const today = new Date().getTime();
+    const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
     if (day >= today) {
       const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
       if (idx > -1) {
@@ -564,24 +560,9 @@ const styles = StyleSheet.create({
     fontSize: 19,
     textAlign: 'center',
   },
-  submitButton: {
-    borderWidth: 1,
-    borderColor: iosColors.green,
-    backgroundColor: iosColors.darkGreen,
-    borderRadius: 5,
-    paddingTop: 12,
-    paddingBottom: 12,
-    paddingLeft: 45,
-    paddingRight: 45,
-  },
-  submitButton_text: {
-    textTransform: 'uppercase',
-    color: 'white',
-    fontWeight: 'bold',
-  },
   timeTable: {
     padding: 10,
-    paddingTop: 20,
+    paddingTop: 30,
   },
   timeTableRow: {
     display: 'flex',
