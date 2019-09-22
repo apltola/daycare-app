@@ -14,7 +14,7 @@ const Popup = props => {
         <DialogFooter>
           <DialogButton
             text="OK"
-            onPress={() => setShowPopup(false)}
+            onPress={props.handlePopupClose}
             textStyle={{color: iosColors.darkBlue, fontSize: 18}}
           />
         </DialogFooter>

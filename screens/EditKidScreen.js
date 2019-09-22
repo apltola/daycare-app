@@ -16,7 +16,7 @@ const EditKidScreen = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [globalState, globalActions] = useGlobalHook();
   const [loading, setLoading] = useState(false);
-  const [res, setRes] = useState(null);
+  const [res, setRes] = useState({});
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const EditKidScreen = ({ navigation }) => {
       setRes(() => res);
       setLoading(() => false);
       setShowPopup(() => true);
-    } catch (error) {
+    } catch (e) {
       setRes(() => res);
       setLoading(() => false);
       setShowPopup(() => true);
@@ -125,8 +125,18 @@ const EditKidScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.buttonsContainer}>
-          {loading ? <Spinner size="small" /> : <Button onPress={handleSubmit} style="primary" title="Tallenna" />}
+          {loading
+            ? <Spinner size="small" />
+            : <Button onPress={handleSubmit} style="primary" title="Tallenna" />
+          }
         </View>
+
+        <Popup
+          visible={showPopup}
+          handleTouchOutside={() => setShowPopup(() => false)}
+          handlePopupClose={() => setShowPopup(() => false)}
+          submitWasSuccessful={res.status === 200}
+        />
 
         <View style={{marginTop: 60}}>
           <Text>
