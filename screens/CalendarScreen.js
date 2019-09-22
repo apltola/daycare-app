@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Image } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Button from '../components/Button';
+import Popup from '../components/Popup';
 import Dialog, { DialogContent, DialogFooter, DialogButton, ScaleAnimation } from 'react-native-popup-dialog';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
@@ -9,7 +10,7 @@ import axios from 'axios';
 import Spinner from '../components/Spinner';
 import { initMonth, getDays, dateIsOut, getDateWithoutTime, formatDateString, iosColors, apiRoot } from '../util';
 import union from 'lodash/union';
-import globalStyles from '../util/globalStyles';
+
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
@@ -27,7 +28,7 @@ const CalendarScreen = props => {
   const [daysWithDeparture, setDaysWithDeparture] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [res, setRes] = useState(null);
+  const [res, setRes] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [submitWasSuccessful, setSubmitWasSuccessful] = useState(false);
 
@@ -283,7 +284,7 @@ const CalendarScreen = props => {
     if (loading) {
       return <Spinner side="small" />;
     } else {
-      return <Button onPress={onSubmit} style="primary" title="Tallenna" />
+      return <Button onPress={onSubmit} style="green" title="Tallenna" disabled={false} />
     }
   }
 
@@ -316,7 +317,7 @@ const CalendarScreen = props => {
       await fetchSchedules();
       setSelectedDays([]);
     } catch (e) {
-      setError(e);
+      setRes(res);
       setSubmitWasSuccessful(() => false);
       setLoading(() => false);
       setShowPopup(() => true);
@@ -422,39 +423,15 @@ const CalendarScreen = props => {
           confirmTextIOS="Ok"
           titleIOS={timePickerTarget === 'arrival' ? 'Aseta saapumisaika' : 'Aseta lähtöaika'}
         />
-        
-        <Dialog
+
+        <Popup
+          dialogType='submitNotification'
           visible={showPopup}
-          onTouchOutside={() => setShowPopup(false)}
-          dialogAnimation={new ScaleAnimation({ initialValue: 0, useNativeDriver: true })}
-          footer={
-            <DialogFooter>
-              <DialogButton
-                text="OK"
-                onPress={() => setShowPopup(false)}
-                textStyle={{color: iosColors.darkBlue, fontSize: 18}}
-              />
-            </DialogFooter>
-          }
-        >
-          <DialogContent style={{paddingTop: 10}}>
-            <Icon
-              name={submitWasSuccessful ? 'check-circle' : 'exclamation-circle'}
-              type='font-awesome'
-              color={submitWasSuccessful ? iosColors.green : iosColors.red}
-              size={60}
-            />
-            <Text style={{paddingTop:13, fontSize: 18, color: iosColors.black, textAlign: 'center'}}>
-              {submitWasSuccessful ? 'Tallentaminen onnistui' : 'Tallentaminen epäonnistui!'}
-            </Text>
-            {
-              !submitWasSuccessful &&
-              <Text style={{paddingTop:13, fontSize: 18, color: iosColors.black, textAlign: 'center'}}>
-                Yritä uudelleen.
-              </Text>
-            }
-          </DialogContent>
-        </Dialog>
+          handleTouchOutside={() => setShowPopup(() => false)}
+          handlePopupClose={() => setShowPopup(() => false)}
+          submitWasSuccessful={res.status === 200}
+        />
+
       </Animated.ScrollView>
     </View>
   );

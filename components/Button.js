@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { iosColors } from '../util';
 
 const Button = props => {
@@ -7,11 +7,19 @@ const Button = props => {
   const getButtonStyle = elementType => {
     if (elementType === 'button') {
       switch(props.style) {
-        case 'primary':
-          return [styles.btn, styles.btn_primary];
+        case 'green':
+          return [
+            styles.btn,
+            styles.btn_primary,
+            props.disabled ? styles.btn_disabled : null
+          ];
 
-        case 'delete':
-          return [sytles.btn, styles.btn_delete];
+        case 'red':
+          return [
+            styles.btn,
+            styles.btn_delete,
+            props.disabled ? styles.btn_disabled : null
+          ];
       }
     }
   }
@@ -19,7 +27,7 @@ const Button = props => {
   return (
     <TouchableOpacity
       onPress={props.onPress}
-      disabled={props.disabled || false}
+      disabled={props.disabled}
       style={getButtonStyle('button')}
     >
       <Text style={styles.btn_text}>
@@ -35,8 +43,14 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingTop: 10,
     paddingBottom: 10,
-    paddingLeft: 55,
-    paddingRight: 55,
+    //paddingLeft: 55,
+    //paddingRight: 55,
+    width: 250,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  btn_disabled: {
+    opacity: 0.3
   },
   btn_primary: {
     borderColor: iosColors.darkGreen,

@@ -12,15 +12,17 @@ import isEqual from 'lodash/isEqual';
 
 const EditKidScreen = ({ navigation }) => {
   const kid = navigation.getParam('kid', {});
+  const [globalState, globalActions] = useGlobalHook();
+  const [initialKidData, setInitialKidData] = useState({});
   const [postData, setPostData] = useState(kid);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [globalState, globalActions] = useGlobalHook();
   const [loading, setLoading] = useState(false);
   const [res, setRes] = useState({});
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     globalActions.fetchChildGroups();
+    setInitialKidData(navigation.getParam('kid', {}));
 
     return () => {};
   }, []);
@@ -47,12 +49,18 @@ const EditKidScreen = ({ navigation }) => {
       const res = await axios.put(`${apiRoot}/child/edit`, postData)
       setRes(() => res);
       setLoading(() => false);
+      setInitialKidData(() => postData);
       setShowPopup(() => true);
+      globalActions.fetchAllKids();
     } catch (e) {
       setRes(() => res);
       setLoading(() => false);
       setShowPopup(() => true);
     }
+  }
+
+  const handleDelete = () => {
+
   }
 
   return (
@@ -124,14 +132,30 @@ const EditKidScreen = ({ navigation }) => {
           />
         </View>
 
-        <View style={styles.buttonsContainer}>
-          {loading
-            ? <Spinner size="small" />
-            : <Button onPress={handleSubmit} style="primary" title="Tallenna" />
-          }
+        <View style={{paddingTop: 20}}>
+          <View style={styles.buttonContainer}>
+            {loading
+              ? <Spinner size="small" />
+              : <Button
+                  onPress={handleSubmit}
+                  style="green"
+                  title="Tallenna"
+                  disabled={isEqual(initialKidData, postData)}
+                />
+            }
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              onPress={handleDelete}
+              style="red"
+              title={`Poista ${initialKidData.firstName}`}
+              disabled={false}
+            />
+          </View>
         </View>
 
         <Popup
+          dialogType='submitNotification'
           visible={showPopup}
           handleTouchOutside={() => setShowPopup(() => false)}
           handlePopupClose={() => setShowPopup(() => false)}
@@ -139,6 +163,9 @@ const EditKidScreen = ({ navigation }) => {
         />
 
         <View style={{marginTop: 60}}>
+          <Text>
+            kid: {JSON.stringify(kid || {}, null, 2)}
+          </Text>
           <Text>
             postData: {JSON.stringify(postData || {}, null, 2)}
           </Text>
@@ -158,8 +185,8 @@ const styles = StyleSheet.create({
   section: {
     paddingTop: 20,
   },
-  buttonsContainer: {
-    paddingTop: 40,
+  buttonContainer: {
+    paddingTop: 20,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
