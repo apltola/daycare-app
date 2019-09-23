@@ -18,7 +18,8 @@ const EditKidScreen = ({ navigation }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [res, setRes] = useState({});
-  const [showPopup, setShowPopup] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
 
   useEffect(() => {
     globalActions.fetchChildGroups();
@@ -50,17 +51,17 @@ const EditKidScreen = ({ navigation }) => {
       setRes(() => res);
       setLoading(() => false);
       setInitialKidData(() => postData);
-      setShowPopup(() => true);
+      setShowDialog(() => true);
       globalActions.fetchAllKids();
     } catch (e) {
       setRes(() => res);
       setLoading(() => false);
-      setShowPopup(() => true);
+      setShowDialog(() => true);
     }
   }
 
   const handleDelete = () => {
-
+    setShowConfirmationDialog(true);
   }
 
   return (
@@ -70,7 +71,7 @@ const EditKidScreen = ({ navigation }) => {
       >
         <View>
           <Text>
-            Muokkaa muksua: {kid.firstName}
+            Muokkaa muksua {kid.firstName}
           </Text>
         </View>
         <View style={styles.section}>
@@ -156,9 +157,17 @@ const EditKidScreen = ({ navigation }) => {
 
         <Popup
           dialogType='submitNotification'
-          visible={showPopup}
-          handleTouchOutside={() => setShowPopup(() => false)}
-          handlePopupClose={() => setShowPopup(() => false)}
+          visible={showDialog}
+          handleTouchOutside={() => setShowDialog(() => false)}
+          handlePopupClose={() => setShowDialog(() => false)}
+          submitWasSuccessful={res.status === 200}
+        />
+
+        <Popup
+          dialogType='confirmation'
+          visible={showConfirmationDialog}
+          handleTouchOutside={() => setShowConfirmationDialog(() => false)}
+          handlePopupClose={() => {}}
           submitWasSuccessful={res.status === 200}
         />
 

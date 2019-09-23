@@ -24,7 +24,7 @@ const ScheduleScreen = ({ navigation }) => {
       }
     }
 
-    arr = orderBy(arr, ['childgroup.name'], ['asc']);
+    arr = orderBy(arr, ['childgroup.name', 'firstName'], ['asc']);
 
     return arr.map((kid, idx) => {
 
