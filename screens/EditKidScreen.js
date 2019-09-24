@@ -164,7 +164,7 @@ const EditKidScreen = ({ navigation }) => {
         />
 
         <Popup
-          dialogType='confirmation'
+          dialogType='deleteConfirmation'
           visible={showConfirmationDialog}
           handleTouchOutside={() => setShowConfirmationDialog(() => false)}
           handlePopupClose={() => {}}

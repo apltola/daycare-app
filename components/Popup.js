@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Dialog, { DialogContent, DialogFooter, DialogButton, ScaleAnimation } from 'react-native-popup-dialog';
 import { iosColors } from '../util';
@@ -29,6 +29,53 @@ const Popup = props => {
           </View>
         )
       }
+
+      case 'deleteConfirmation': {
+        return (
+          <View>
+            <Icon
+              name='exclamation-circle'
+              type='font-awesome'
+              color={iosColors.red}
+              size={60}
+            />
+          </View>
+        );
+      }
+    }
+  }
+
+  const renderFooter = () => {
+
+    switch (props.dialogType) {
+      case 'submitNotification': {
+        return (
+          <DialogFooter>
+            <DialogButton
+              text="OK"
+              onPress={props.handlePopupClose}
+              textStyle={{color: iosColors.darkBlue, fontSize: 18}}
+            />
+          </DialogFooter>
+        );
+      }
+
+      case 'deleteConfirmation': {
+        return (
+          <DialogFooter>
+            <DialogButton
+              text="Peruuta"
+              onPress={props.handlePopupClose}
+              textStyle={{color: iosColors.darkBlue, fontSize: 18}}
+            />
+            <DialogButton
+              text="Poista"
+              onPress={props.handlePopupClose}
+              textStyle={{color: iosColors.red, fontSize: 18}}
+            />
+          </DialogFooter>
+        );
+      }
     }
   }
 
@@ -37,15 +84,7 @@ const Popup = props => {
       visible={props.visible}
       onTouchOutside={props.handleTouchOutside}
       dialogAnimation={new ScaleAnimation({ initialValue: 0, useNativeDriver: true })}
-      footer={
-        <DialogFooter>
-          <DialogButton
-            text="OK"
-            onPress={props.handlePopupClose}
-            textStyle={{color: iosColors.darkBlue, fontSize: 18}}
-          />
-        </DialogFooter>
-      }
+      footer={renderFooter()}
     >
       <DialogContent style={{paddingTop: 10}}>
         {renderContent()}
@@ -53,5 +92,9 @@ const Popup = props => {
     </Dialog>
   );
 }
+
+const styles = StyleSheet.create({
+  
+});
 
 export default Popup;
