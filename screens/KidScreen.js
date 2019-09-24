@@ -120,7 +120,10 @@ const KidScreen = ({ navigation }) => {
 KidScreen.navigationOptions = ({ navigation }) => ({
   title: 'Muksut',
   headerRight: (
-    <TouchableOpacity style={{marginRight: 15}}>
+    <TouchableOpacity
+      style={{marginRight: 15}}
+      
+    >
       <Text style={{color: iosColors.darkBlue, fontSize: 16}}>
         Lisää muksu
       </Text>
