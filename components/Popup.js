@@ -17,12 +17,12 @@ const Popup = props => {
               color={props.submitWasSuccessful ? iosColors.green : iosColors.red}
               size={60}
             />
-            <Text style={{paddingTop:13, fontSize: 18, color: iosColors.black, textAlign: 'center'}}>
+            <Text style={styles.dialogText}>
               {props.submitWasSuccessful ? 'Tallentaminen onnistui' : 'Tallentaminen epäonnistui!'}
             </Text>
             {
               !props.submitWasSuccessful &&
-              <Text style={{paddingTop:13, fontSize: 18, color: iosColors.black, textAlign: 'center'}}>
+              <Text style={styles.dialogText}>
                 Yritä uudelleen.
               </Text>
             }
@@ -39,6 +39,9 @@ const Popup = props => {
               color={iosColors.red}
               size={60}
             />
+            <Text style={styles.dialogText}>
+              Poistetaanko {props.kid.firstName}?
+            </Text>
           </View>
         );
       }
@@ -46,7 +49,6 @@ const Popup = props => {
   }
 
   const renderFooter = () => {
-
     switch (props.dialogType) {
       case 'submitNotification': {
         return (
@@ -70,7 +72,7 @@ const Popup = props => {
             />
             <DialogButton
               text="Poista"
-              onPress={props.handlePopupClose}
+              onPress={props.handlePopupConfirm}
               textStyle={{color: iosColors.red, fontSize: 18}}
             />
           </DialogFooter>
@@ -94,7 +96,12 @@ const Popup = props => {
 }
 
 const styles = StyleSheet.create({
-  
+  dialogText: {
+    paddingTop:13,
+    fontSize: 18,
+    color: iosColors.black,
+    textAlign: 'center'
+  }
 });
 
 export default Popup;

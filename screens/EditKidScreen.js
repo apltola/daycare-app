@@ -12,6 +12,7 @@ import isEqual from 'lodash/isEqual';
 
 const EditKidScreen = ({ navigation }) => {
   const kid = navigation.getParam('kid', {});
+  const clearSearchTerm = navigation.getParam('clearSearchTerm');
   const [globalState, globalActions] = useGlobalHook();
   const [initialKidData, setInitialKidData] = useState({});
   const [postData, setPostData] = useState(kid);
@@ -60,8 +61,18 @@ const EditKidScreen = ({ navigation }) => {
     }
   }
 
-  const handleDelete = () => {
-    setShowConfirmationDialog(true);
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(`${apiRoot}/child/delete/${kid.id}`);
+      setRes(() => res);
+      setShowConfirmationDialog(() => false);
+      clearSearchTerm();
+      navigation.navigate('kid');
+      globalActions.fetchAllKids();
+    } catch (e) {
+      console.log(e);
+      setRes(() => res);
+    }
   }
 
   return (
@@ -147,7 +158,7 @@ const EditKidScreen = ({ navigation }) => {
           </View>
           <View style={styles.buttonContainer}>
             <Button
-              onPress={handleDelete}
+              onPress={() => setShowConfirmationDialog(true)}
               style="red"
               title={`Poista ${initialKidData.firstName}`}
               disabled={false}
@@ -167,8 +178,10 @@ const EditKidScreen = ({ navigation }) => {
           dialogType='deleteConfirmation'
           visible={showConfirmationDialog}
           handleTouchOutside={() => setShowConfirmationDialog(() => false)}
-          handlePopupClose={() => {}}
+          handlePopupClose={() => setShowConfirmationDialog(() => false)}
+          handlePopupConfirm={handleDelete}
           submitWasSuccessful={res.status === 200}
+          kid={kid}
         />
 
         <View style={{marginTop: 60}}>

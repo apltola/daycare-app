@@ -45,7 +45,10 @@ const KidScreen = ({ navigation }) => {
           <View style={styles.listItem_right}>
             <TouchableOpacity
               style={styles.editButton}
-              onPress={() => navigation.navigate('editKid', { kid })}
+              onPress={() => navigation.navigate('editKid', {
+                kid: kid,
+                clearSearchTerm: (() => setSearchTerm(() => ''))
+              })}
             >
               <View style={styles.buttonContent}>
                 <Icon
