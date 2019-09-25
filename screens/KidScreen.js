@@ -122,7 +122,9 @@ KidScreen.navigationOptions = ({ navigation }) => ({
   headerRight: (
     <TouchableOpacity
       style={{marginRight: 15}}
-      
+      onPress={() => navigation.navigate('editKid', {
+        addNewKid: true
+      })}
     >
       <Text style={{color: iosColors.darkBlue, fontSize: 16}}>
         Lisää muksu

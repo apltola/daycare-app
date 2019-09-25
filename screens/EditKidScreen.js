@@ -11,8 +11,15 @@ import useGlobalHook from '../store';
 import isEqual from 'lodash/isEqual';
 
 const EditKidScreen = ({ navigation }) => {
-  const kid = navigation.getParam('kid', {});
+  const kid = navigation.getParam('kid', {
+    birthday: null,
+    present: false,
+    childgroup: {},
+    firstName: ''
+  });
+  const addNewKid = navigation.getParam('addNewKid', false);
   const clearSearchTerm = navigation.getParam('clearSearchTerm');
+  
   const [globalState, globalActions] = useGlobalHook();
   const [initialKidData, setInitialKidData] = useState({});
   const [postData, setPostData] = useState(kid);
@@ -47,17 +54,29 @@ const EditKidScreen = ({ navigation }) => {
   const handleSubmit = async () => {
     setLoading(() => true);
 
-    try {
-      const res = await axios.put(`${apiRoot}/child/edit`, postData)
-      setRes(() => res);
-      setLoading(() => false);
-      setInitialKidData(() => postData);
-      setShowDialog(() => true);
-      globalActions.fetchAllKids();
-    } catch (e) {
-      setRes(() => res);
-      setLoading(() => false);
-      setShowDialog(() => true);
+    if (addNewKid) {
+      try {
+        const res = await axios.post(`${apiRoot}/child/add`, postData);
+        setRes(() => res);
+        setLoading(() => false);
+        await globalActions.fetchAllKids();
+      } catch (e) {
+        setRes(() => res);
+        setLoading(() => false);
+      }
+    } else {
+      try {
+        const res = await axios.put(`${apiRoot}/child/edit`, postData)
+        setRes(() => res);
+        setLoading(() => false);
+        setInitialKidData(() => postData);
+        setShowDialog(() => true);
+        globalActions.fetchAllKids();
+      } catch (e) {
+        setRes(() => res);
+        setLoading(() => false);
+        setShowDialog(() => true);
+      }
     }
   }
 
@@ -72,6 +91,15 @@ const EditKidScreen = ({ navigation }) => {
     } catch (e) {
       console.log(e);
       setRes(() => res);
+      setShowConfirmationDialog(() => false);
+    }
+  }
+
+  const submitButtonShouldBeDisabled = () => {
+    if (addNewKid) {
+      return !(postData.firstName && postData.childgroup.id);
+    } else {
+      return isEqual(initialKidData, postData);
     }
   }
 
@@ -82,7 +110,7 @@ const EditKidScreen = ({ navigation }) => {
       >
         <View>
           <Text>
-            Muokkaa muksua {kid.firstName}
+            {kid.id ? `Muokkaa muksua ${kid.firstName}` : 'Lisää uusi muksu'}
           </Text>
         </View>
         <View style={styles.section}>
@@ -152,18 +180,21 @@ const EditKidScreen = ({ navigation }) => {
                   onPress={handleSubmit}
                   style="green"
                   title="Tallenna"
-                  disabled={isEqual(initialKidData, postData)}
+                  disabled={submitButtonShouldBeDisabled()}
                 />
             }
           </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              onPress={() => setShowConfirmationDialog(true)}
-              style="red"
-              title={`Poista ${initialKidData.firstName}`}
-              disabled={false}
-            />
-          </View>
+          {
+            !addNewKid &&
+            <View style={styles.buttonContainer}>
+              <Button
+                onPress={() => setShowConfirmationDialog(true)}
+                style="red"
+                title={`Poista ${initialKidData.firstName}`}
+                disabled={false}
+              />
+            </View>
+          }
         </View>
 
         <Popup
