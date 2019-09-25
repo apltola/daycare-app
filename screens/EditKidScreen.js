@@ -86,8 +86,8 @@ const EditKidScreen = ({ navigation }) => {
       setRes(() => res);
       setShowConfirmationDialog(() => false);
       clearSearchTerm();
-      navigation.navigate('kid');
       globalActions.fetchAllKids();
+      navigation.navigate('kid');
     } catch (e) {
       console.log(e);
       setRes(() => res);
@@ -247,13 +247,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    //paddingLeft: 8,
     paddingBottom: 5,
     color: iosColors.black,
   },
   input: {
-    //backgroundColor: '#d3d1d7',
-    //backgroundColor: '#e0dada',
     backgroundColor: '#e0e0e6',
     padding: 10,
     borderRadius: 5,

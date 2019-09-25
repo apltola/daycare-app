@@ -195,7 +195,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: iosColors.grey,
     fontWeight: 'bold',
-    //paddingTop: 8,
   }
 });
 
