@@ -6,7 +6,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { iosColors } from '../util';
 import orderBy from 'lodash/orderBy';
 
-
 const ScheduleScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
   const [searchTerm, setSearchTerm] = useState('');

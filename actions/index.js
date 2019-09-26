@@ -32,3 +32,13 @@ export const fetchChildGroups = async store => {
     console.error(error);
   }
 }
+
+export const fetchTeachers = async store => {
+  try {
+    const res = await axios.get(`${apiRoot}/teacher/all`);
+    const teachers = res.data;
+    store.setState({ teachers: teachers });
+  } catch (err) {
+    console.error(err);
+  }
+}

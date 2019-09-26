@@ -11,6 +11,7 @@ const initialState = {
   allKids: [],
   kidsForDate: [],
   childGroups: [],
+  teachers: [],
 };
 
 const useGlobal = useGlobalHook(React, initialState, actions);
