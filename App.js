@@ -10,6 +10,7 @@ import GroupScreen from './screens/GroupScreen';
 import ScheduleScreen from './screens/ScheduleScreen';
 import CalendarScreen from './screens/CalendarScreen';
 import EditKidScreen from './screens/EditKidScreen';
+import EditTeacherScreen from './screens/EditTeacherScreen';
 import { iosColors } from './util';
 
 const MainNavigator = createBottomTabNavigator({
@@ -31,7 +32,22 @@ const MainNavigator = createBottomTabNavigator({
       }
     }
   }),
-  teacher: TeacherScreen,
+  teacher: createStackNavigator({
+    teacher: TeacherScreen,
+    editTeacher: EditTeacherScreen
+  },{
+    navigationOptions: {
+      tabBarLabel: 'Opet',
+    },
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 50,
+        borderBottomWidth: 0.5,
+        borderBottomColor: iosColors.black,
+        backgroundColor: '#fafafa',
+      }
+    }
+  }),
   group: GroupScreen,
   schedule: createStackNavigator({
     schedule: ScheduleScreen,
@@ -74,5 +90,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
+  }
 });

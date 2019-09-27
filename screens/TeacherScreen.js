@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, Animated, View, Text, TouchableOpacity } from 'react-native';
 import { Icon, SearchBar } from 'react-native-elements';
 import useGlobalHook from '../store';
-import Header from '../components/Header';
 import orderBy from 'lodash/orderBy';
-import { getSearchBarPlatform } from '../util';
+import { getSearchBarPlatform, iosColors } from '../util';
 
 
 const TeacherScreen = () => {
@@ -40,7 +39,6 @@ const TeacherScreen = () => {
 
   return (
     <View style={{flex: 1}}>
-      <Header title="ope" noMargin={true} />
       
       <Animated.ScrollView style={styles.scrollView}>
         <SearchBar
@@ -81,7 +79,19 @@ const styles = StyleSheet.create({
 });
 
 TeacherScreen.navigationOptions = ({ navigation }) => ({
-  title: 'Ope'
+  title: 'Opet',
+  headerRight: (
+    <TouchableOpacity
+      style={{marginRight: 15}}
+      onPress={() => navigation.navigate('editTeacher', {
+        addNewTeacher: true
+      })}
+    >
+      <Text style={{color: iosColors.darkBlue, fontSize: 16}}>
+        Lisää ope
+      </Text>
+    </TouchableOpacity>
+  ),
 })
 
 export default TeacherScreen;
