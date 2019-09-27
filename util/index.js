@@ -111,3 +111,13 @@ export const arraysAreEqual = (_arr1, _arr2) => {
 
   return true;
 }
+
+export const getSearchBarPlatform = () => {
+  if (Platform.OS === 'android') {
+    return 'android';
+  } else if (Platform.OS === 'ios') {
+    return 'ios';
+  } else {
+    return 'default';
+  }
+}

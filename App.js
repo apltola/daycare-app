@@ -50,7 +50,7 @@ const MainNavigator = createBottomTabNavigator({
     }
   })
 },{
-  initialRouteName: 'kid',
+  initialRouteName: 'teacher',
 });
 
 const AppContainer = createAppContainer(MainNavigator);

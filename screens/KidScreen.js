@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Platform, Animated, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { Icon, SearchBar } from 'react-native-elements';
 import useGlobalHook from '../store';
-import { iosColors, formatDateString } from '../util';
+import { iosColors, formatDateString, getSearchBarPlatform } from '../util';
 import orderBy from 'lodash/orderBy';
 
 const KidScreen = ({ navigation }) => {
@@ -64,16 +64,6 @@ const KidScreen = ({ navigation }) => {
         </View>
       )
     })
-  }
-
-  const getSearchBarPlatform = () => {
-    if (Platform.OS === 'android') {
-      return 'android';
-    } else if (Platform.OS === 'ios') {
-      return 'ios';
-    } else {
-      return 'default';
-    }
   }
 
   return (
