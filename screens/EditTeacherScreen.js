@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Animated, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { Icon } from 'react-native-elements';
 import axios from 'axios';
 import Button from '../components/Button';
 import Spinner from '../components/Spinner';
@@ -32,6 +33,40 @@ const EditTeacherScreen = ({ navigation }) => {
     setPostData(() => ({...postData, childgroup: globalState.childGroups[idx]}));
   }
 
+  const renderGroups = () => {
+
+    const handleGroupDeleted = () => {
+
+    }
+
+    return postData.childgroups.map((group, idx) => {
+      const padding = idx === 0 ? {paddingBottom: 10} : {paddingVertical: 10}
+
+      return (
+        <View style={[styles.groupListItem, padding]}>
+          <View style={styles.groupListItem_left}>
+            <Text style={styles.groupName}>
+              {group.name}
+            </Text>
+          </View>
+          <View style={styles.groupListItem_right}>
+            <TouchableOpacity
+              onPress={handleGroupDeleted}
+              style={styles.groupDeleteButton}
+            >
+              <Icon
+                name='minus'
+                type='font-awesome'
+                color='#f7f7f7'
+                size={20}
+              />
+            </TouchableOpacity>
+          </View>
+        </View>
+      );
+    })
+  }
+
   return (
     <View style={styles.container}>
       <Animated.ScrollView
@@ -53,8 +88,11 @@ const EditTeacherScreen = ({ navigation }) => {
 
         <View style={styles.section}>
           <Text style={styles.label}>
-            Ryhmä
+            Ryhmät
           </Text>
+          <View style={styles.groupList}>
+            {renderGroups()}
+          </View>
           {/* <GroupPicker value={} items={} handleGroupPicked={} /> */}
         </View>
 
@@ -90,6 +128,37 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     color: iosColors.black,
   },
+  groupListItem: {
+    display: 'flex',
+    flexDirection: 'row',
+    //borderWidth: 1,
+  },
+  groupListItem_left: {
+    flex: 1,
+    //borderWidth: 1,
+    justifyContent: 'center',
+  },
+  groupListItem_right: {
+    flex: 1,
+    display: 'flex',
+    alignItems: 'flex-end',
+  },
+  groupName: {
+    fontSize: 16,
+  },
+  groupDeleteButton: {
+    borderWidth: 1,
+    borderColor: iosColors.red,
+    backgroundColor: iosColors.red,
+    height: 30,
+    width: 30,
+    borderRadius: 60,
+    //display: 'flex',
+    justifyContent: 'center',
+  },
+  deleteIcon: {
+    color: 'white'
+  }
 });
 
 export default EditTeacherScreen;
