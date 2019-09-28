@@ -30,7 +30,6 @@ const EditKidScreen = ({ navigation }) => {
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
 
   useEffect(() => {
-    globalActions.fetchChildGroups();
     setInitialKidData(navigation.getParam('kid', {}));
 
     return () => {};
@@ -47,6 +46,9 @@ const EditKidScreen = ({ navigation }) => {
   }
 
   const handleGroupPicked = group => {
+    if (!group) {
+      return;
+    }
     const idx = globalState.childGroups.findIndex(i => i.id === group);
     setPostData(() => ({...postData, childgroup: globalState.childGroups[idx]}));
   }
@@ -106,11 +108,11 @@ const EditKidScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Animated.ScrollView
-        contentContainerStyle={{padding: 15}}
+        contentContainerStyle={{padding: 20}}
       >
         <View>
           <Text>
-            {kid.id ? `Muokkaa muksua ${kid.firstName}` : 'Lisää uusi muksu'}
+            {addNewKid ? 'Lisää uusi muksu' : `Muokkaa muksua ${kid.firstName}`}
           </Text>
         </View>
         <View style={styles.section}>

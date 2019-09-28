@@ -76,6 +76,8 @@ export default function App() {
 
   useEffect(() => {
     globalActions.fetchAllKids();
+    globalActions.fetchChildGroups();
+
     return () => {};
   }, []);
 
