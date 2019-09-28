@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Platform, Animated, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { Icon, SearchBar } from 'react-native-elements';
+import { Animated, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { SearchBar } from 'react-native-elements';
 import useGlobalHook from '../store';
 import { iosColors, formatDateString, getSearchBarPlatform } from '../util';
 import globalStyles from '../util/globalStyles';
 import orderBy from 'lodash/orderBy';
+import EditButton from '../components/EditButton';
 
 const KidScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
@@ -44,23 +45,12 @@ const KidScreen = ({ navigation }) => {
             </Text>
           </View>
           <View style={styles.listItem_right}>
-            <TouchableOpacity
-              style={styles.editButton}
+            <EditButton
               onPress={() => navigation.navigate('editKid', {
                 kid: kid,
                 clearSearchTerm: (() => setSearchTerm(() => ''))
               })}
-            >
-              <View style={styles.buttonContent}>
-                <Icon
-                  name="edit"
-                  type="font-awesome"
-                  color={iosColors.grey}
-                  size={30}
-                />
-                <Text style={styles.buttonText}>MUOKKAA</Text>
-              </View>
-            </TouchableOpacity>
+            />
           </View>
         </View>
       )
@@ -160,15 +150,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  editButton: {
-    borderRadius: 4,
-    borderColor: iosColors.grey,
-
-  },
-  deleteButton: {
-    backgroundColor: iosColors.red,
-    borderRadius: 4,
   },
   buttonContent: {
     display: 'flex',

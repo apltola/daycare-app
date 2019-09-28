@@ -5,9 +5,9 @@ import useGlobalHook from '../store';
 import orderBy from 'lodash/orderBy';
 import { getSearchBarPlatform, iosColors } from '../util';
 import globalStyles from '../util/globalStyles';
+import EditButton from '../components/EditButton';
 
-
-const TeacherScreen = () => {
+const TeacherScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -25,14 +25,29 @@ const TeacherScreen = () => {
     } else {
       arr = globalState.teachers.filter(i => i.name.toUpperCase().includes(searchTerm.toUpperCase()));
     }
-    arr = orderBy(globalState.teachers, ['name'], ['asc']);
+    arr = orderBy(arr, ['name'], ['asc']);
 
     return arr.map(teacher => {
       return (
-        <View>
-          <Text>
-            {teacher.name}
-          </Text>
+        <View style={styles.listItem}>
+          <View style={styles.listItem_left}>
+            <Text style={{fontWeight: 'bold', textTransform: 'uppercase', color: iosColors.black}}>
+              {teacher.name}
+            </Text>
+            <Text style={{paddingTop: 5, color: iosColors.black}}>
+              Ryhmät: {teacher.childgroups.map(i => i.name).join(', ')}
+            </Text>
+          </View>
+          <View style={styles.listItem_right}>
+            <EditButton
+              onPress={() => {
+                navigation.navigate('editTeacher', {
+                  teacher: teacher,
+                  clearSearchTerm: (() => setSearchTerm(() => ''))
+                });
+              }}
+            />
+          </View>
         </View>
       )
     })
@@ -41,7 +56,9 @@ const TeacherScreen = () => {
   return (
     <View style={{flex: 1}}>
       
-      <Animated.ScrollView style={styles.scrollView}>
+      <Animated.ScrollView
+        contentContainerStyle={{paddingTop: 20, paddingBottom: searchTerm === '' ? 20 : 230}}
+      >
         <SearchBar
           platform={getSearchBarPlatform()}
           containerStyle={globalStyles.searchBarContainer}
@@ -62,6 +79,23 @@ const TeacherScreen = () => {
 const styles = StyleSheet.create({
   scrollView: {
     paddingVertical: 20,
+  },
+  listItem: {
+    borderBottomWidth: 1,
+    borderColor: '#ededed',
+    padding: 20,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  listItem_left: {
+    flex: 1,
+    //borderWidth: 1,
+  },
+  listItem_right: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    //borderWidth: 1,
   },
 });
 
