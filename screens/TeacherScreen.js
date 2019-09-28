@@ -4,6 +4,7 @@ import { Icon, SearchBar } from 'react-native-elements';
 import useGlobalHook from '../store';
 import orderBy from 'lodash/orderBy';
 import { getSearchBarPlatform, iosColors } from '../util';
+import globalStyles from '../util/globalStyles';
 
 
 const TeacherScreen = () => {
@@ -43,12 +44,11 @@ const TeacherScreen = () => {
       <Animated.ScrollView style={styles.scrollView}>
         <SearchBar
           platform={getSearchBarPlatform()}
-          containerStyle={styles.searchBarContainer}
+          containerStyle={globalStyles.searchBarContainer}
           placeholder="Hae"
           onChangeText={search => setSearchTerm(() => search)}
           value={searchTerm}
           cancelButtonTitle='Sulje'
-          cancelButtonProps={{buttonStyle: styles.searchCancelButton}}
         />
 
         <View>
@@ -61,21 +61,8 @@ const TeacherScreen = () => {
 
 const styles = StyleSheet.create({
   scrollView: {
-    paddingTop: 10,
-    paddingBottom: 20,
+    paddingVertical: 20,
   },
-  searchBarContainer: {
-    backgroundColor: 'white',
-    paddingLeft: 5,
-    paddingRight: 5,
-    //paddingTop: 0,
-  },
-  searchCancelButton: {
-    borderWidth: 1,
-    borderColor: 'red',
-    paddingTop: 0,
-    marginTop: 0,
-  }
 });
 
 TeacherScreen.navigationOptions = ({ navigation }) => ({

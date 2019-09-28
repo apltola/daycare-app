@@ -3,6 +3,7 @@ import { Platform, Animated, StyleSheet, View, Text, TouchableOpacity } from 're
 import { Icon, SearchBar } from 'react-native-elements';
 import useGlobalHook from '../store';
 import { iosColors, formatDateString, getSearchBarPlatform } from '../util';
+import globalStyles from '../util/globalStyles';
 import orderBy from 'lodash/orderBy';
 
 const KidScreen = ({ navigation }) => {
@@ -74,10 +75,11 @@ const KidScreen = ({ navigation }) => {
         <View>
           <SearchBar
             platform={getSearchBarPlatform()}
-            containerStyle={styles.searchBarContainer}
+            containerStyle={globalStyles.searchBarContainer}
             placeholder="Hae"
             onChangeText={search => setSearchTerm(() => search)}
             value={searchTerm}
+            cancelButtonTitle='Sulje'
           />
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly',}}>
             <TouchableOpacity
@@ -126,12 +128,6 @@ KidScreen.navigationOptions = ({ navigation }) => ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  searchBarContainer: {
-    backgroundColor: 'white',
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingTop: 0,
   },
   filterButton: {
     padding: 5,

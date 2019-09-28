@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, Animated, Image, TextInput} from 'react-native'
 import { Icon, SearchBar } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { iosColors } from '../util';
+import globalStyles from '../util/globalStyles';
 import orderBy from 'lodash/orderBy';
 
 const ScheduleScreen = ({ navigation }) => {
@@ -75,10 +76,11 @@ const ScheduleScreen = ({ navigation }) => {
         <View>
           <SearchBar
             platform={getSearchBarPlatform()}
-            containerStyle={styles.searchBarContainer}
+            containerStyle={globalStyles.searchBarContainer}
             placeholder="Hae"
             onChangeText={search => setSearchTerm(() => search)}
             value={searchTerm}
+            cancelButtonTitle='Sulje'
           />
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly',}}>
             <TouchableOpacity
@@ -119,12 +121,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     paddingTop: 0,
     position: 'relative',
-  },
-  searchBarContainer: {
-    backgroundColor: 'white',
-    paddingLeft: 5,
-    paddingRight: 5,
-    paddingTop: 0,
   },
   filterButton: {
     padding: 5,
