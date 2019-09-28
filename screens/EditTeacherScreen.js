@@ -13,7 +13,7 @@ import isEqual from 'lodash/isEqual';
 import globalStyles from '../util/globalStyles';
 import GroupPicker from '../components/GroupPicker';
 
-const EditTeacherScreen = ({ navigation }) => {
+function EditTeacherScreen({ navigation }) {
   const teacher = navigation.getParam('teacher', {
     name: '',
     childgroups: []
@@ -24,6 +24,9 @@ const EditTeacherScreen = ({ navigation }) => {
   const [globalState, globalActions] = useGlobalHook();
   const [postData, setPostData] = useState(teacher);
   const [res, setRes] = useState({});
+  const [showPicker, setShowPicker] = useState(false);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [pickerIsOpen, setPickerIsOpen] = useState(false);
 
   const handleGroupPicked = group => {
     if (!group) {
@@ -33,39 +36,25 @@ const EditTeacherScreen = ({ navigation }) => {
     setPostData(() => ({...postData, childgroup: globalState.childGroups[idx]}));
   }
 
-  const renderGroups = () => {
+  const handleGroupDeleted = () => {
 
-    const handleGroupDeleted = () => {
-
-    }
-
-    return postData.childgroups.map((group, idx) => {
-      const padding = idx === 0 ? {paddingBottom: 10} : {paddingVertical: 10}
-
-      return (
-        <View style={[styles.groupListItem, padding]}>
-          <View style={styles.groupListItem_left}>
-            <Text style={styles.groupName}>
-              {group.name}
-            </Text>
-          </View>
-          <View style={styles.groupListItem_right}>
-            <TouchableOpacity
-              onPress={handleGroupDeleted}
-              style={styles.groupDeleteButton}
-            >
-              <Icon
-                name='minus'
-                type='font-awesome'
-                color='#f7f7f7'
-                size={20}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    })
   }
+
+  const handleGroupSelected = value => {
+    setSelectedGroup(value);
+    const idx = postData.childgroups.findIndex(i => i.id === value);
+    console.log('jee => ', idx);
+    if (idx > -1) {
+      return;
+    }
+    const group = globalState.childGroups.find(i => i.id === value);
+    const groups = [...postData.childgroups, group];
+    console.log('groups => ', groups);
+    /*console.log('_childgroups => ', _childgroups);
+    setPostData({...postData, childgroups: _childgroups}); */
+  }
+
+  
 
   return (
     <View style={styles.container}>
@@ -91,9 +80,72 @@ const EditTeacherScreen = ({ navigation }) => {
             Ryhmät
           </Text>
           <View style={styles.groupList}>
-            {renderGroups()}
+            {
+              postData.childgroups.map((group, idx) => {
+                //const padding = idx === 0 ? {paddingBottom: 10} : {paddingVertical: 10}
+                const padding = {paddingVertical: 10}
+          
+                return (
+                  <View style={[styles.groupListItem, padding]}>
+                    <View style={styles.groupListItem_left}>
+                      <Text style={styles.groupName}>
+                        {group.name}
+                      </Text>
+                    </View>
+                    <View style={styles.groupListItem_right}>
+                      <TouchableOpacity
+                        onPress={handleGroupDeleted}
+                        style={styles.deleteGroupButton}
+                      >
+                        <Icon
+                          name='minus'
+                          type='font-awesome'
+                          color='#f7f7f7'
+                          size={20}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                );
+              })
+            }
+            <View style={{alignItems: 'flex-end', paddingTop: 10}}>
+              <TouchableOpacity
+                style={styles.addGroupButton}
+              >
+                <Icon
+                  name='plus'
+                  type='font-awesome'
+                  color='#f7f7f7'
+                  size={20}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
-          {/* <GroupPicker value={} items={} handleGroupPicked={} /> */}
+          
+          {/* <RNPickerSelect
+            placeholder={{
+              label: 'Lisää ryhmä',
+              value: null,
+              color: iosColors.grey,
+            }}
+            value={selectedGroup}
+            onValueChange={value => handleGroupSelected(value)}
+            style={{
+              ...pickerStyles,
+              placeholder: {
+                color: iosColors.darkGreen,
+              },
+            }}
+            items={
+              globalState.childGroups.map(group => {
+                return (
+                  { label: group.name, value: group.id }
+                )
+              })
+            }
+            doneText='Valmis'
+          /> */}
         </View>
 
         <View style={{marginTop: 60}}>
@@ -132,6 +184,9 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     //borderWidth: 1,
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderColor: '#e0e0e6',
   },
   groupListItem_left: {
     flex: 1,
@@ -146,19 +201,44 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 16,
   },
-  groupDeleteButton: {
+  deleteGroupButton: {
     borderWidth: 1,
     borderColor: iosColors.red,
     backgroundColor: iosColors.red,
     height: 30,
     width: 30,
     borderRadius: 60,
-    //display: 'flex',
+    justifyContent: 'center',
+  },
+  addGroupButton: {
+    borderWidth: 1,
+    borderColor: iosColors.green,
+    backgroundColor: iosColors.green,
+    height: 30,
+    width: 30,
+    borderRadius: 60,
     justifyContent: 'center',
   },
   deleteIcon: {
     color: 'white'
   }
 });
+
+
+/* const pickerStyles = StyleSheet.create({
+  inputIOS: {
+    backgroundColor: 'transparent',
+    padding: 0,
+    fontSize: 16,
+    borderWidth: 1,
+    color: iosColors.black,
+  },
+  inputAndroid: {
+    backgroundColor: 'transparent',
+    padding: 0,
+    fontSize: 16,
+    color: iosColors.black,
+  },
+}) */
 
 export default EditTeacherScreen;
