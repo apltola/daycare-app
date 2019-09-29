@@ -28,6 +28,7 @@ const EditKidScreen = ({ navigation }) => {
   const [res, setRes] = useState({});
   const [showDialog, setShowDialog] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [actionType, setActionType] = useState('');
 
   useEffect(() => {
     setInitialKidData(navigation.getParam('kid', {}));
@@ -54,36 +55,41 @@ const EditKidScreen = ({ navigation }) => {
   }
 
   const handleSubmit = async () => {
-    setLoading(() => true);
+    setLoading(true);
 
     if (addNewKid) {
       try {
+        setActionType('add');
         const res = await axios.post(`${apiRoot}/child/add`, postData);
-        setRes(() => res);
-        setLoading(() => false);
-        await globalActions.fetchAllKids();
+        setRes(res);
+        setLoading(false);
+        globalActions.fetchAllKids();
+        setShowDialog(true);
       } catch (e) {
-        setRes(() => res);
-        setLoading(() => false);
+        setRes(res);
+        setLoading(false);
+        setShowDialog(true);
       }
     } else {
       try {
-        const res = await axios.put(`${apiRoot}/child/edit`, postData)
-        setRes(() => res);
-        setLoading(() => false);
-        setInitialKidData(() => postData);
-        setShowDialog(() => true);
+        setActionType('modify');
+        const res = await axios.put(`${apiRoot}/child/edit`, postData);
+        setRes(res);
+        setLoading(false);
+        setInitialKidData(postData);
+        setShowDialog(true);
         globalActions.fetchAllKids();
       } catch (e) {
-        setRes(() => res);
-        setLoading(() => false);
-        setShowDialog(() => true);
+        setRes(res);
+        setLoading(false);
+        setShowDialog(true);
       }
     }
   }
 
   const handleDelete = async () => {
     try {
+      setActionType('delete');
       const res = await axios.delete(`${apiRoot}/child/delete/${kid.id}`);
       setRes(res);
       setShowConfirmationDialog(false);
@@ -91,9 +97,9 @@ const EditKidScreen = ({ navigation }) => {
       globalActions.fetchAllKids();
       navigation.navigate('kid');
     } catch (e) {
-      console.log(e);
       setRes(res);
       setShowConfirmationDialog(false);
+      setShowDialog(true);
     }
   }
 
@@ -201,6 +207,7 @@ const EditKidScreen = ({ navigation }) => {
 
         <Popup
           dialogType='submitNotification'
+          actionType={actionType}
           visible={showDialog}
           handleTouchOutside={() => setShowDialog(() => false)}
           handlePopupClose={() => setShowDialog(() => false)}

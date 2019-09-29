@@ -1,14 +1,31 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { Dimensions, StyleSheet, View, Text } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Dialog, { DialogContent, DialogFooter, DialogButton, ScaleAnimation } from 'react-native-popup-dialog';
 import { iosColors } from '../util';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const Popup = props => {
 
   const renderContent = () => {
     switch (props.dialogType) {
       case 'submitNotification': {
+        const getText = () => {
+          if (props.submitWasSuccessful) {
+            switch (props.actionType) {
+              case 'add': return 'Lisäys onnistui!';
+              case 'modify': return 'Tallennus onnistui!';
+            }
+          } else {
+            switch (props.actionType) {
+              case 'add': return 'Lisäys epäonnistui!';
+              case 'modify': return 'Tallennus epäonnistui!';
+              case 'delete': return 'Poisto epäonnistui!';
+            } 
+          }
+        }
+
         return (
           <View>
             <Icon
@@ -18,7 +35,7 @@ const Popup = props => {
               size={60}
             />
             <Text style={styles.dialogText}>
-              {props.submitWasSuccessful ? 'Tallentaminen onnistui' : 'Tallentaminen epäonnistui!'}
+              {getText()}
             </Text>
             {
               !props.submitWasSuccessful &&
@@ -34,9 +51,9 @@ const Popup = props => {
         return (
           <View>
             <Icon
-              name='exclamation-circle'
+              name='exclamation-triangle'
               type='font-awesome'
-              color={iosColors.red}
+              color={iosColors.yellow}
               size={60}
             />
             <Text style={styles.dialogText}>
@@ -88,7 +105,7 @@ const Popup = props => {
       dialogAnimation={new ScaleAnimation({ initialValue: 0, useNativeDriver: true })}
       footer={renderFooter()}
     >
-      <DialogContent style={{paddingTop: 10}}>
+      <DialogContent style={styles.dialogContent}>
         {renderContent()}
       </DialogContent>
     </Dialog>
@@ -96,6 +113,10 @@ const Popup = props => {
 }
 
 const styles = StyleSheet.create({
+  dialogContent: {
+    paddingTop: 10,
+    minWidth: SCREEN_WIDTH*0.65,
+  },
   dialogText: {
     paddingTop:13,
     fontSize: 18,

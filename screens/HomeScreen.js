@@ -244,11 +244,14 @@ const styles = StyleSheet.create({
     //borderWidth: 1,
     //borderColor: '#147efb',
     paddingVertical: 10,
-    paddingVertical: 10,
-    borderRadius: 10,
+    //borderBottomColor: 'transparent',
+    //borderBottomWidth: 2,
+    //borderRadius: 10,
   },
   filterButtonSelected: {
-    backgroundColor: customColors.lightGrey,
+    //backgroundColor: customColors.lightGrey,
+    //borderBottomWidth: 2,
+    //borderBottomColor: customColors.lightGrey,
   },
   filterButton_left: {
     //borderTopLeftRadius: 5,
@@ -262,12 +265,15 @@ const styles = StyleSheet.create({
     //color: '#147efb',
     color: iosColors.black,
     //fontSize: 16,
+    //borderBottomWidth: 2,
   },
   filterButtonText_selected: {
     //color: 'white',
     color: iosColors.black,
     //fontSize: 16,
     fontWeight: 'bold',
+    borderBottomWidth: 2,
+    borderColor: customColors.lightGrey,
   },
 });
 

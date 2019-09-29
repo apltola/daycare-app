@@ -5,9 +5,7 @@ import axios from 'axios';
 import Button from '../components/Button';
 import Spinner from '../components/Spinner';
 import Popup from '../components/Popup';
-import { iosColors, formatDateString, apiRoot, customColors } from '../util';
-import DateTimePicker from "react-native-modal-datetime-picker";
-import RNPickerSelect from 'react-native-picker-select';
+import { iosColors, apiRoot, customColors } from '../util';
 import useGlobalHook from '../store';
 import isEqual from 'lodash/isEqual';
 import globalStyles from '../util/globalStyles';
@@ -27,6 +25,7 @@ function EditTeacherScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+  const [actionType, setActionType] = useState('');
 
   useEffect(() => {
     setInitialTeacherData(navigation.getParam('teacher', {}));
@@ -58,6 +57,7 @@ function EditTeacherScreen({ navigation }) {
 
     if (addNewTeacher) {
       try {
+        setActionType('add');
         const res = await axios.post(`${apiRoot}/teacher/add`, postData);
         setRes(res);
         setLoading(false);
@@ -69,12 +69,13 @@ function EditTeacherScreen({ navigation }) {
         setShowNotificationDialog(true);
       }
     } else {
-
+      setActionType('modify');
     }
   }
 
   const handleDelete = async () => {
     try {
+      setActionType('delete');
       const res = await axios.delete(`${apiRoot}/teacher/delete/${teacher.id}`)
       setRes(res);
       setShowConfirmationDialog(false);
@@ -175,6 +176,7 @@ function EditTeacherScreen({ navigation }) {
 
         <Popup
           dialogType='submitNotification'
+          actionType={actionType}
           visible={showNotificationDialog}
           handleTouchOutside={() => setShowNotificationDialog(false)}
           handlePopupClose={() => setShowNotificationDialog(false)}
