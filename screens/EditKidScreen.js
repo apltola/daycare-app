@@ -111,7 +111,7 @@ const EditKidScreen = ({ navigation }) => {
         contentContainerStyle={{padding: 20}}
       >
         <View>
-          <Text>
+          <Text style={{fontSize: 16}}>
             {addNewKid ? 'Lisää uusi muksu' : `Muokkaa muksua ${kid.firstName}`}
           </Text>
         </View>

@@ -19,7 +19,8 @@ export const iosColors = {
 
 /* CUSTOM COLORS */
 export const customColors = {
-  lightGrey: '#ededed'
+  lightGrey: '#ededed',
+  grey: '#e0e0e6',
 }
 
 /* CALENDAR & DATE UTILS */

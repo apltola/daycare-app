@@ -5,7 +5,7 @@ import axios from 'axios';
 import Button from '../components/Button';
 import Spinner from '../components/Spinner';
 import Popup from '../components/Popup';
-import { iosColors, formatDateString, apiRoot } from '../util';
+import { iosColors, formatDateString, apiRoot, customColors } from '../util';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import RNPickerSelect from 'react-native-picker-select';
 import useGlobalHook from '../store';
@@ -24,34 +24,16 @@ function EditTeacherScreen({ navigation }) {
   const [globalState, globalActions] = useGlobalHook();
   const [postData, setPostData] = useState(teacher);
   const [res, setRes] = useState({});
-  const [showPicker, setShowPicker] = useState(true);
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [pickerIsOpen, setPickerIsOpen] = useState(false);
 
-  const handleGroupPicked = group => {
-    if (!group) {
-      return;
+  const handleGroupToggled = (group, addGroup) => {
+    let groups = [];
+    if (addGroup) {
+      groups = [...postData.childgroups, group];
+    } else {
+      groups = postData.childgroups.filter(i => i.id !== group.id);
     }
-    const idx = globalState.childGroups.findIndex(i => i.id === group);
-    setPostData(() => ({...postData, childgroup: globalState.childGroups[idx]}));
-  }
 
-  const handleGroupDeleted = () => {
-
-  }
-
-  const handleGroupSelected = value => {
-    setSelectedGroup(value);
-    const idx = postData.childgroups.findIndex(i => i.id === value);
-    console.log('jee => ', idx);
-    if (idx > -1) {
-      return;
-    }
-    const group = globalState.childGroups.find(i => i.id === value);
-    const groups = [...postData.childgroups, group];
-    console.log('groups => ', groups);
-    /*console.log('_childgroups => ', _childgroups);
-    setPostData({...postData, childgroups: _childgroups}); */
+    return setPostData({...postData, childgroups: groups});
   }
 
   return (
@@ -59,7 +41,7 @@ function EditTeacherScreen({ navigation }) {
       <Animated.ScrollView
         contentContainerStyle={{padding: 20}}
       >
-        <Text>
+        <Text style={{fontSize: 16}}>
           {addNewTeacher ? 'Lisää uusi ope' : `Muokkaa opea ${teacher.name}`}
         </Text>
         <View style={styles.section}>
@@ -79,26 +61,30 @@ function EditTeacherScreen({ navigation }) {
           </Text>
           <View style={styles.groupList}>
             {
-              postData.childgroups.map((group, idx) => {
-                //const padding = idx === 0 ? {paddingBottom: 10} : {paddingVertical: 10}
-                const padding = {paddingVertical: 10}
-          
+              globalState.childGroups.map((group, idx) => {
+                const groupSelected = postData.childgroups.findIndex(i => i.id === group.id) > -1;
+
                 return (
-                  <View style={[styles.groupListItem, padding]}>
+                  <View style={[styles.groupListItem, {borderTopWidth: idx === 0 ? 1 : 0}]}>
                     <View style={styles.groupListItem_left}>
-                      <Text style={styles.groupName}>
+                      <Text style={[styles.groupName, {
+                        opacity: groupSelected ? 1 : 0.4
+                      }]}>
                         {group.name}
                       </Text>
                     </View>
                     <View style={styles.groupListItem_right}>
                       <TouchableOpacity
-                        onPress={handleGroupDeleted}
-                        style={styles.deleteGroupButton}
+                        onPress={() => handleGroupToggled(group, !groupSelected)}
+                        style={[styles.toggleGroupButton,{
+                          backgroundColor: groupSelected ? iosColors.darkGreen : customColors.grey,
+                          borderColor: groupSelected ? iosColors.darkGreen : customColors.grey
+                        }]}
                       >
                         <Icon
-                          name='minus'
+                          name='check'
                           type='font-awesome'
-                          color='#f7f7f7'
+                          color='#ffffff'
                           size={20}
                         />
                       </TouchableOpacity>
@@ -107,40 +93,7 @@ function EditTeacherScreen({ navigation }) {
                 );
               })
             }
-            <View style={{alignItems: 'flex-end', paddingTop: 10}}>
-              <TouchableOpacity
-                style={styles.addGroupButton}
-                onPress={() => setShowPicker(prev => !prev)}
-              >
-                <Icon
-                  name='plus'
-                  type='font-awesome'
-                  color='#f7f7f7'
-                  size={20}
-                />
-              </TouchableOpacity>
-            </View>
           </View>
-          
-          <RNPickerSelect
-            visible={true}
-            placeholder={{
-              label: 'Lisää ryhmä',
-              value: null,
-              color: iosColors.grey,
-            }}
-            style={pickerStyles}
-            value={selectedGroup}
-            onValueChange={value => handleGroupSelected(value)}
-            items={
-              globalState.childGroups.map(group => {
-                return (
-                  { label: group.name, value: group.id }
-                )
-              })
-            }
-            doneText='Valmis'
-          />
         </View>
 
         <View style={{marginTop: 60}}>
@@ -153,9 +106,9 @@ function EditTeacherScreen({ navigation }) {
           <Text>
             res: {JSON.stringify(res || {}, null, 2)}
           </Text>
-          <Text>
+          {/* <Text>
             global.groups: {JSON.stringify(globalState.childGroups || {}, null, 2)}
-          </Text>
+          </Text> */}
         </View>
       </Animated.ScrollView>
     </View>
@@ -176,11 +129,11 @@ const styles = StyleSheet.create({
     color: iosColors.black,
   },
   groupListItem: {
-    display: 'flex',
+    paddingVertical: 10,
     flexDirection: 'row',
     //borderWidth: 1,
     borderBottomWidth: 1,
-    borderTopWidth: 1,
+    //borderTopWidth: 1,
     borderColor: '#e0e0e6',
   },
   groupListItem_left: {
@@ -196,27 +149,15 @@ const styles = StyleSheet.create({
   groupName: {
     fontSize: 16,
   },
-  deleteGroupButton: {
+  toggleGroupButton: {
     borderWidth: 1,
-    borderColor: iosColors.red,
-    backgroundColor: iosColors.red,
-    height: 30,
-    width: 30,
-    borderRadius: 60,
+    //borderColor: iosColors.green,
+    //backgroundColor: iosColors.green,
+    height: 35,
+    width: 35,
+    borderRadius: 70,
     justifyContent: 'center',
   },
-  addGroupButton: {
-    borderWidth: 1,
-    borderColor: iosColors.green,
-    backgroundColor: iosColors.green,
-    height: 30,
-    width: 30,
-    borderRadius: 60,
-    justifyContent: 'center',
-  },
-  deleteIcon: {
-    color: 'white'
-  }
 });
 
 

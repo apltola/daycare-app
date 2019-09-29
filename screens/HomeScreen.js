@@ -33,7 +33,6 @@ const Kid = ({ kid }) => {
                 backgroundColor: kidPresent ? '#e0e0e6' : iosColors.red,
                 borderBottomLeftRadius: 10,
                 borderTopLeftRadius: 10,
-                //opacity: kidPresent ? 0.8 : 1,
               }]}
             >
               <Icon
@@ -49,7 +48,6 @@ const Kid = ({ kid }) => {
                 backgroundColor: kidPresent ? iosColors.darkGreen : '#e0e0e6',
                 borderTopRightRadius: 10,
                 borderBottomRightRadius: 10,
-                //opacity: kidPresent ? 1 : 0.8,
               }]}
             >
               <Icon

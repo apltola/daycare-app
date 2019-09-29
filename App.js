@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createAppContainer, createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import useGlobalHook from './store';
-import * as Font from 'expo-font';
 
 import HomeScreen from './screens/HomeScreen';
 import KidScreen from './screens/KidScreen';
@@ -66,7 +65,7 @@ const MainNavigator = createBottomTabNavigator({
     }
   })
 },{
-  initialRouteName: 'main',
+  initialRouteName: 'teacher',
 });
 
 const AppContainer = createAppContainer(MainNavigator);
