@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createAppContainer, createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import useGlobalHook from './store';
+import * as Font from 'expo-font';
 
-import KidListScreen from './screens/KidListScreen';
+import HomeScreen from './screens/HomeScreen';
 import KidScreen from './screens/KidScreen';
 import TeacherScreen from './screens/TeacherScreen';
 import GroupScreen from './screens/GroupScreen';
@@ -14,8 +15,7 @@ import EditTeacherScreen from './screens/EditTeacherScreen';
 import { iosColors } from './util';
 
 const MainNavigator = createBottomTabNavigator({
-  main: KidListScreen,
-  //kid: KidScreen,
+  main: HomeScreen,
   kid: createStackNavigator({
     kid: KidScreen,
     editKid: EditKidScreen
@@ -66,7 +66,7 @@ const MainNavigator = createBottomTabNavigator({
     }
   })
 },{
-  initialRouteName: 'teacher',
+  initialRouteName: 'main',
 });
 
 const AppContainer = createAppContainer(MainNavigator);
@@ -75,6 +75,9 @@ export default function App() {
   const [globalState, globalActions] = useGlobalHook();
 
   useEffect(() => {
+    /* Font.loadAsync({
+      'SFUI-regular': require('./assets/fonts/SF-UI-Display-Regular.otf'),
+    }); */
     globalActions.fetchAllKids();
     globalActions.fetchChildGroups();
 

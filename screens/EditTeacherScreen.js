@@ -24,7 +24,7 @@ function EditTeacherScreen({ navigation }) {
   const [globalState, globalActions] = useGlobalHook();
   const [postData, setPostData] = useState(teacher);
   const [res, setRes] = useState({});
-  const [showPicker, setShowPicker] = useState(false);
+  const [showPicker, setShowPicker] = useState(true);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [pickerIsOpen, setPickerIsOpen] = useState(false);
 
@@ -53,8 +53,6 @@ function EditTeacherScreen({ navigation }) {
     /*console.log('_childgroups => ', _childgroups);
     setPostData({...postData, childgroups: _childgroups}); */
   }
-
-  
 
   return (
     <View style={styles.container}>
@@ -112,6 +110,7 @@ function EditTeacherScreen({ navigation }) {
             <View style={{alignItems: 'flex-end', paddingTop: 10}}>
               <TouchableOpacity
                 style={styles.addGroupButton}
+                onPress={() => setShowPicker(prev => !prev)}
               >
                 <Icon
                   name='plus'
@@ -123,20 +122,16 @@ function EditTeacherScreen({ navigation }) {
             </View>
           </View>
           
-          {/* <RNPickerSelect
+          <RNPickerSelect
+            visible={true}
             placeholder={{
               label: 'Lisää ryhmä',
               value: null,
               color: iosColors.grey,
             }}
+            style={pickerStyles}
             value={selectedGroup}
             onValueChange={value => handleGroupSelected(value)}
-            style={{
-              ...pickerStyles,
-              placeholder: {
-                color: iosColors.darkGreen,
-              },
-            }}
             items={
               globalState.childGroups.map(group => {
                 return (
@@ -145,7 +140,7 @@ function EditTeacherScreen({ navigation }) {
               })
             }
             doneText='Valmis'
-          /> */}
+          />
         </View>
 
         <View style={{marginTop: 60}}>
@@ -225,20 +220,21 @@ const styles = StyleSheet.create({
 });
 
 
-/* const pickerStyles = StyleSheet.create({
+const pickerStyles = StyleSheet.create({
   inputIOS: {
-    backgroundColor: 'transparent',
-    padding: 0,
+    backgroundColor: '#e0e0e6',
+    padding: 10,
+    borderRadius: 10,
     fontSize: 16,
-    borderWidth: 1,
     color: iosColors.black,
   },
   inputAndroid: {
-    backgroundColor: 'transparent',
-    padding: 0,
+    backgroundColor: '#e0e0e6',
+    padding: 10,
+    borderRadius: 10,
     fontSize: 16,
     color: iosColors.black,
   },
-}) */
+})
 
 export default EditTeacherScreen;

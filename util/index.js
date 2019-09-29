@@ -17,6 +17,11 @@ export const iosColors = {
   grey: '#8e8e93'
 }
 
+/* CUSTOM COLORS */
+export const customColors = {
+  lightGrey: '#ededed'
+}
+
 /* CALENDAR & DATE UTILS */
 const DAYS_TO_DISPLAY_PER_MONTH = 42
 const MONTHS_LENGHT = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]

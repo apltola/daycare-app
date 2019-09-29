@@ -251,11 +251,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingBottom: 5,
     color: iosColors.black,
+    fontFamily: 'San Francisco',
   },
   input: {
     backgroundColor: '#e0e0e6',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     fontSize: 16,
   },
   bdButton_text: {
@@ -268,14 +269,14 @@ const pickerStyles = StyleSheet.create({
   inputIOS: {
     backgroundColor: '#e0e0e6',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     fontSize: 16,
     color: iosColors.black,
   },
   inputAndroid: {
     backgroundColor: '#e0e0e6',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     fontSize: 16,
     color: iosColors.black,
   },

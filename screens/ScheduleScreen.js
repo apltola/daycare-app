@@ -81,6 +81,8 @@ const ScheduleScreen = ({ navigation }) => {
             onChangeText={search => setSearchTerm(() => search)}
             value={searchTerm}
             cancelButtonTitle='Sulje'
+            inputStyle={{backgroundColor: '#e0e0e6'}}
+            inputContainerStyle={{backgroundColor: '#e0e0e6',borderRadius:10}}
           />
           <View style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly',}}>
             <TouchableOpacity

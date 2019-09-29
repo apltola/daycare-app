@@ -11,7 +11,7 @@ const globalStyles = StyleSheet.create({
   input: {
     backgroundColor: '#e0e0e6',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 10,
     fontSize: 16,
   },
 });
