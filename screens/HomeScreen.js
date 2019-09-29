@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Image, Button } from 'react-native';
 import { Icon } from 'react-native-elements';
 import DateTimePicker from "react-native-modal-datetime-picker";
-import axios from 'axios';
 import useGlobalHook from '../store';
 import Header from '../components/Header';
 import { formatDateString, iosColors, customColors } from '../util';
@@ -233,23 +232,23 @@ const styles = StyleSheet.create({
   },
   filterButtonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    paddingLeft: 20,
-    paddingRight: 20,
+    justifyContent: 'space-evenly',
+    paddingHorizontal: 20,
     paddingTop: 20,
   },
   filterButton: {
-    flex: 1,
+    //flex: 1,
     alignItems: 'center',
     //borderWidth: 1,
     //borderColor: '#147efb',
     paddingVertical: 10,
+    paddingHorizontal: 20,
     //borderBottomColor: 'transparent',
     //borderBottomWidth: 2,
-    //borderRadius: 10,
+    borderRadius: 10,
   },
   filterButtonSelected: {
-    //backgroundColor: customColors.lightGrey,
+    backgroundColor: customColors.lightGrey,
     //borderBottomWidth: 2,
     //borderBottomColor: customColors.lightGrey,
   },
