@@ -11,19 +11,28 @@ import RNPickerSelect from 'react-native-picker-select';
 import useGlobalHook from '../store';
 import isEqual from 'lodash/isEqual';
 import globalStyles from '../util/globalStyles';
-import GroupPicker from '../components/GroupPicker';
 
 function EditTeacherScreen({ navigation }) {
   const teacher = navigation.getParam('teacher', {
     name: '',
     childgroups: []
   });
-  const clearSearchTerm = navigation.getParam('clearSearchTerm');
   const addNewTeacher = navigation.getParam('addNewTeacher', false);
+  const clearSearchTerm = navigation.getParam('clearSearchTerm');
 
   const [globalState, globalActions] = useGlobalHook();
+  const [initialTeacherData, setInitialTeacherData] = useState({});
   const [postData, setPostData] = useState(teacher);
   const [res, setRes] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+
+  useEffect(() => {
+    setInitialTeacherData(navigation.getParam('teacher', {}));
+
+    return () => {};
+  }, []);
 
   const handleGroupToggled = (group, addGroup) => {
     let groups = [];
@@ -34,6 +43,49 @@ function EditTeacherScreen({ navigation }) {
     }
 
     return setPostData({...postData, childgroups: groups});
+  }
+
+  const saveButtonShouldBeDisabled = () => {
+    if (addNewTeacher) {
+      return !(postData.name && postData.childgroups.length > 0);
+    } else {
+      return isEqual(initialTeacherData, postData);
+    }
+  }
+
+  const handleSave = async () => {
+    setLoading(true);
+
+    if (addNewTeacher) {
+      try {
+        const res = await axios.post(`${apiRoot}/teacher/add`, postData);
+        setRes(res);
+        setLoading(false);
+        setShowNotificationDialog(true);
+        await globalActions.fetchTeachers();
+      } catch(err) {
+        setRes(res);
+        setLoading(false);
+        setShowNotificationDialog(true);
+      }
+    } else {
+
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(`${apiRoot}/teacher/delete/${teacher.id}`)
+      setRes(res);
+      setShowConfirmationDialog(false);
+      clearSearchTerm();
+      globalActions.fetchTeachers();
+      navigation.navigate('teacher');
+    } catch(err) {
+      setRes(res);
+      setShowConfirmationDialog(false);
+      setShowNotificationDialog(true);
+    }
   }
 
   return (
@@ -95,6 +147,49 @@ function EditTeacherScreen({ navigation }) {
             }
           </View>
         </View>
+
+        <View style={styles.section}>
+          <View style={styles.buttonContainer}>
+            {loading
+              ? <Spinner size="small" />
+              : <Button
+                  onPress={handleSave}
+                  style="green"
+                  title="Tallenna"
+                  disabled={saveButtonShouldBeDisabled()}
+                />
+            }
+          </View>
+          {
+            !addNewTeacher &&
+            <View style={styles.buttonContainer}>
+              <Button
+                onPress={() => setShowConfirmationDialog(true)}
+                style='red'
+                title={`Poista ${teacher.name}`}
+                disabled={false}
+              />
+            </View>
+          }
+        </View>
+
+        <Popup
+          dialogType='submitNotification'
+          visible={showNotificationDialog}
+          handleTouchOutside={() => setShowNotificationDialog(false)}
+          handlePopupClose={() => setShowNotificationDialog(false)}
+          submitWasSuccessful={res.status === 200}
+        />
+
+        <Popup
+          dialogType='deleteConfirmation'
+          visible={showConfirmationDialog}
+          handleTouchOutside={() => setShowConfirmationDialog(() => false)}
+          handlePopupClose={() => setShowConfirmationDialog(() => false)}
+          handlePopupConfirm={handleDelete}
+          submitWasSuccessful={res.status === 200}
+          item={teacher}
+        />
 
         <View style={{marginTop: 60}}>
           <Text>
@@ -158,24 +253,12 @@ const styles = StyleSheet.create({
     borderRadius: 70,
     justifyContent: 'center',
   },
+  buttonContainer: {
+    paddingTop: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
 });
-
-
-const pickerStyles = StyleSheet.create({
-  inputIOS: {
-    backgroundColor: '#e0e0e6',
-    padding: 10,
-    borderRadius: 10,
-    fontSize: 16,
-    color: iosColors.black,
-  },
-  inputAndroid: {
-    backgroundColor: '#e0e0e6',
-    padding: 10,
-    borderRadius: 10,
-    fontSize: 16,
-    color: iosColors.black,
-  },
-})
 
 export default EditTeacherScreen;

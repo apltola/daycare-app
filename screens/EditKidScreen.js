@@ -85,15 +85,15 @@ const EditKidScreen = ({ navigation }) => {
   const handleDelete = async () => {
     try {
       const res = await axios.delete(`${apiRoot}/child/delete/${kid.id}`);
-      setRes(() => res);
-      setShowConfirmationDialog(() => false);
+      setRes(res);
+      setShowConfirmationDialog(false);
       clearSearchTerm();
       globalActions.fetchAllKids();
       navigation.navigate('kid');
     } catch (e) {
       console.log(e);
-      setRes(() => res);
-      setShowConfirmationDialog(() => false);
+      setRes(res);
+      setShowConfirmationDialog(false);
     }
   }
 
@@ -214,7 +214,7 @@ const EditKidScreen = ({ navigation }) => {
           handlePopupClose={() => setShowConfirmationDialog(() => false)}
           handlePopupConfirm={handleDelete}
           submitWasSuccessful={res.status === 200}
-          kid={kid}
+          item={kid}
         />
 
         <View style={{marginTop: 60}}>

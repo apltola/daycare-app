@@ -28,9 +28,7 @@ const KidScreen = ({ navigation }) => {
 
     arr = orderBy(arr, ['childgroup.name', 'firstName'], ['asc']);
 
-    return arr.map((kid, idx) => {
-      const _styles = idx === 0 ? [styles.listItem_first, styles.listItem] : [styles.listItem];
-
+    return arr.map(kid => {
       return (
         <View style={styles.listItem}>
           <View style={styles.listItem_left}>
@@ -38,7 +36,7 @@ const KidScreen = ({ navigation }) => {
               {kid.firstName}
             </Text>
             <Text style={{paddingTop: 5, color: iosColors.black}}>
-              {kid.childgroup.name}
+              Ryhmä: {kid.childgroup.name}
             </Text>
             <Text style={{paddingTop: 5, color: iosColors.black}}>
               Syntymäpäivä: {kid.birthday ? formatDateString(kid.birthday, 'dd.mm.yyyy') : '–'}

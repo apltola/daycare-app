@@ -40,7 +40,7 @@ const Popup = props => {
               size={60}
             />
             <Text style={styles.dialogText}>
-              Poistetaanko {props.kid.firstName}?
+              Poistetaanko {props.item.firstName || props.item.name}?
             </Text>
           </View>
         );
