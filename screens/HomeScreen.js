@@ -94,6 +94,12 @@ function HomeScreen() {
     <View style={styles.container}>
       <Header title="kidTracker_3000" />
 
+      <TouchableOpacity
+        onPress={() => this._scrollViewRef.getNode().scrollToEnd({animated: true})}
+      >
+        <Text>scroll!!!!</Text>
+      </TouchableOpacity>
+
       <View style={styles.dateButtonContainer}>
         <TouchableOpacity
           style={styles.dateButton}

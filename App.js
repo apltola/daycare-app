@@ -65,7 +65,7 @@ const MainNavigator = createBottomTabNavigator({
     }
   })
 },{
-  initialRouteName: 'teacher',
+  initialRouteName: 'schedule',
 });
 
 const AppContainer = createAppContainer(MainNavigator);

@@ -25,6 +25,7 @@ export const customColors = {
 
 /* CALENDAR & DATE UTILS */
 const DAYS_TO_DISPLAY_PER_MONTH = 42
+let days_to_show_per_month = null
 const MONTHS_LENGHT = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 export const isLeapYear = year => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
@@ -36,7 +37,9 @@ export const initMonth = timestamp => {
   const monthLenght = MONTHS_LENGHT[month - 1] || (isLeapYear(year) ? 29 : 28)
   const lastMonthDay = t.addDays(firstMonthDay, monthLenght - 1)
   const firstMonthDayNumber = t.getWeekDay(firstMonthDay)
-  const firstDayToDisplay = t.addDays(firstMonthDay, -firstMonthDayNumber)
+  //const firstDayToDisplay = t.addDays(firstMonthDay, -firstMonthDayNumber)
+  //const firstDayToDisplay = t.addDays(firstMonthDay, 0)
+  const firstDayToDisplay = firstMonthDay;
 
   return {
     firstMonthDay,
@@ -52,7 +55,14 @@ export const parseRange = (startDate, endDate) => ({
   endDate: endDate && (endDate !== startDate) ? Math.max(startDate, endDate) : null
 })
 
-export const getDays = firstDay => times(DAYS_TO_DISPLAY_PER_MONTH, i => t.addDays(firstDay, i))
+//export const getDays = firstDay => times(DAYS_TO_DISPLAY_PER_MONTH, i => t.addDays(firstDay, i))
+export const getDays = firstDay => {
+
+  const daysNo = MONTHS_LENGHT[new Date(firstDay).getMonth()];
+  //console.log(t.getMonth(firstDay));
+  //console.log(new Date(firstDay).getMonth());
+  return times(daysNo, i => t.addDays(firstDay, i));
+}
 
 export const getDateWithoutTime = timestamp => {
   const [, , , hours, minutes, seconds, milliseconds] = t.decompose(timestamp)

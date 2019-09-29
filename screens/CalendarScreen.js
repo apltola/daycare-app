@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated, Image } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
 import { Icon } from 'react-native-elements';
 import Button from '../components/Button';
 import Popup from '../components/Popup';
@@ -11,13 +11,15 @@ import Spinner from '../components/Spinner';
 import { initMonth, getDays, dateIsOut, getDateWithoutTime, formatDateString, iosColors, apiRoot } from '../util';
 import union from 'lodash/union';
 
-
+const TODAY = new Date();
 const SCREEN_WIDTH = Dimensions.get('window').width;
+const CALENDAR_DATE_WIDTH = SCREEN_WIDTH / 5;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const DAY_LABELS = ['MA', 'TI', 'KE', 'TO', 'PE', 'LA', 'SU'];
 const MONTH_LABELS = ['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','Kesäkuu','Heinäkuu','Elokuu','Syyskuu','Lokakuu','Marraskuu','Joulukuu'];
 
-const CalendarScreen = props => {
+function CalendarScreen(props) {
+  this._scrollViewRef = React.createRef();
   const [kidSchedules, setKidSchedules] = useState([]);
   const [dateData, setDateData] = useState({...initMonth()});
   const [selectedDays, setSelectedDays] = useState([]);
@@ -31,9 +33,11 @@ const CalendarScreen = props => {
   const [res, setRes] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [submitWasSuccessful, setSubmitWasSuccessful] = useState(false);
+  const scrollViewRef = useRef(null);
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
+
 
   const fetchSchedules = async () => {
     const res = await axios.get(`${apiRoot}/schedule/child/${kid.id}`);
@@ -41,8 +45,19 @@ const CalendarScreen = props => {
     setKidSchedules(() => schedules);
   }
 
+  const scrollCalendarToToday = () => {
+    if (!this._scrollViewRef.getNode) {
+      return;
+    }
+
+    const dayNo = TODAY.getDate();
+    const distance = dayNo * CALENDAR_DATE_WIDTH - CALENDAR_DATE_WIDTH;
+    this._scrollViewRef.getNode().scrollTo({ x: distance, y: 0, animated: true });
+  }
+
   useEffect(() => {
     fetchSchedules();
+    scrollCalendarToToday();
 
     return () => {
       return setKidSchedules([]);
@@ -194,26 +209,110 @@ const CalendarScreen = props => {
 
     return (
       <View style={styles.calendarNavigation}>
-        <TouchableOpacity
-          style={{marginRight: 15}}
-          onPress={() => changeMonth(-1)}
-        >
-          <Text style={{fontSize: 25, color: iosColors.darkBlue}}>
-            {'<'}
+        <View style={{justifyContent: 'center'}}>
+          <Text style={{fontSize: 16}}>
+            Valitse jotaki...
           </Text>
-        </TouchableOpacity>
-        <Text style={{fontSize: 20, color: iosColors.darkBlue, paddingTop: 2}}>
-          {`${monthLabel} ${dateData.year}`}
-        </Text>
-        <TouchableOpacity
-          style={{marginLeft: 15}}
-          onPress={() => changeMonth(1)}
-        >
-          <Text style={{fontSize: 25, color: iosColors.darkBlue}}>
-            {'>'}
+        </View>
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+          <TouchableOpacity
+            style={{marginRight: 15, padding: 5}}
+            onPress={() => {
+              this._scrollViewRef.getNode && this._scrollViewRef.getNode().scrollTo({ x: 0, y: 0, animated: true });
+              return changeMonth(-1);
+            }}
+          >
+            <Icon
+              name="chevron-left"
+              type="font-awesome"
+              color={iosColors.grey}
+              size={20}
+            />
+          </TouchableOpacity>
+          <Text style={{fontSize: 16}}>
+            {`${monthLabel} ${dateData.year}`}
           </Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={{marginLeft: 15, padding: 5}}
+            onPress={() => {
+              this._scrollViewRef.getNode && this._scrollViewRef.getNode().scrollTo({ x: 0, y: 0, animated: true });
+              return changeMonth(1);
+            }}
+          >
+            <Icon
+              name="chevron-right"
+              type="font-awesome"
+              color={iosColors.grey}
+              size={20}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
+    );
+  }
+
+  const renderCheckmark = day => {
+    const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
+    if (day >= today) {
+      const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
+      if (idx > -1) {
+        return (
+          <Icon
+            name="circle"
+            type="font-awesome"
+            color={iosColors.green}
+            size={10}
+          />
+        )
+      }
+    } else {
+      return null;
+    }
+  }
+
+  const renderCalendar = () => {
+    return (
+      <Animated.ScrollView
+        ref={e => this._scrollViewRef = e}
+        horizontal={true}
+        showScrollBar={false}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: 10,
+        }}
+      >
+        <View style={styles.calendar}>
+          {
+            getDays(dateData.firstDayToDisplay).map(day => {
+              const dayOfWeek = new Date(day).getDay();
+              const dayLabel = DAY_LABELS[dayOfWeek];
+
+              return (
+                <TouchableOpacity
+                  key={day}
+                  style={[getCalendarClassNames(day, 'view'), {
+                    opacity: dayOfWeek === 6 || dayOfWeek === 5 ? 0.4 : 1
+                  }]}
+                  onPress={() => onDaySelect(day)}
+                  disabled={dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay)}
+                >
+                  <Text style={{textAlign: 'center',fontWeight:500}}>
+                    {dayLabel}
+                  </Text>
+                  <Text style={getCalendarClassNames(day, 'text')}>
+                    {parseInt(t.getDay(day), 10)}
+                  </Text>
+                  {renderCheckmark(day)}
+                </TouchableOpacity>
+              )
+            })
+          }
+        </View>
+      </Animated.ScrollView>
     );
   }
 
@@ -227,7 +326,7 @@ const CalendarScreen = props => {
 
     if (daysWithSchedule.length === 0) return null;
 
-    return (
+    /* return (
       <View style={styles.timeTable}>
         <View style={styles.timeTableRow}>
           <Text style={[styles.timeTableCol_left, {fontWeight: 'bold'}]}>
@@ -272,7 +371,7 @@ const CalendarScreen = props => {
           })
         }
       </View>
-    );
+    ); */
   }
 
   const renderSubmitButton = () => {
@@ -285,23 +384,6 @@ const CalendarScreen = props => {
       return <Spinner side="small" />;
     } else {
       return <Button onPress={onSubmit} style="green" title="Tallenna" disabled={false} />
-    }
-  }
-
-  const renderCheckmark = day => {
-    const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
-    if (day >= today) {
-      const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
-      if (idx > -1) {
-        return (
-          <Image
-            style={styles.checkmark}
-            source={require('../assets/checkmark.png')}
-          />
-        )
-      }
-    } else {
-      return null;
     }
   }
 
@@ -326,7 +408,10 @@ const CalendarScreen = props => {
 
   return (
     <View style={{flex: 1}}>
-      <Animated.ScrollView style={{flex: 1}}>
+      <Animated.ScrollView
+        style={{flex: 1}}
+        contentContainerStyle={{paddingVertical: 20}}
+      >
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
             {`${kid.firstName}, ${kid.childgroup.name}`}
@@ -335,7 +420,7 @@ const CalendarScreen = props => {
         
         <View style={styles.calendarContainer}>
           {renderCalendarNavigation()}
-          <View style={styles.dayLabels}>
+          {/* <View style={styles.dayLabels}>
             {DAY_LABELS.map(label => {
               return (
                 <Text key={label} style={styles.dayLabel_text}>
@@ -343,24 +428,8 @@ const CalendarScreen = props => {
                 </Text>
               )
             })}
-          </View>
-          <View style={styles.calendar}>
-            {getDays(dateData.firstDayToDisplay).map(day => {
-              return (
-                <TouchableOpacity
-                  key={day}
-                  style={getCalendarClassNames(day, 'view')}
-                  onPress={() => onDaySelect(day)}
-                  disabled={dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay)}
-                >
-                  <Text style={getCalendarClassNames(day, 'text')}>
-                    {parseInt(t.getDay(day), 10)}
-                  </Text>
-                  {renderCheckmark(day)}
-                </TouchableOpacity>
-              )
-            })}
-          </View>
+          </View> */}
+          {renderCalendar()}
         </View>
 
         <View>
@@ -445,21 +514,19 @@ const styles = StyleSheet.create({
   kidTitle_text: {
     fontSize: 22,
     fontWeight: 'bold',
-    textAlign: 'center',
-    paddingTop: 18,
+    textAlign: 'left',
+    paddingLeft: 10,
   },
   calendarNavigation: {
-    display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center',
+    //alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
   },
   calendarContainer: {
     borderColor: 'red',
-    padding: 10,
     paddingTop: 20,
     paddingBottom: 0,
-    alignContent: 'center',
-    alignItems: 'center',
   },
   dayLabels: {
     flexDirection: 'row',
@@ -473,21 +540,27 @@ const styles = StyleSheet.create({
   },
   calendar: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexWrap: 'nowrap',
+    paddingTop: 10,
   },
   day: {
-    width: (SCREEN_WIDTH/7.05)-(20/7),
-    height: 50,
+    //width: (SCREEN_WIDTH/7.05)-(20/7),
+    width: CALENDAR_DATE_WIDTH,
+    //height: 50,
+    height: 70,
     borderWidth: 0.5,
+    borderRadius: 15,
+    marginHorizontal: 5,
     borderColor: iosColors.grey,
-    justifyContent: 'center',
+    paddingTop: 5,
+    /* justifyContent: 'center',
     alignContent: 'center',
-    alignItems: 'center',
-    position: 'relative'
+    alignItems: 'center', */
   },
   day_text: {
     fontSize: 18,
     textAlign: 'center',
+    fontWeight: 500,
   },
   dayOutOfMonth: {
     
@@ -499,10 +572,8 @@ const styles = StyleSheet.create({
 
   },
   dayToday_text: {
-    textAlign: 'center',
     color: iosColors.red,
     fontWeight: 'bold',
-    padding: 5,
   },
   daySelected: {
     backgroundColor: iosColors.lightBlue,
