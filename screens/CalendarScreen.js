@@ -31,11 +31,8 @@ function CalendarScreen(props) {
   const [daysWithArrival, setDaysWithArrival] = useState([]);
   const [daysWithDeparture, setDaysWithDeparture] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [res, setRes] = useState({});
   const [showPopup, setShowPopup] = useState(false);
-  const [submitWasSuccessful, setSubmitWasSuccessful] = useState(false);
-  const scrollViewRef = useRef(null);
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
@@ -257,22 +254,17 @@ function CalendarScreen(props) {
   }
 
   const renderCheckmark = day => {
-    const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
-    if (day >= today) {
-      const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
-      if (idx > -1) {
-        return (
-          <Icon
-            name="circle"
-            type="font-awesome"
-            color={iosColors.green}
-            size={10}
-            iconStyle={{paddingTop: 3}}
-          />
-        )
-      }
-    } else {
-      return null;
+    const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
+    if (idx > -1) {
+      return (
+        <Icon
+          name="circle"
+          type="font-awesome"
+          color={iosColors.green}
+          size={10}
+          iconStyle={{paddingTop: 3}}
+        />
+      )
     }
   }
 
@@ -326,16 +318,18 @@ function CalendarScreen(props) {
   const renderTimeTable = () => {
     const existingSchedules = kidSchedules.map(i => new Date(i.date).getTime());
     const newSchedules = getDaysWithSchedule();
-    let daysWithSchedule = union(existingSchedules, newSchedules);
+    const daysWithSchedule = union(existingSchedules, newSchedules);
     
     const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
     const futureDaysWithSchedule = daysWithSchedule.filter(i => i >= today);
     const selectedMonthDaysWithSchedule = daysWithSchedule.filter(i => i >= dateData.firstMonthDay && i <= dateData.lastMonthDay);
 
-    daysWithSchedule.sort();
     futureDaysWithSchedule.sort();
+    selectedMonthDaysWithSchedule.sort();
 
-    if (daysWithSchedule.length === 0) return null;
+    if (daysWithSchedule.length === 0) {
+      return null;
+    }
 
     const renderList = days => {
       return days.map(day => {
@@ -347,12 +341,12 @@ function CalendarScreen(props) {
         let dayData;
         if (postData.findIndex(i => i.temp_id === day) === -1) {
           dayData = kidSchedules.find(item => new Date(item.date).getTime() === day);
-          arrivalStr = dayData.arrive.substring(0,5);
-          departureStr = dayData.departure.substring(0,5);
+          arrivalStr = dayData.arrive ? dayData.arrive.substring(0,5) : '';
+          departureStr = dayData.departure ? dayData.departure.substring(0,5) : '';
         } else {
           dayData = postData.find(item => item.temp_id === day);
-          arrivalStr = formatDateString(dayData.arrive, 'hh:mm');
-          departureStr = formatDateString(dayData.departure, 'hh:mm');
+          arrivalStr = dayData.arrive ? formatDateString(dayData.arrive, 'hh:mm') : '';
+          departureStr = dayData.departure ? formatDateString(dayData.departure, 'hh:mm') : '';
         }
 
         return (
@@ -451,7 +445,7 @@ function CalendarScreen(props) {
   return (
     <View style={styles.container}>
       <Animated.ScrollView
-        contentContainerStyle={{paddingTop: 20}}
+        contentContainerStyle={{paddingTop: 20, }}
       >
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
@@ -505,9 +499,6 @@ function CalendarScreen(props) {
             <Text>
               timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
             </Text>
-            <Text>
-              error: {JSON.stringify(error, null, 2)}
-            </Text>
           </View>
         </View>
 
@@ -542,12 +533,15 @@ CalendarScreen.navigationOptions = () => ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    //borderWidth: 1,
   },
   greyContainer: {
     flex: 1,
     backgroundColor: '#F5FBFE',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
+    borderWidth: 0.5,
+    borderColor: 'blue',
   },
   kidTitle_text: {
     fontSize: 22,
@@ -655,8 +649,9 @@ const styles = StyleSheet.create({
     color: iosColors.black,
   },
   timeTable: {
+    flex: 1,
     marginTop: 20,
-    //borderWidth: 0.5,
+    borderWidth: 0.5,
   },
   timeTablePage: {
     width: SCREEN_WIDTH,
