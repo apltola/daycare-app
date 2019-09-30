@@ -88,6 +88,10 @@ export const formatDateString = (value, pattern) => {
   if (pattern === 'dd.mm.yyyy') {
     return `${date}.${month}.${year}`;
   }
+
+  else if (pattern === 'dd.mm') {
+    return `${date}.${month}`;
+  }
   
   else if (pattern === 'yyyy-mm-dd') {
     return `${year}-${month}-${date}`;

@@ -8,14 +8,16 @@ import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import axios from 'axios';
 import Spinner from '../components/Spinner';
-import { initMonth, getDays, dateIsOut, getDateWithoutTime, formatDateString, iosColors, apiRoot } from '../util';
+import { initMonth, getDays, dateIsOut, getDateWithoutTime, formatDateString, iosColors, apiRoot, customColors } from '../util';
 import union from 'lodash/union';
 
 const TODAY = new Date();
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CALENDAR_DATE_WIDTH = SCREEN_WIDTH / 5;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const DAY_LABELS = ['MA', 'TI', 'KE', 'TO', 'PE', 'LA', 'SU'];
+const DAY_LABELS = ['SU', 'MA', 'TI', 'KE', 'TO', 'PE', 'LA'];
+const DAY_LABELS_LOWERCASE = ['Su', 'Ma', 'Ti', 'Ke', 'To', 'Pe', 'La'];
+const DAY_NAMES = ['Sunnuntai','Maanantai','Tiistai','Keskiviikko','Torstai','Perjantai','Lauantai'];
 const MONTH_LABELS = ['Tammikuu','Helmikuu','Maaliskuu','Huhtikuu','Toukokuu','Kesäkuu','Heinäkuu','Elokuu','Syyskuu','Lokakuu','Marraskuu','Joulukuu'];
 
 function CalendarScreen(props) {
@@ -37,7 +39,6 @@ function CalendarScreen(props) {
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
-
 
   const fetchSchedules = async () => {
     const res = await axios.get(`${apiRoot}/schedule/child/${kid.id}`);
@@ -211,7 +212,7 @@ function CalendarScreen(props) {
       <View style={styles.calendarNavigation}>
         <View style={{justifyContent: 'center'}}>
           <Text style={{fontSize: 16}}>
-            Valitse jotaki...
+            Tee jotaki...
           </Text>
         </View>
         <View style={{
@@ -266,6 +267,7 @@ function CalendarScreen(props) {
             type="font-awesome"
             color={iosColors.green}
             size={10}
+            iconStyle={{paddingTop: 3}}
           />
         )
       }
@@ -295,12 +297,17 @@ function CalendarScreen(props) {
                 <TouchableOpacity
                   key={day}
                   style={[getCalendarClassNames(day, 'view'), {
-                    opacity: dayOfWeek === 6 || dayOfWeek === 5 ? 0.4 : 1
+                    opacity: dayOfWeek === 0 || dayOfWeek === 6 ? 0.4 : 1
                   }]}
                   onPress={() => onDaySelect(day)}
                   disabled={dateIsOut(day, dateData.firstMonthDay, dateData.lastMonthDay)}
                 >
-                  <Text style={{textAlign: 'center',fontWeight:500}}>
+                  <Text style={[getCalendarClassNames(day, 'text'), {
+                    textAlign:'center',
+                    fontWeight:500,
+                    fontSize: 14,
+                  }]}
+                  >
                     {dayLabel}
                   </Text>
                   <Text style={getCalendarClassNames(day, 'text')}>
@@ -317,61 +324,96 @@ function CalendarScreen(props) {
   }
 
   const renderTimeTable = () => {
-    const arr1 = kidSchedules.map(i => new Date(i.date).getTime());
-    const arr2 = getDaysWithSchedule();
-    const arr3 = union(arr1, arr2);
+    const existingSchedules = kidSchedules.map(i => new Date(i.date).getTime());
+    const newSchedules = getDaysWithSchedule();
+    let daysWithSchedule = union(existingSchedules, newSchedules);
+    
     const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
-    const daysWithSchedule = arr3.filter(i => i >= today);
+    const futureDaysWithSchedule = daysWithSchedule.filter(i => i >= today);
+    const selectedMonthDaysWithSchedule = daysWithSchedule.filter(i => i >= dateData.firstMonthDay && i <= dateData.lastMonthDay);
+
     daysWithSchedule.sort();
+    futureDaysWithSchedule.sort();
 
     if (daysWithSchedule.length === 0) return null;
 
-    /* return (
-      <View style={styles.timeTable}>
-        <View style={styles.timeTableRow}>
-          <Text style={[styles.timeTableCol_left, {fontWeight: 'bold'}]}>
-            Päivä
-          </Text>
-          <Text style={[styles.timeTableCol_mid, {fontWeight: 'bold'}]}>
-            Saapumisaika
-          </Text>
-          <Text style={[styles.timeTableCol_right, {fontWeight: 'bold'}]}>
-            Lähtöaika
-          </Text>
-        </View>
-        {
-          daysWithSchedule.map(day => {
-            const dateStr = formatDateString(day, 'dd.mm.yyyy');
-            let arrivalStr;
-            let departureStr;
-            let dayData;
-            if (postData.findIndex(i => i.temp_id === day) === -1) {
-              dayData = kidSchedules.find(item => new Date(item.date).getTime() === day);
-              arrivalStr = dayData.arrive.substring(0,5);
-              departureStr = dayData.departure.substring(0,5);
-            } else {
-              dayData = postData.find(item => item.temp_id === day);
-              arrivalStr = formatDateString(dayData.arrive, 'hh:mm');
-              departureStr = formatDateString(dayData.departure, 'hh:mm');
-            }
-
-            return (
-              <View style={styles.timeTableRow}>
-                <Text style={styles.timeTableCol_left}>
-                  {dateStr}
-                </Text>
-                <Text style={styles.timeTableCol_mid}>
-                  {arrivalStr || '-'}
-                </Text>
-                <Text style={styles.timeTableCol_right}>
-                  {departureStr || '-'}
-                </Text>
-              </View>
-            )
-          })
+    const renderList = days => {
+      return days.map(day => {
+        const dayOfWeek = new Date(day).getDay();
+        const dayLabel = DAY_LABELS_LOWERCASE[dayOfWeek];
+        const dateStr = formatDateString(day, 'dd.mm');
+        let arrivalStr;
+        let departureStr;
+        let dayData;
+        if (postData.findIndex(i => i.temp_id === day) === -1) {
+          dayData = kidSchedules.find(item => new Date(item.date).getTime() === day);
+          arrivalStr = dayData.arrive.substring(0,5);
+          departureStr = dayData.departure.substring(0,5);
+        } else {
+          dayData = postData.find(item => item.temp_id === day);
+          arrivalStr = formatDateString(dayData.arrive, 'hh:mm');
+          departureStr = formatDateString(dayData.departure, 'hh:mm');
         }
+
+        return (
+          <View style={styles.timeTableRow}>
+            <Text style={[styles.timeTableRow_text, {width: 120}]}>
+              {dayLabel} {dateStr}
+            </Text>
+            <Text style={styles.timeTableRow_text}>
+              {arrivalStr}
+            </Text>
+            <Text style={styles.timeTableRow_text}> – </Text>
+            <Text style={styles.timeTableRow_text}>
+              {departureStr}
+            </Text>
+          </View>
+        );
+      })
+    }
+
+    return (
+      <View style={styles.timeTable}>
+        <Animated.ScrollView
+          horizontal={true}
+          pagingEnabled={true}
+        >
+          <View style={styles.timeTablePage}>
+            <View style={{flexDirection: 'row', justifyContent: 'center', paddingVertical: 10}}>
+              <Icon name="circle" type="font-awesome" size={12} color={iosColors.black} iconStyle={{marginHorizontal: 3}} />
+              <Icon name="circle" type="font-awesome" size={12} color={customColors.grey} iconStyle={{marginHorizontal: 3}} />
+            </View>
+            <Text style={styles.timeTableTitle}>
+              Tuleva aikataulu
+            </Text>
+            <View style={{flex:1, maxHeight: 300}}>
+              <Animated.ScrollView
+                contentContainerStyle={{paddingVertical: 10}}
+              >
+                {renderList(futureDaysWithSchedule)}
+              </Animated.ScrollView>
+            </View>
+          </View>
+
+          <View style={styles.timeTablePage}>
+            <View style={{flexDirection: 'row', justifyContent: 'center', paddingVertical: 10}}>
+              <Icon name="circle" type="font-awesome" size={12} color={customColors.grey} iconStyle={{marginHorizontal: 3}} />
+              <Icon name="circle" type="font-awesome" size={12} color={iosColors.black} iconStyle={{marginHorizontal: 3}} />
+            </View>
+            <Text style={styles.timeTableTitle}>
+              Valitun kuukauden aikataulu
+            </Text>
+            <View style={{flex:1, maxHeight: 300}}>
+              <Animated.ScrollView
+                contentContainerStyle={{paddingVertical: 10}}
+              >
+                {renderList(selectedMonthDaysWithSchedule)}
+              </Animated.ScrollView>
+            </View>
+          </View>
+        </Animated.ScrollView>
       </View>
-    ); */
+    );
   }
 
   const renderSubmitButton = () => {
@@ -407,10 +449,9 @@ function CalendarScreen(props) {
   }
 
   return (
-    <View style={{flex: 1}}>
+    <View style={styles.container}>
       <Animated.ScrollView
-        style={{flex: 1}}
-        contentContainerStyle={{paddingVertical: 20}}
+        contentContainerStyle={{paddingTop: 20}}
       >
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
@@ -418,69 +459,56 @@ function CalendarScreen(props) {
           </Text>
         </View>
         
-        <View style={styles.calendarContainer}>
-          {renderCalendarNavigation()}
-          {/* <View style={styles.dayLabels}>
-            {DAY_LABELS.map(label => {
-              return (
-                <Text key={label} style={styles.dayLabel_text}>
-                  {label}
-                </Text>
-              )
-            })}
-          </View> */}
-          {renderCalendar()}
-        </View>
+        <View style={styles.greyContainer}>
+          <View style={styles.calendarContainer}>
+            {renderCalendarNavigation()}
+            {renderCalendar()}
+          </View>
 
-        <View>
-          {selectedDays.length > 0 &&
-          <View style={styles.timeButtonsContainer}>
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() => onTimeButtonPress('arrival')}
+          <View>
+            {selectedDays.length > 0 &&
+            <View style={styles.timeButtonsContainer}>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={() => onTimeButtonPress('arrival')}
+                >
+                <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.timeButton}
+                onPress={() => onTimeButtonPress('departure')}
               >
-              <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.timeButton}
-              onPress={() => onTimeButtonPress('departure')}
-            >
-              <Text style={styles.timeButton_text}>Aseta lähtöaika</Text>
-            </TouchableOpacity>
-          </View>}
-        </View>
-        
-        {renderTimeTable()}
-        
-        <View style={{display: 'flex', alignItems: 'center', paddingTop: 20}}>
-          {renderSubmitButton()}
-        </View>
+                <Text style={styles.timeButton_text}>Aseta lähtöaika</Text>
+              </TouchableOpacity>
+            </View>}
+          </View>
+          
+          {renderTimeTable()}
+          
+          <View style={{display: 'flex', alignItems: 'center', paddingTop: 20}}>
+            {renderSubmitButton()}
+          </View>
 
-        <View style={{marginTop: 60}}>
-          <Text>
-            selectedDays: {JSON.stringify(selectedDays, null, 2)}
-          </Text>
-          <Text>
-            postData: {JSON.stringify(postData, null, 2)}
-          </Text>
-          <Text>
-            daysWithArrival: {JSON.stringify(daysWithArrival, null, 2)}
-          </Text>
-          <Text>
-            daysWithDeparture: {JSON.stringify(daysWithDeparture, null, 2)}
-          </Text>
-          <Text>
-            timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
-          </Text>
-          <Text>
-            error: {JSON.stringify(error, null, 2)}
-          </Text>
-          {/* <Text>
-            res: {JSON.stringify(res, null, 2)}
-          </Text>
-          <Text>
-            kidSchedules: {JSON.stringify(kidSchedules, null, 2)}
-          </Text> */}
+          <View style={{marginTop: 60}}>
+            <Text>
+              selectedDays: {JSON.stringify(selectedDays, null, 2)}
+            </Text>
+            <Text>
+              postData: {JSON.stringify(postData, null, 2)}
+            </Text>
+            <Text>
+              daysWithArrival: {JSON.stringify(daysWithArrival, null, 2)}
+            </Text>
+            <Text>
+              daysWithDeparture: {JSON.stringify(daysWithDeparture, null, 2)}
+            </Text>
+            <Text>
+              timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
+            </Text>
+            <Text>
+              error: {JSON.stringify(error, null, 2)}
+            </Text>
+          </View>
         </View>
 
         <DateTimePicker
@@ -495,6 +523,7 @@ function CalendarScreen(props) {
 
         <Popup
           dialogType='submitNotification'
+          actionType='modify'
           visible={showPopup}
           handleTouchOutside={() => setShowPopup(() => false)}
           handlePopupClose={() => setShowPopup(() => false)}
@@ -511,11 +540,22 @@ CalendarScreen.navigationOptions = () => ({
 });
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  greyContainer: {
+    flex: 1,
+    backgroundColor: '#F5FBFE',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+  },
   kidTitle_text: {
     fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'left',
-    paddingLeft: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 20,
+    color: iosColors.black,
   },
   calendarNavigation: {
     flexDirection: 'row',
@@ -524,9 +564,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   calendarContainer: {
-    borderColor: 'red',
     paddingTop: 20,
-    paddingBottom: 0,
   },
   dayLabels: {
     flexDirection: 'row',
@@ -548,11 +586,12 @@ const styles = StyleSheet.create({
     width: CALENDAR_DATE_WIDTH,
     //height: 50,
     height: 70,
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderRadius: 15,
     marginHorizontal: 5,
-    borderColor: iosColors.grey,
+    borderColor: customColors.lightGrey,
     paddingTop: 5,
+    backgroundColor: 'white',
     /* justifyContent: 'center',
     alignContent: 'center',
     alignItems: 'center', */
@@ -561,6 +600,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     fontWeight: 500,
+    paddingTop: 1,
   },
   dayOutOfMonth: {
     
@@ -576,7 +616,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   daySelected: {
-    backgroundColor: iosColors.lightBlue,
+    backgroundColor: '#7CD2F9'
   },
   daySelected_text: {
     color: 'white',
@@ -591,56 +631,55 @@ const styles = StyleSheet.create({
     flexWrap: 'nowrap',
   },
   timeButtonsContainer: {
-    paddingLeft: 10,
-    paddingRight: 10,
+    paddingHorizontal: 10,
     paddingTop: 20,
-    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignContent: 'center',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
   },
   timeButton: {
     display: 'flex',
+    borderWidth: 0.5,
+    borderColor: customColors.lightGrey,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    //backgroundColor: '#7CD2F9',
+    backgroundColor: 'white',
   },
   timeButton_text: {
-    color: iosColors.darkBlue,
-    fontSize: 19,
+    color: iosColors.black,
+    fontSize: 16,
+    fontWeight: 400,
     textAlign: 'center',
+    color: iosColors.black,
   },
   timeTable: {
-    padding: 10,
-    paddingTop: 30,
+    marginTop: 20,
+    //borderWidth: 0.5,
+  },
+  timeTablePage: {
+    width: SCREEN_WIDTH,
+    paddingHorizontal: 10,
+  },
+  timeTableTitle: {
+    color: iosColors.black,
+    fontSize: 16,
+    fontWeight: 600,
   },
   timeTableRow: {
-    display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'nowrap',
+    marginBottom: 10,
+    borderRadius: 10,
+    padding: 10,
+    backgroundColor: 'white',
+    borderWidth: 0.5,
+    borderColor: customColors.lightGrey,
   },
-  timeTableCol_left: {
-    width: 115,
+  timeTableRow_text: {
     fontSize: 16,
     color: iosColors.black,
-    marginBottom: 4,
   },
-  timeTableCol_mid: {
-    width: 125,
-    fontSize: 16,
-    color: iosColors.black,
-    marginBottom: 4,
-  },
-  timeTableCol_right: {
-    fontSize: 16,
-    color: iosColors.black,
-    marginBottom: 4,
-  },
-  checkmark: {
-    width: 10,
-    height: 10,
-    position: 'absolute',
-    right: 5,
-    bottom: 5,
-  }
 });
 
 export default CalendarScreen;

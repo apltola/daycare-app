@@ -40,7 +40,7 @@ const Button = props => {
 const styles = StyleSheet.create({
   btn: {
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     paddingTop: 10,
     paddingBottom: 10,
     //paddingLeft: 55,
