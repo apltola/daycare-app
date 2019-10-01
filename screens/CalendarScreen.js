@@ -141,9 +141,9 @@ function CalendarScreen(props) {
     }
   }
 
-  const onTimeButtonPress = type => {
-    setTimePickerTarget(() => type);
-    setIsTimePickerVisible(() => true);
+  const handleTimeButtonPress = type => {
+    setTimePickerTarget(type);
+    setIsTimePickerVisible(true);
   }
 
   const onTimePicked = time => {
@@ -315,6 +315,63 @@ function CalendarScreen(props) {
     );
   }
 
+  const renderButtons = () => {
+
+    const renderSubmitButton = () => {
+      /* const daysWithSchedule = getDaysWithSchedule();
+      if (selectedDays.length === 0) {
+        return null;
+      }; */
+  
+      if (loading) {
+        return (
+          <View style={styles.submitButtonContainer}>
+            <Spinner side="small" />;
+          </View>
+        );
+      } else {
+        return (
+          <View style={styles.submitButtonContainer}>
+            <TouchableOpacity
+              onPress={handleSubmit}
+              style={styles.submitButton}
+            >
+              <Text style={styles.submitButton_text}>
+                Tallenna
+              </Text>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+    }
+
+    if (selectedDays.length > 0) {
+      return (
+        <View>
+          <View style={styles.timeButtonsContainer}>
+            <TouchableOpacity
+              style={styles.timeButton}
+              onPress={() => handleTimeButtonPress('arrival')}
+            >
+              <Text style={styles.timeButton_text}>
+                Aseta saapumisaika
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.timeButton}
+              onPress={() => handleTimeButtonPress('departure')}
+            >
+              <Text style={styles.timeButton_text}>
+                Aseta lähtöaika
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {renderSubmitButton()}
+        </View>
+      );
+    }
+  }
+
   const renderTimeTable = () => {
     const existingSchedules = kidSchedules.map(i => new Date(i.date).getTime());
     const newSchedules = getDaysWithSchedule();
@@ -327,12 +384,18 @@ function CalendarScreen(props) {
     futureDaysWithSchedule.sort();
     selectedMonthDaysWithSchedule.sort();
 
-    if (daysWithSchedule.length === 0) {
-      return null;
-    }
-
     const renderList = days => {
-      return days.map(day => {
+      if (days.length === 0) {
+        return (
+          <View style={styles.timeTableRow}>
+            <Text>
+              Ei tallennettuja tietoja
+            </Text>
+          </View>
+        );
+      }
+
+      else return days.map(day => {
         const dayOfWeek = new Date(day).getDay();
         const dayLabel = DAY_LABELS_LOWERCASE[dayOfWeek];
         const dateStr = formatDateString(day, 'dd.mm');
@@ -410,42 +473,29 @@ function CalendarScreen(props) {
     );
   }
 
-  const renderSubmitButton = () => {
-    const daysWithSchedule = getDaysWithSchedule();
-    if (selectedDays.length === 0) {
-      return null;
-    };
-
-    if (loading) {
-      return <Spinner side="small" />;
-    } else {
-      return <Button onPress={onSubmit} style="green" title="Tallenna" disabled={false} />
-    }
-  }
-
-  const onSubmit = async () => {
+  const handleSubmit = async () => {
     setLoading(() => true);
 
     try {
-      const res = await axios.post(`${apiRoot}/schedule/add/many`, postData);
-      setRes(res);
-      setLoading(() => false);
-      setShowPopup(() => true);
-      setSubmitWasSuccessful(() => true);
+      const submitRes = await axios.post(`${apiRoot}/schedule/add/many`, postData);
       await fetchSchedules();
+      setRes(submitRes);
+      setLoading(false);
+      setShowPopup(true);
       setSelectedDays([]);
     } catch (e) {
-      setRes(res);
-      setSubmitWasSuccessful(() => false);
-      setLoading(() => false);
-      setShowPopup(() => true);
+      setRes(submitRes);
+      setLoading(false);
+      setShowPopup(true);
     }
   }
 
   return (
     <View style={styles.container}>
       <Animated.ScrollView
-        contentContainerStyle={{paddingTop: 20, }}
+        contentContainerStyle={{
+          paddingTop: 20,
+        }}
       >
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
@@ -458,32 +508,11 @@ function CalendarScreen(props) {
             {renderCalendarNavigation()}
             {renderCalendar()}
           </View>
-
-          <View>
-            {selectedDays.length > 0 &&
-            <View style={styles.timeButtonsContainer}>
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => onTimeButtonPress('arrival')}
-                >
-                <Text style={styles.timeButton_text}>Aseta saapumisaika</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.timeButton}
-                onPress={() => onTimeButtonPress('departure')}
-              >
-                <Text style={styles.timeButton_text}>Aseta lähtöaika</Text>
-              </TouchableOpacity>
-            </View>}
-          </View>
           
+          {renderButtons()}
           {renderTimeTable()}
-          
-          <View style={{display: 'flex', alignItems: 'center', paddingTop: 20}}>
-            {renderSubmitButton()}
-          </View>
 
-          <View style={{marginTop: 60}}>
+          {/* <View style={{marginTop: 60}}>
             <Text>
               selectedDays: {JSON.stringify(selectedDays, null, 2)}
             </Text>
@@ -499,7 +528,10 @@ function CalendarScreen(props) {
             <Text>
               timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
             </Text>
-          </View>
+            <Text>
+              res: {JSON.stringify(res, null, 2)}
+            </Text>
+          </View> */}
         </View>
 
         <DateTimePicker
@@ -534,14 +566,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     //borderWidth: 1,
+    //borderColor: 'goldenrod'
   },
   greyContainer: {
-    flex: 1,
+    //flex: 1,
     backgroundColor: '#F5FBFE',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-    borderWidth: 0.5,
-    borderColor: 'blue',
+    minHeight: SCREEN_HEIGHT,
   },
   kidTitle_text: {
     fontSize: 22,
@@ -596,14 +628,8 @@ const styles = StyleSheet.create({
     fontWeight: 500,
     paddingTop: 1,
   },
-  dayOutOfMonth: {
-    
-  },
   dayOutOfMonth_text: {
     opacity: 0.3,
-  },
-  dayToday: {
-
   },
   dayToday_text: {
     color: iosColors.red,
@@ -616,9 +642,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold'
   },
-  dayWithSchedule_text: {
-
-  },
   selectedDaysTitle: {
     display: 'flex',
     flexDirection: 'row',
@@ -626,32 +649,49 @@ const styles = StyleSheet.create({
   },
   timeButtonsContainer: {
     paddingHorizontal: 10,
-    paddingTop: 20,
+    paddingTop: 30,
+    paddingBottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
   },
+  submitButtonContainer: {
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   timeButton: {
-    display: 'flex',
     borderWidth: 0.5,
     borderColor: customColors.lightGrey,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     borderRadius: 10,
-    //backgroundColor: '#7CD2F9',
     backgroundColor: 'white',
+  },
+  submitButton: {
+    borderWidth: 0.5,
+    borderColor: iosColors.green,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+    backgroundColor: iosColors.green,
   },
   timeButton_text: {
     color: iosColors.black,
     fontSize: 16,
-    fontWeight: 400,
     textAlign: 'center',
-    color: iosColors.black,
+  },
+  submitButton_text: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    textTransform: 'uppercase',
   },
   timeTable: {
-    flex: 1,
-    marginTop: 20,
-    borderWidth: 0.5,
+    //flex: 1,
+    marginTop: 30,
+    //borderWidth: 0.5,
   },
   timeTablePage: {
     width: SCREEN_WIDTH,

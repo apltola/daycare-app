@@ -55,12 +55,8 @@ export const parseRange = (startDate, endDate) => ({
   endDate: endDate && (endDate !== startDate) ? Math.max(startDate, endDate) : null
 })
 
-//export const getDays = firstDay => times(DAYS_TO_DISPLAY_PER_MONTH, i => t.addDays(firstDay, i))
 export const getDays = firstDay => {
-
   const daysNo = MONTHS_LENGHT[new Date(firstDay).getMonth()];
-  //console.log(t.getMonth(firstDay));
-  //console.log(new Date(firstDay).getMonth());
   return times(daysNo, i => t.addDays(firstDay, i));
 }
 
