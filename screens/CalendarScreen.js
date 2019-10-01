@@ -387,7 +387,7 @@ function CalendarScreen(props) {
     const renderList = days => {
       if (days.length === 0) {
         return (
-          <View style={styles.timeTableRow}>
+          <View style={[styles.timeTableRow, { borderColor: customColors.lightGrey, paddingVertical: 10 }]}>
             <Text>
               Ei tallennettuja tietoja
             </Text>
@@ -412,18 +412,45 @@ function CalendarScreen(props) {
           departureStr = dayData.departure ? formatDateString(dayData.departure, 'hh:mm') : '';
         }
 
+        const dayHasExistingSchedule = existingSchedules.findIndex(i => i === day) > -1;
+        const borderColor = dayHasExistingSchedule ? customColors.lightGrey : iosColors.darkBlue;
+        const paddingVertical = dayHasExistingSchedule ? 0 : 10;
+
         return (
-          <View style={styles.timeTableRow}>
-            <Text style={[styles.timeTableRow_text, {width: 120}]}>
-              {dayLabel} {dateStr}
-            </Text>
-            <Text style={styles.timeTableRow_text}>
-              {arrivalStr}
-            </Text>
-            <Text style={styles.timeTableRow_text}> – </Text>
-            <Text style={styles.timeTableRow_text}>
-              {departureStr}
-            </Text>
+          <View style={[styles.timeTableRow, { borderColor }]}>
+            <View style={styles.timeTableRowTextContainer}>
+              <Text style={[styles.timeTableRowText, {width: 120}]}>
+                {dayLabel} {dateStr}
+              </Text>
+            </View>
+            <View style={styles.timeTableRowTextContainer}>
+              <Text style={styles.timeTableRowText}>
+                {arrivalStr}
+              </Text>
+            </View>
+            <View style={styles.timeTableRowTextContainer}>
+              <Text style={styles.timeTableRowText}> – </Text>
+            </View>
+            <View style={styles.timeTableRowTextContainer}>
+              <Text style={styles.timeTableRowText}>
+                {departureStr}
+              </Text>
+            </View>
+            <View style={{flex: 1, alignItems: 'flex-end', justifyContent: 'center'}}>
+              <TouchableOpacity
+                onPress={handleScheduleDeleted}
+                style={styles.deleteScheduleButton}
+              >
+                <Icon
+                  name="trash"
+                  type="font-awesome"
+                  size={25}
+                  color={dayHasExistingSchedule ? iosColors.red : 'white'} // likanen kikka
+                  disabled={!dayHasExistingSchedule}
+                  iconStyle={{backgroundColor:'white'}}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         );
       })
@@ -443,7 +470,7 @@ function CalendarScreen(props) {
             <Text style={styles.timeTableTitle}>
               Tuleva aikataulu
             </Text>
-            <View style={{flex:1, maxHeight: 300}}>
+            <View style={{flex:1, maxHeight: 400}}>
               <Animated.ScrollView
                 contentContainerStyle={{paddingVertical: 10}}
               >
@@ -460,7 +487,7 @@ function CalendarScreen(props) {
             <Text style={styles.timeTableTitle}>
               Valitun kuukauden aikataulu
             </Text>
-            <View style={{flex:1, maxHeight: 300}}>
+            <View style={{flex:1, maxHeight: 400}}>
               <Animated.ScrollView
                 contentContainerStyle={{paddingVertical: 10}}
               >
@@ -471,6 +498,10 @@ function CalendarScreen(props) {
         </Animated.ScrollView>
       </View>
     );
+  }
+
+  const handleScheduleDeleted = () => {
+
   }
 
   const handleSubmit = async () => {
@@ -706,14 +737,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 10,
     borderRadius: 10,
-    padding: 10,
+    paddingLeft: 10,
     backgroundColor: 'white',
     borderWidth: 0.5,
-    borderColor: customColors.lightGrey,
   },
-  timeTableRow_text: {
+  timeTableRowTextContainer: {
+    justifyContent: 'center',
+  },
+  timeTableRowText: {
     fontSize: 16,
     color: iosColors.black,
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  deleteScheduleButton: {
+    padding: 10
   },
 });
 
