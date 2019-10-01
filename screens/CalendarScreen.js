@@ -316,13 +316,8 @@ function CalendarScreen(props) {
   }
 
   const renderButtons = () => {
-
+    
     const renderSubmitButton = () => {
-      /* const daysWithSchedule = getDaysWithSchedule();
-      if (selectedDays.length === 0) {
-        return null;
-      }; */
-  
       if (loading) {
         return (
           <View style={styles.submitButtonContainer}>
@@ -574,14 +569,14 @@ function CalendarScreen(props) {
           titleIOS={timePickerTarget === 'arrival' ? 'Aseta saapumisaika' : 'Aseta lähtöaika'}
         />
 
-        <Popup
+        {/* <Popup
           dialogType='submitNotification'
           actionType='modify'
           visible={showPopup}
           handleTouchOutside={() => setShowPopup(() => false)}
           handlePopupClose={() => setShowPopup(() => false)}
           submitWasSuccessful={res.status === 200}
-        />
+        /> */}
 
       </Animated.ScrollView>
     </View>
