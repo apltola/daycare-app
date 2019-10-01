@@ -414,10 +414,9 @@ function CalendarScreen(props) {
 
         const dayHasExistingSchedule = existingSchedules.findIndex(i => i === day) > -1;
         const borderColor = dayHasExistingSchedule ? customColors.lightGrey : iosColors.darkBlue;
-        const paddingVertical = dayHasExistingSchedule ? 0 : 10;
 
         return (
-          <View style={[styles.timeTableRow, { borderColor }]}>
+          <View style={[styles.timeTableRow, { borderColor: borderColor }]}>
             <View style={styles.timeTableRowTextContainer}>
               <Text style={[styles.timeTableRowText, {width: 120}]}>
                 {dayLabel} {dateStr}
@@ -445,9 +444,9 @@ function CalendarScreen(props) {
                   name="trash"
                   type="font-awesome"
                   size={25}
-                  color={dayHasExistingSchedule ? iosColors.red : 'white'} // likanen kikka
+                  //color={dayHasExistingSchedule ? iosColors.red : 'white'}
                   disabled={!dayHasExistingSchedule}
-                  iconStyle={{backgroundColor:'white'}}
+                  //iconStyle={{backgroundColor:'white'}}
                 />
               </TouchableOpacity>
             </View>
