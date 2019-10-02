@@ -31,8 +31,9 @@ function CalendarScreen(props) {
   const [daysWithArrival, setDaysWithArrival] = useState([]);
   const [daysWithDeparture, setDaysWithDeparture] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [res, setRes] = useState({});
+  const [submitResult, setSubmitResult] = useState({});
   const [showPopup, setShowPopup] = useState(false);
+  const [deleteScheduleLoading, setDeleteScheduleLoading] = useState({ active: false, scheduleId: null });
 
   /* Navigation props */
   const kid = props.navigation.getParam('kid', {});
@@ -321,7 +322,7 @@ function CalendarScreen(props) {
       if (loading) {
         return (
           <View style={styles.submitButtonContainer}>
-            <Spinner side="small" />;
+            <Spinner size="large" />
           </View>
         );
       } else {
@@ -394,21 +395,51 @@ function CalendarScreen(props) {
         const dayOfWeek = new Date(day).getDay();
         const dayLabel = DAY_LABELS_LOWERCASE[dayOfWeek];
         const dateStr = formatDateString(day, 'dd.mm');
+        let scheduleData;
         let arrivalStr;
         let departureStr;
-        let dayData;
         if (postData.findIndex(i => i.temp_id === day) === -1) {
-          dayData = kidSchedules.find(item => new Date(item.date).getTime() === day);
-          arrivalStr = dayData.arrive ? dayData.arrive.substring(0,5) : '';
-          departureStr = dayData.departure ? dayData.departure.substring(0,5) : '';
+          scheduleData = kidSchedules.find(item => new Date(item.date).getTime() === day);
+          arrivalStr = scheduleData.arrive ? scheduleData.arrive.substring(0,5) : '';
+          departureStr = scheduleData.departure ? scheduleData.departure.substring(0,5) : '';
         } else {
-          dayData = postData.find(item => item.temp_id === day);
-          arrivalStr = dayData.arrive ? formatDateString(dayData.arrive, 'hh:mm') : '';
-          departureStr = dayData.departure ? formatDateString(dayData.departure, 'hh:mm') : '';
+          scheduleData = postData.find(item => item.temp_id === day);
+          arrivalStr = scheduleData.arrive ? formatDateString(scheduleData.arrive, 'hh:mm') : '';
+          departureStr = scheduleData.departure ? formatDateString(scheduleData.departure, 'hh:mm') : '';
         }
 
         const dayHasExistingSchedule = existingSchedules.findIndex(i => i === day) > -1;
         const borderColor = dayHasExistingSchedule ? customColors.lightGrey : iosColors.darkBlue;
+
+        const renderDeleteButton = () => {
+          const deleteButton = () => (
+            <TouchableOpacity
+            onPress={() => handleScheduleDeleted(scheduleData)}
+            style={styles.deleteScheduleButton}
+            disabled={!dayHasExistingSchedule}
+            >
+              <Icon
+                name="trash"
+                type="font-awesome"
+                size={25}
+                color={dayHasExistingSchedule ? iosColors.red : 'white'}
+                iconStyle={{backgroundColor:'white'}}
+              />
+            </TouchableOpacity>
+          );
+
+          if (!deleteScheduleLoading.active) {
+            return deleteButton();
+          } else {
+            if (deleteScheduleLoading.scheduleId === scheduleData.id) {
+              return (
+                <Spinner size="small" />
+              );
+            } else {
+              return deleteButton();
+            }
+          }
+        }
 
         return (
           <View style={[styles.timeTableRow, { borderColor: borderColor }]}>
@@ -431,19 +462,7 @@ function CalendarScreen(props) {
               </Text>
             </View>
             <View style={{flex: 1, alignItems: 'flex-end', justifyContent: 'center'}}>
-              <TouchableOpacity
-                onPress={handleScheduleDeleted}
-                style={styles.deleteScheduleButton}
-              >
-                <Icon
-                  name="trash"
-                  type="font-awesome"
-                  size={25}
-                  //color={dayHasExistingSchedule ? iosColors.red : 'white'}
-                  disabled={!dayHasExistingSchedule}
-                  //iconStyle={{backgroundColor:'white'}}
-                />
-              </TouchableOpacity>
+              {renderDeleteButton()}
             </View>
           </View>
         );
@@ -462,7 +481,7 @@ function CalendarScreen(props) {
               <Icon name="circle" type="font-awesome" size={12} color={customColors.grey} iconStyle={{marginHorizontal: 3}} />
             </View>
             <Text style={styles.timeTableTitle}>
-              Tuleva aikataulu
+              Aikataulu tästä päivästä eteenpäin
             </Text>
             <View style={{flex:1, maxHeight: 400}}>
               <Animated.ScrollView
@@ -494,22 +513,33 @@ function CalendarScreen(props) {
     );
   }
 
-  const handleScheduleDeleted = () => {
+  const handleScheduleDeleted = async schedule => {
+    setDeleteScheduleLoading({ active: true, scheduleId: schedule.id });
 
+    try {
+      const res = await axios.delete(`${apiRoot}/schedule/delete/${schedule.id}`);
+      await fetchSchedules();
+      setSubmitResult(res);
+      setDeleteScheduleLoading({ active: false, scheduleId: null });
+    } catch (e) {
+      setSubmitResult(res);
+      await fetchSchedules();
+      setDeleteScheduleLoading({ active: false, scheduleId: null });
+    }
   }
 
   const handleSubmit = async () => {
     setLoading(() => true);
 
     try {
-      const submitRes = await axios.post(`${apiRoot}/schedule/add/many`, postData);
+      const res = await axios.post(`${apiRoot}/schedule/add/many`, postData);
       await fetchSchedules();
-      setRes(submitRes);
+      setSubmitResult(res);
       setLoading(false);
       setShowPopup(true);
       setSelectedDays([]);
     } catch (e) {
-      setRes(submitRes);
+      setSubmitResult(res);
       setLoading(false);
       setShowPopup(true);
     }
@@ -569,14 +599,14 @@ function CalendarScreen(props) {
           titleIOS={timePickerTarget === 'arrival' ? 'Aseta saapumisaika' : 'Aseta lähtöaika'}
         />
 
-        {/* <Popup
+        <Popup
           dialogType='submitNotification'
           actionType='modify'
           visible={showPopup}
           handleTouchOutside={() => setShowPopup(() => false)}
           handlePopupClose={() => setShowPopup(() => false)}
-          submitWasSuccessful={res.status === 200}
-        /> */}
+          submitWasSuccessful={submitResult.status === 200}
+        />
 
       </Animated.ScrollView>
     </View>
