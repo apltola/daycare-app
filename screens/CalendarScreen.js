@@ -317,8 +317,13 @@ function CalendarScreen(props) {
   }
 
   const renderButtons = () => {
+    const submitButtonShouldBeDisabled = () => {
+      return postData.length === 0 || postData.findIndex(i => !i.arrive || !i.departure) > -1;
+    }
     
     const renderSubmitButton = () => {
+      const disabled = submitButtonShouldBeDisabled();
+
       if (loading) {
         return (
           <View style={styles.submitButtonContainer}>
@@ -330,7 +335,8 @@ function CalendarScreen(props) {
           <View style={styles.submitButtonContainer}>
             <TouchableOpacity
               onPress={handleSubmit}
-              style={styles.submitButton}
+              style={[styles.submitButton, { opacity: disabled ? 0.35 : 1 }]}
+              disabled={disabled}
             >
               <Text style={styles.submitButton_text}>
                 Tallenna
@@ -567,14 +573,14 @@ function CalendarScreen(props) {
           {renderButtons()}
           {renderTimeTable()}
 
-          {/* <View style={{marginTop: 60}}>
+          <View style={{marginTop: 60}}>
             <Text>
               selectedDays: {JSON.stringify(selectedDays, null, 2)}
             </Text>
             <Text>
               postData: {JSON.stringify(postData, null, 2)}
             </Text>
-            <Text>
+            {/* <Text>
               daysWithArrival: {JSON.stringify(daysWithArrival, null, 2)}
             </Text>
             <Text>
@@ -582,11 +588,11 @@ function CalendarScreen(props) {
             </Text>
             <Text>
               timePickerTarget: {JSON.stringify(timePickerTarget, null, 2)}
-            </Text>
+            </Text> */}
             <Text>
-              res: {JSON.stringify(res, null, 2)}
+              res: {JSON.stringify(submitResult.status, null, 2)}
             </Text>
-          </View> */}
+          </View>
         </View>
 
         <DateTimePicker
