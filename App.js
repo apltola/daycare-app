@@ -5,13 +5,14 @@ import useGlobalHook from './store';
 
 import HomeScreen from './screens/HomeScreen';
 import KidScreen from './screens/KidScreen';
+import EditKidScreen from './screens/EditKidScreen';
 import TeacherScreen from './screens/TeacherScreen';
+import EditTeacherScreen from './screens/EditTeacherScreen';
 import GroupScreen from './screens/GroupScreen';
 import ScheduleScreen from './screens/ScheduleScreen';
 import CalendarScreen from './screens/CalendarScreen';
-import EditKidScreen from './screens/EditKidScreen';
-import EditTeacherScreen from './screens/EditTeacherScreen';
 import { iosColors } from './util';
+import EditGroupScreen from './screens/EditGroupScreen';
 
 const MainNavigator = createBottomTabNavigator({
   main: HomeScreen,
@@ -47,7 +48,22 @@ const MainNavigator = createBottomTabNavigator({
       }
     }
   }),
-  group: GroupScreen,
+  group: createStackNavigator({
+    group: GroupScreen,
+    editGroup: EditGroupScreen
+  },{
+    navigationOptions: {
+      tabBarLabel: 'Ryhmät',
+    },
+    defaultNavigationOptions: {
+      headerStyle: {
+        height: 50,
+        borderBottomWidth: 0.5,
+        borderBottomColor: iosColors.black,
+        backgroundColor: '#fafafa',
+      }
+    }
+  }),
   schedule: createStackNavigator({
     schedule: ScheduleScreen,
     calendar: CalendarScreen,
@@ -65,7 +81,7 @@ const MainNavigator = createBottomTabNavigator({
     }
   })
 },{
-  initialRouteName: 'schedule',
+  initialRouteName: 'group',
 });
 
 const AppContainer = createAppContainer(MainNavigator);
@@ -94,5 +110,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  }
+  },
 });

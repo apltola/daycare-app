@@ -16,7 +16,9 @@ const EditButton = ({ onPress }) => {
           color={iosColors.grey}
           size={30}
         />
-        <Text style={styles.buttonText}>MUOKKAA</Text>
+        <Text style={styles.buttonText}>
+          MUOKKAA
+        </Text>
       </View>
     </TouchableOpacity>
   );

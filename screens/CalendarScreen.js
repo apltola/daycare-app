@@ -1,9 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Dimensions, Animated } from 'react-native';
 import { Icon } from 'react-native-elements';
-import Button from '../components/Button';
 import Popup from '../components/Popup';
-import Dialog, { DialogContent, DialogFooter, DialogButton, ScaleAnimation } from 'react-native-popup-dialog';
 import t from 'timestamp-utils';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import axios from 'axios';
@@ -630,7 +628,6 @@ const styles = StyleSheet.create({
     //borderColor: 'goldenrod'
   },
   greyContainer: {
-    //flex: 1,
     backgroundColor: '#F5FBFE',
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
@@ -669,9 +666,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   day: {
-    //width: (SCREEN_WIDTH/7.05)-(20/7),
     width: CALENDAR_DATE_WIDTH,
-    //height: 50,
     height: 70,
     borderWidth: 1,
     borderRadius: 15,
@@ -679,9 +674,6 @@ const styles = StyleSheet.create({
     borderColor: customColors.lightGrey,
     paddingTop: 5,
     backgroundColor: 'white',
-    /* justifyContent: 'center',
-    alignContent: 'center',
-    alignItems: 'center', */
   },
   day_text: {
     fontSize: 18,
@@ -750,7 +742,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   timeTable: {
-    //flex: 1,
     marginTop: 30,
     //borderWidth: 0.5,
   },

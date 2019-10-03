@@ -12,7 +12,7 @@ const KidScreen = ({ navigation }) => {
   const [searchFilter, setSearchFilter] = useState('name');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const renderList = () => {
+  const renderKidList = () => {
     if (!globalState.allKids || globalState.allKids.length === 0) return null;
 
     let arr = null;
@@ -92,7 +92,7 @@ const KidScreen = ({ navigation }) => {
         </View>
 
         <View style={{paddingTop: 10}}>
-          {renderList()}
+          {renderKidList()}
         </View>
       </Animated.ScrollView>
     </View>
@@ -139,12 +139,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#ededed',
     padding: 20,
-    display: 'flex',
     flexDirection: 'row',
   },
   listItem_left: {
     flex: 1,
-
   },
   listItem_right: {
     display: 'flex',
