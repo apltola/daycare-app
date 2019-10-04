@@ -258,7 +258,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingBottom: 5,
     color: iosColors.black,
-    fontFamily: 'San Francisco',
   },
   input: {
     backgroundColor: '#e0e0e6',

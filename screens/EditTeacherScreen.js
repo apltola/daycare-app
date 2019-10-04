@@ -257,9 +257,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     paddingTop: 20,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

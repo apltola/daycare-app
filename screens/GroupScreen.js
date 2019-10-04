@@ -61,7 +61,6 @@ const GroupScreen = ({ navigation }) => {
           {renderGroupList()}
         </View>
 
-
         <View style={{marginTop: 60}}>
           <Text>
             groups: {JSON.stringify(globalState.childGroups || {}, null, 2)}
@@ -101,7 +100,6 @@ const styles = StyleSheet.create({
   listItem_left: {
     flex: 1,
     justifyContent: 'center',
-    //borderWidth: 0.5
   },
   listItem_right: {
     //flex: 1,
