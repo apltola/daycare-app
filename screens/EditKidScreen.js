@@ -97,6 +97,7 @@ const EditKidScreen = ({ navigation }) => {
       globalActions.fetchAllKids();
       navigation.navigate('kid');
     } catch (e) {
+      setLoading(false);
       setRes(res);
       setShowConfirmationDialog(false);
       setShowDialog(true);

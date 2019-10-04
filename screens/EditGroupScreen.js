@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Animated, View, Text, TextInput } from 'react-native';
 import axios from 'axios';
-import { iosColors } from '../util';
+import { apiRoot, iosColors } from '../util';
 import Spinner from '../components/Spinner';
 import Button from '../components/Button';
 import isEqual from 'lodash/isEqual';
+import Popup from '../components/Popup';
+import useGlobalHook from '../store';
 
 const EditGroupScreen = ({ navigation }) => {
   const group = navigation.getParam('group', {
     name: ''
   });
   const addNewGroup = navigation.getParam('addNewGroup', false);
+  const clearSearchTerm = navigation.getParam('clearSearchTerm', () => {});
 
+  const [globalState, globalActions] = useGlobalHook();
   const [postData, setPostData] = useState(group);
   const [initialGroupData, setInitialGroupData] = useState({});
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
+  const [showNotificationDialog, setShowNotificationDialog] = useState(false);
   const [submitResult, setSubmitResult] = useState({});
+  const [submitType, setSubmitType] = useState('');
+  const [groupHasBeenAdded, setGroupHasBeenAdded] = useState(false);
 
   useEffect(() => {
     setInitialGroupData(navigation.getParam('group', { name: '' }));
@@ -26,14 +33,53 @@ const EditGroupScreen = ({ navigation }) => {
 
   const saveButtonShouldBeDisabled = () => {
     if (addNewGroup) {
-      return !postData.name;
+      return !postData.name || groupHasBeenAdded;
     } else {
       return isEqual(initialGroupData, postData);
     }
   }
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    setLoading(true);
 
+    if (addNewGroup) {
+      setSubmitType('add');
+      try {
+        const res = await axios.post(`${apiRoot}/childgroup/add`, postData);
+        setLoading(false);
+        await globalActions.fetchChildGroups();
+        setSubmitResult(res);
+        setGroupHasBeenAdded(true);
+        setShowNotificationDialog(true);
+      } catch(e) {
+        setSubmitResult(res);
+        setLoading(false);
+        setShowNotificationDialog(true);
+      }
+    } else {
+
+    }
+  }
+
+  const handleDeleteGroup = async () => {
+    setLoading(true);
+
+    try {
+      setSubmitType('delete');
+      const res = await axios.delete(`${apiRoot}/childgroup/delete/${group.id}`);
+      await globalActions.fetchChildGroups();
+      setSubmitResult(res);
+      setLoading(false);
+      setShowConfirmationDialog(false);
+      clearSearchTerm();
+      navigation.navigate('group');
+    } catch(e) {
+      console.log('DELETE CATCH');
+      setShowConfirmationDialog(false);
+      setShowNotificationDialog(true);
+      setLoading(false);
+      setSubmitResult(res);
+    }
   }
 
   return (
@@ -64,7 +110,7 @@ const EditGroupScreen = ({ navigation }) => {
               : <Button
                   onPress={handleSave}
                   style="green"
-                  title="Tallenna"
+                  title={addNewGroup ? 'Lisää' : 'Tallenna'}
                   disabled={saveButtonShouldBeDisabled()}
                 />
             }
@@ -82,9 +128,30 @@ const EditGroupScreen = ({ navigation }) => {
           }
         </View>
 
+        <Popup
+          dialogType='submitNotification'
+          actionType={submitType}
+          visible={showNotificationDialog}
+          handleTouchOutside={() => setShowNotificationDialog(() => false)}
+          handlePopupClose={() => setShowNotificationDialog(() => false)}
+          submitWasSuccessful={submitResult.status === 200}
+        />
+
+        <Popup
+          dialogType='deleteConfirmation'
+          visible={showConfirmationDialog}
+          handleTouchOutside={() => setShowConfirmationDialog(() => false)}
+          handlePopupClose={() => setShowConfirmationDialog(() => false)}
+          handlePopupConfirm={() => handleDeleteGroup()}
+          submitWasSuccessful={submitResult.status === 200}
+          item={group}
+        />
+
         <View style={{paddingTop: 60}}>
+          <Text>addNewGroup: {JSON.stringify(addNewGroup, {}, 2)}</Text>
           <Text>postData: {JSON.stringify(postData, {}, 2)}</Text>
           <Text>initialGroupData: {JSON.stringify(initialGroupData, {}, 2)}</Text>
+          <Text>res: {JSON.stringify(submitResult, {}, 2)}</Text>
         </View>
       </Animated.ScrollView>
     </View>
