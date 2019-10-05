@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { createAppContainer, createBottomTabNavigator, createStackNavigator } from 'react-navigation';
 import useGlobalHook from './store';
+import { iosColors } from './util';
 
 import HomeScreen from './screens/HomeScreen';
 import KidScreen from './screens/KidScreen';
@@ -11,8 +12,14 @@ import EditTeacherScreen from './screens/EditTeacherScreen';
 import GroupScreen from './screens/GroupScreen';
 import ScheduleScreen from './screens/ScheduleScreen';
 import CalendarScreen from './screens/CalendarScreen';
-import { iosColors } from './util';
 import EditGroupScreen from './screens/EditGroupScreen';
+
+const headerStyle = {
+  height: 50,
+  borderBottomWidth: 0.5,
+  borderBottomColor: iosColors.black,
+  backgroundColor: '#fafafa',
+}
 
 const MainNavigator = createBottomTabNavigator({
   main: HomeScreen,
@@ -23,14 +30,7 @@ const MainNavigator = createBottomTabNavigator({
     navigationOptions: {
       tabBarLabel: 'Muksut',
     },
-    defaultNavigationOptions: {
-      headerStyle: {
-        height: 50,
-        borderBottomWidth: 0.5,
-        borderBottomColor: iosColors.black,
-        backgroundColor: '#fafafa',
-      }
-    }
+    defaultNavigationOptions: { headerStyle }
   }),
   teacher: createStackNavigator({
     teacher: TeacherScreen,
@@ -39,14 +39,7 @@ const MainNavigator = createBottomTabNavigator({
     navigationOptions: {
       tabBarLabel: 'Opet',
     },
-    defaultNavigationOptions: {
-      headerStyle: {
-        height: 50,
-        borderBottomWidth: 0.5,
-        borderBottomColor: iosColors.black,
-        backgroundColor: '#fafafa',
-      }
-    }
+    defaultNavigationOptions: { headerStyle }
   }),
   group: createStackNavigator({
     group: GroupScreen,
@@ -55,14 +48,7 @@ const MainNavigator = createBottomTabNavigator({
     navigationOptions: {
       tabBarLabel: 'Ryhmät',
     },
-    defaultNavigationOptions: {
-      headerStyle: {
-        height: 50,
-        borderBottomWidth: 0.5,
-        borderBottomColor: iosColors.black,
-        backgroundColor: '#fafafa',
-      }
-    }
+    defaultNavigationOptions: { headerStyle }
   }),
   schedule: createStackNavigator({
     schedule: ScheduleScreen,
@@ -71,17 +57,10 @@ const MainNavigator = createBottomTabNavigator({
     navigationOptions: {
       tabBarLabel: 'Aikataulut',
     },
-    defaultNavigationOptions: {
-      headerStyle: {
-        height: 50,
-        borderBottomWidth: 0.5,
-        borderBottomColor: iosColors.black,
-        backgroundColor: '#fafafa',
-      }
-    }
+    defaultNavigationOptions: { headerStyle }
   })
 },{
-  initialRouteName: 'group',
+  initialRouteName: 'main',
 });
 
 const AppContainer = createAppContainer(MainNavigator);
@@ -90,9 +69,6 @@ export default function App() {
   const [globalState, globalActions] = useGlobalHook();
 
   useEffect(() => {
-    /* Font.loadAsync({
-      'SFUI-regular': require('./assets/fonts/SF-UI-Display-Regular.otf'),
-    }); */
     globalActions.fetchAllKids();
     globalActions.fetchChildGroups();
 

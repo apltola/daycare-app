@@ -325,7 +325,7 @@ function CalendarScreen(props) {
       if (loading) {
         return (
           <View style={styles.submitButtonContainer}>
-            <Spinner size="large" />
+            <Spinner size="small" />
           </View>
         );
       } else {
@@ -480,9 +480,9 @@ function CalendarScreen(props) {
           pagingEnabled={true}
         >
           <View style={styles.timeTablePage}>
-            <View style={{flexDirection: 'row', justifyContent: 'center', paddingVertical: 10}}>
-              <Icon name="circle" type="font-awesome" size={12} color={iosColors.black} iconStyle={{marginHorizontal: 3}} />
-              <Icon name="circle" type="font-awesome" size={12} color={customColors.grey} iconStyle={{marginHorizontal: 3}} />
+            <View style={{flexDirection: 'row', justifyContent: 'center', paddingTop: 10, paddingBottom: 15}}>
+              <Icon name="circle" type="font-awesome" size={14} color={iosColors.black} iconStyle={{marginHorizontal: 3}} />
+              <Icon name="circle" type="font-awesome" size={14} color={customColors.grey} iconStyle={{marginHorizontal: 3}} />
             </View>
             <Text style={styles.timeTableTitle}>
               Aikataulu tästä päivästä eteenpäin
@@ -497,9 +497,9 @@ function CalendarScreen(props) {
           </View>
 
           <View style={styles.timeTablePage}>
-            <View style={{flexDirection: 'row', justifyContent: 'center', paddingVertical: 10}}>
-              <Icon name="circle" type="font-awesome" size={12} color={customColors.grey} iconStyle={{marginHorizontal: 3}} />
-              <Icon name="circle" type="font-awesome" size={12} color={iosColors.black} iconStyle={{marginHorizontal: 3}} />
+            <View style={{flexDirection: 'row', justifyContent: 'center', paddingTop: 10, paddingBottom: 15}}>
+              <Icon name="circle" type="font-awesome" size={14} color={customColors.grey} iconStyle={{marginHorizontal: 3}} />
+              <Icon name="circle" type="font-awesome" size={14} color={iosColors.black} iconStyle={{marginHorizontal: 3}} />
             </View>
             <Text style={styles.timeTableTitle}>
               Valitun kuukauden aikataulu
