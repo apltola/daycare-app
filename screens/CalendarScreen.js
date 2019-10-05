@@ -206,11 +206,11 @@ function CalendarScreen(props) {
 
     return (
       <View style={styles.calendarNavigation}>
-        <View style={{justifyContent: 'center'}}>
+        {/* <View style={{justifyContent: 'center'}}>
           <Text style={{fontSize: 16}}>
             Tee jotaki...
           </Text>
-        </View>
+        </View> */}
         <View style={{
           flexDirection: 'row',
           justifyContent: 'center',
@@ -388,7 +388,7 @@ function CalendarScreen(props) {
       if (days.length === 0) {
         return (
           <View style={[styles.timeTableRow, { borderColor: customColors.lightGrey, paddingVertical: 10 }]}>
-            <Text>
+            <Text style={{fontSize: 16, color: iosColors.black}}>
               Ei tallennettuja tietoja
             </Text>
           </View>
@@ -561,6 +561,12 @@ function CalendarScreen(props) {
             {`${kid.firstName}, ${kid.childgroup.name}`}
           </Text>
         </View>
+
+        <View>
+          <Text style={styles.descriptionText}>
+            Valitse päiviä kalenterista asettaaksesi tulo- ja lähtöaikoja.
+          </Text>
+        </View>
         
         <View style={styles.greyContainer}>
           <View style={styles.calendarContainer}>
@@ -641,11 +647,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     color: iosColors.black,
   },
+  descriptionText: {
+    fontSize: 16,
+    paddingLeft: 10,
+    paddingBottom: 20,
+    width: 300,
+  },
   calendarNavigation: {
     flexDirection: 'row',
-    //alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     paddingHorizontal: 10,
+    paddingBottom: 5,
   },
   calendarContainer: {
     paddingTop: 20,

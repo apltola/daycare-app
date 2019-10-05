@@ -73,7 +73,18 @@ function HomeScreen() {
   this._scrollViewRef = React.createRef();
 
   const renderKids = kids => {
-    if (kids.length === 0) return null;
+    if (kids.length === 0) return (
+      <View>
+        <Text style={{
+          //fontSize: 16,
+          color: iosColors.black,
+          textAlign: 'center',
+          paddingVertical: 20,
+        }}>
+          Ei tietoja saapuvista muksuista
+        </Text>
+      </View>
+    );
 
     const sortedKids = orderBy(kids, ['arrival'], ['asc']);
     return sortedKids.map(kid => {
