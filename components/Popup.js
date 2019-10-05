@@ -62,12 +62,29 @@ const Popup = props => {
           </View>
         );
       }
+
+      case 'errorDescription': {
+        return (
+          <View>
+            <Icon
+              name='exclamation-circle'
+              type='font-awesome'
+              color={iosColors.red}
+              size={60}
+            />
+            <Text style={styles.dialogText}>
+              Siirrä ryhmän muksut muihin ryhmiin ennen poistamista.
+            </Text>
+          </View>
+        );
+      }
     }
   }
 
   const renderFooter = () => {
     switch (props.dialogType) {
-      case 'submitNotification': {
+      case 'submitNotification':
+      case 'errorDescription' : {
         return (
           <DialogFooter>
             <DialogButton

@@ -21,6 +21,7 @@ const EditGroupScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
+  const [showErrorNotification, setShowErrorNotification] = useState(false);
   const [submitResult, setSubmitResult] = useState({});
   const [submitType, setSubmitType] = useState('');
   const [groupHasBeenAdded, setGroupHasBeenAdded] = useState(false);
@@ -39,6 +40,10 @@ const EditGroupScreen = ({ navigation }) => {
     }
   }
 
+  const groupHasKids = () => {
+    return globalState.allKids.findIndex(i => i.childgroup.id === group.id) > -1;
+  }
+
   const handleSave = async () => {
     setLoading(true);
 
@@ -46,15 +51,15 @@ const EditGroupScreen = ({ navigation }) => {
       setSubmitType('add');
       try {
         const res = await axios.post(`${apiRoot}/childgroup/add`, postData);
-        setLoading(false);
         await globalActions.fetchChildGroups();
         setSubmitResult(res);
         setGroupHasBeenAdded(true);
         setShowNotificationDialog(true);
+        setLoading(false);
       } catch(e) {
         setSubmitResult(res);
-        setLoading(false);
         setShowNotificationDialog(true);
+        setLoading(false);
       }
     } else {
 
@@ -63,9 +68,9 @@ const EditGroupScreen = ({ navigation }) => {
 
   const handleDeleteGroup = async () => {
     setLoading(true);
+    setSubmitType('delete');
 
     try {
-      setSubmitType('delete');
       const res = await axios.delete(`${apiRoot}/childgroup/delete/${group.id}`);
       await globalActions.fetchChildGroups();
       setSubmitResult(res);
@@ -74,13 +79,15 @@ const EditGroupScreen = ({ navigation }) => {
       clearSearchTerm();
       navigation.navigate('group');
     } catch(e) {
-      console.log('DELETE CATCH');
       setShowConfirmationDialog(false);
       setShowNotificationDialog(true);
       setLoading(false);
       setSubmitResult(res);
     }
   }
+
+  const openErrorDialog = () => setShowErrorNotification(true);
+  const openConfirmationDialog = () => setShowConfirmationDialog(true);
 
   return (
     <View style={styles.container}>
@@ -119,7 +126,7 @@ const EditGroupScreen = ({ navigation }) => {
             !addNewGroup &&
             <View style={styles.buttonContainer}>
               <Button
-                onPress={() => setShowConfirmationDialog(true)}
+                onPress={groupHasKids() ? openErrorDialog : openConfirmationDialog}
                 style='red'
                 title={`Poista ${group.name}`}
                 disabled={false}
@@ -147,11 +154,22 @@ const EditGroupScreen = ({ navigation }) => {
           item={group}
         />
 
+        <Popup
+          dialogType='errorDescription'
+          actionType='groupDelete'
+          visible={showErrorNotification}
+          handleTouchOutside={() => setShowErrorNotification(() => false)}
+          handlePopupClose={() => setShowErrorNotification(() => false)}
+          //submitWasSuccessful={submitResult.status === 200}
+          item={group}
+        />
+
         <View style={{paddingTop: 60}}>
           <Text>addNewGroup: {JSON.stringify(addNewGroup, {}, 2)}</Text>
           <Text>postData: {JSON.stringify(postData, {}, 2)}</Text>
           <Text>initialGroupData: {JSON.stringify(initialGroupData, {}, 2)}</Text>
           <Text>res: {JSON.stringify(submitResult, {}, 2)}</Text>
+          {/* <Text>all kids: {JSON.stringify(globalState.allKids, {}, 2)}</Text> */}
         </View>
       </Animated.ScrollView>
     </View>
