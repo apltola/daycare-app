@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated, DatePickerIOS, Image, Button } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Animated, FlatList } from 'react-native';
 import { Icon } from 'react-native-elements';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import useGlobalHook from '../store';
@@ -63,6 +63,7 @@ const Kid = ({ kid }) => {
   );
 }
 
+
 function HomeScreen() {
   const [globalState, globalActions] = useGlobalHook();
   const [kids, setKids] = useState([]);
@@ -70,7 +71,14 @@ function HomeScreen() {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [listRefreshing, setListRefreshing] = useState(false);
   this._scrollViewRef = React.createRef();
+
+  const handleListRefresh = async () => {
+    setListRefreshing(true);
+    await globalActions.fetchKidsForDate(date);
+    setListRefreshing(false);
+  }
 
   const renderKids = kids => {
     if (kids.length === 0) return (
@@ -87,9 +95,19 @@ function HomeScreen() {
     );
 
     const sortedKids = orderBy(kids, ['arrival'], ['asc']);
-    return sortedKids.map(kid => {
+    /* return sortedKids.map(kid => {
       return <Kid kid={kid} />
-    });
+    }); */
+
+    return (
+      <FlatList
+        data={sortedKids}
+        renderItem={({ item }) => <Kid kid={item} />}
+        keyExtractor={item => item.id}
+        refreshing={listRefreshing}
+        onRefresh={() => handleListRefresh()}
+      />
+    );
   }
 
   const onDatePicked = date => {
@@ -147,12 +165,13 @@ function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <Animated.ScrollView
+      {/* <Animated.ScrollView
         ref={e => this._scrollViewRef = e}
         style={styles.scrollView}
       >
         {renderKids(globalState.kidsForDate)}
-      </Animated.ScrollView>
+      </Animated.ScrollView> */}
+      {renderKids(globalState.kidsForDate)}
 
       <DateTimePicker
         date={date}
