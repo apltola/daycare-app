@@ -95,10 +95,6 @@ function HomeScreen() {
     );
 
     const sortedKids = orderBy(kids, ['arrival'], ['asc']);
-    /* return sortedKids.map(kid => {
-      return <Kid kid={kid} />
-    }); */
-
     return (
       <FlatList
         data={sortedKids}
