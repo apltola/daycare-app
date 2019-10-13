@@ -161,12 +161,6 @@ function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* <Animated.ScrollView
-        ref={e => this._scrollViewRef = e}
-        style={styles.scrollView}
-      >
-        {renderKids(globalState.kidsForDate)}
-      </Animated.ScrollView> */}
       {renderKids(globalState.kidsForDate)}
 
       <DateTimePicker
@@ -263,39 +257,25 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   filterButton: {
-    //flex: 1,
     alignItems: 'center',
-    //borderWidth: 1,
-    //borderColor: '#147efb',
     paddingVertical: 10,
     paddingHorizontal: 20,
-    //borderBottomColor: 'transparent',
-    //borderBottomWidth: 2,
     borderRadius: 10,
   },
   filterButtonSelected: {
     backgroundColor: customColors.lightGrey,
-    //borderBottomWidth: 2,
-    //borderBottomColor: customColors.lightGrey,
   },
   filterButton_left: {
-    //borderTopLeftRadius: 5,
-    //borderBottomLeftRadius: 5,
+
   },
   filterButton_right: {
-    //borderTopRightRadius: 5,
-    //borderBottomRightRadius: 5,
+
   },
   filterButtonText: {
-    //color: '#147efb',
     color: iosColors.black,
-    //fontSize: 16,
-    //borderBottomWidth: 2,
   },
   filterButtonText_selected: {
-    //color: 'white',
     color: iosColors.black,
-    //fontSize: 16,
     fontWeight: 'bold',
     borderBottomWidth: 2,
     borderColor: customColors.lightGrey,

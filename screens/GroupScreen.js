@@ -102,8 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   listItem_right: {
-    //flex: 1,
-    //borderWidth: 0.5
+    
   },
   groupName: {
     fontWeight: 'bold',

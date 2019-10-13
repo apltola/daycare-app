@@ -203,9 +203,6 @@ function EditTeacherScreen({ navigation }) {
           <Text>
             res: {JSON.stringify(res || {}, null, 2)}
           </Text>
-          {/* <Text>
-            global.groups: {JSON.stringify(globalState.childGroups || {}, null, 2)}
-          </Text> */}
         </View>
       </Animated.ScrollView>
     </View>
@@ -228,14 +225,11 @@ const styles = StyleSheet.create({
   groupListItem: {
     paddingVertical: 10,
     flexDirection: 'row',
-    //borderWidth: 1,
     borderBottomWidth: 1,
-    //borderTopWidth: 1,
     borderColor: '#e0e0e6',
   },
   groupListItem_left: {
     flex: 1,
-    //borderWidth: 1,
     justifyContent: 'center',
   },
   groupListItem_right: {
@@ -248,8 +242,6 @@ const styles = StyleSheet.create({
   },
   toggleGroupButton: {
     borderWidth: 1,
-    //borderColor: iosColors.green,
-    //backgroundColor: iosColors.green,
     height: 35,
     width: 35,
     borderRadius: 70,

@@ -91,13 +91,11 @@ const styles = StyleSheet.create({
   },
   listItem_left: {
     flex: 1,
-    //borderWidth: 1,
   },
   listItem_right: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-start',
-    //borderWidth: 1,
   },
 });
 

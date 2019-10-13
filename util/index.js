@@ -25,7 +25,6 @@ export const customColors = {
 
 /* CALENDAR & DATE UTILS */
 const DAYS_TO_DISPLAY_PER_MONTH = 42
-let days_to_show_per_month = null
 const MONTHS_LENGHT = [31, null, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 export const isLeapYear = year => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
@@ -72,7 +71,9 @@ export const dateIsOut = (date, start, end) => date < start || date > end
 export const formartTime = value => (`0${value}`).slice(-2)
 
 export const formatDateString = (value, pattern) => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
 
   const dValue = new Date(value);
   let date = dValue.getDate();
@@ -100,10 +101,7 @@ export const formatDateString = (value, pattern) => {
       hours = t.getHours(value);
       minutes = t.getMinutes(value);
     } catch(error) {
-      console.log('CATCH!!!');
-      //console.log('dValue ==> ', dValue);
-      //hours = dValue.getHours();
-      //minutes = dValue.getMinutes();
+      console.error(error);
     }
     return `${hours}:${minutes}`
   }
