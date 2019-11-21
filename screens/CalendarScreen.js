@@ -67,7 +67,7 @@ function CalendarScreen(props) {
     //const sDate = getDateWithoutTime(startDate)
     //const eDate = getDateWithoutTime(endDate)
 
-    const dayHasSchedule = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd')) > -1;
+    const dayHasSchedule = kidSchedules.findIndex(i => i.scheduledate === formatDateString(day, 'yyyy-mm-dd')) > -1;
 
     let conditions = {};
     if (elementType === 'view') {
@@ -175,7 +175,7 @@ function CalendarScreen(props) {
         let data = {
           temp_id: selectedDay,
           child: kid,
-          date: formatDateString(selectedDay, 'yyyy-mm-dd')
+          scheduledate: formatDateString(selectedDay, 'yyyy-mm-dd')
         }
         if (timePickerTarget === 'arrival') {
           data.arrive = timeWithHoursAndMin;
@@ -253,7 +253,7 @@ function CalendarScreen(props) {
   }
 
   const renderCheckmark = day => {
-    const idx = kidSchedules.findIndex(i => i.date === formatDateString(day, 'yyyy-mm-dd'));
+    const idx = kidSchedules.findIndex(i => i.scheduledate === formatDateString(day, 'yyyy-mm-dd'));
     if (idx > -1) {
       return (
         <Icon
@@ -373,11 +373,12 @@ function CalendarScreen(props) {
   }
 
   const renderTimeTable = () => {
-    const existingSchedules = kidSchedules.map(i => new Date(i.date).getTime());
+    const existingSchedules = kidSchedules.map(i => new Date(i.scheduledate).getTime());
     const newSchedules = getDaysWithSchedule();
     const daysWithSchedule = union(existingSchedules, newSchedules);
     
     const today = new Date(formatDateString(new Date(), 'yyyy-mm-dd')).getTime();
+    console.log('today => ', today);
     const futureDaysWithSchedule = daysWithSchedule.filter(i => i >= today);
     const selectedMonthDaysWithSchedule = daysWithSchedule.filter(i => i >= dateData.firstMonthDay && i <= dateData.lastMonthDay);
 
@@ -403,7 +404,7 @@ function CalendarScreen(props) {
         let arrivalStr;
         let departureStr;
         if (postData.findIndex(i => i.temp_id === day) === -1) {
-          scheduleData = kidSchedules.find(item => new Date(item.date).getTime() === day);
+          scheduleData = kidSchedules.find(item => new Date(item.scheduledate).getTime() === day);
           arrivalStr = scheduleData.arrive ? scheduleData.arrive.substring(0,5) : '';
           departureStr = scheduleData.departure ? scheduleData.departure.substring(0,5) : '';
         } else {
@@ -418,9 +419,9 @@ function CalendarScreen(props) {
         const renderDeleteButton = () => {
           const deleteButton = () => (
             <TouchableOpacity
-            onPress={() => handleScheduleDeleted(scheduleData)}
-            style={styles.deleteScheduleButton}
-            disabled={!dayHasExistingSchedule}
+              onPress={() => handleScheduleDeleted(scheduleData)}
+              style={styles.deleteScheduleButton}
+              disabled={!dayHasExistingSchedule}
             >
               <Icon
                 name="trash"
@@ -470,6 +471,11 @@ function CalendarScreen(props) {
             </View>
           </View>
         );
+        /* return (
+          <View>
+            <Text>jeejee</Text>
+          </View>
+        ) */
       })
     }
 
@@ -523,10 +529,8 @@ function CalendarScreen(props) {
     try {
       const res = await axios.delete(`${apiRoot}/schedule/delete/${schedule.id}`);
       await fetchSchedules();
-      setSubmitResult(res);
       setDeleteScheduleLoading({ active: false, scheduleId: null });
     } catch (e) {
-      setSubmitResult(res);
       await fetchSchedules();
       setDeleteScheduleLoading({ active: false, scheduleId: null });
     }
@@ -558,7 +562,7 @@ function CalendarScreen(props) {
       >
         <View style={styles.kidTitle}>
           <Text style={styles.kidTitle_text}>
-            {`${kid.firstName}, ${kid.childgroup.name}`}
+            {`${kid.firstName}, ${kid.childgroup.name}, ${kid.id}`}
           </Text>
         </View>
 
@@ -585,6 +589,9 @@ function CalendarScreen(props) {
               postData: {JSON.stringify(postData, null, 2)}
             </Text>
             {/* <Text>
+              kidSchedules: {JSON.stringify(kidSchedules, null, 2)}
+            </Text>
+            <Text>
               daysWithArrival: {JSON.stringify(daysWithArrival, null, 2)}
             </Text>
             <Text>
