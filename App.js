@@ -60,7 +60,7 @@ const MainNavigator = createBottomTabNavigator({
     defaultNavigationOptions: { headerStyle }
   })
 },{
-  initialRouteName: 'schedule',
+  initialRouteName: 'main',
 });
 
 const AppContainer = createAppContainer(MainNavigator);

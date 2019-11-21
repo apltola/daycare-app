@@ -81,6 +81,10 @@ function HomeScreen() {
   }
 
   const renderKids = kids => {
+    if (kidsFiltered) {
+      kids = kids.filter(i => i.childgroupId === globalState.auth.groupId);
+    }
+
     if (kids.length === 0) return (
       <View>
         <Text style={{
@@ -95,6 +99,7 @@ function HomeScreen() {
     );
 
     const sortedKids = orderBy(kids, ['arrival'], ['asc']);
+
     return (
       <FlatList
         data={sortedKids}
